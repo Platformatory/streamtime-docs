@@ -1,0 +1,3 @@
+site_name: Streamtime Documentation
+nav:
+  - Home: index.md
