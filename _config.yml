@@ -1,6 +1,6 @@
 title: Streamtime Docs
-description: A starter template for a Jeykll site using the Just the Docs theme!
+description: Docs for streamtime.ai
 theme: just-the-docs
-url: ""
+url: "https://docs.streamtime.ai"
 plugins:
   - jekyll-default-layout
