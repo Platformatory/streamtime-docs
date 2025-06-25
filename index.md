@@ -1,5 +1,7 @@
-# Streamtime Documentation
-
+---
+title: Get Started
+layout: home
+---
 
 ## Streamtime: A Universal Management Plane for Kafka
 
