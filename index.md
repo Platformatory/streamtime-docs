@@ -1,79 +1,92 @@
 ---
 title: Get Started
+nav_order: 1
 layout: home
 ---
 
-## Streamtime: A Universal Management Plane for Kafka
+# Get Started
 
-Kafka Fleet Manager enables **MSPs and Platform Operators** to:
+Once access is granted, users will be prompted to enter their **organization name**.
 
-- Install, configure, and operate production-grade **OSK**, **Confluent**, or **Warpstream** clusters.
-- Do it **in minutes** and **anywhere** using clicks or automation.
+![Organization prompt](assets/images/org-prompt.png)
 
-> _100% happy path assurance_  
-> _Experience like Confluent Cloud™ or MSK Serverless_  
-> _Works with any Kubernetes distribution_
+After login via OIDC, users are redirected to the **Streamtime Console Home Page**.
 
----
+##  Console Overview
 
-##  Features
+Key dashboard widgets available on the homepage:
 
--  **Comprehensive Management Plane**
--  **Multi-tenancy**
--  **Cluster & Fleet Management**
--  **Workload & User Identity Federation**
--  **Observability**
--  **AI Ops + Fleet Health Agent**
--  **Audit Logs & Compliance**
--  **FinOps & Chargeback**
--  **Bring Your Own Infrastructure**
+-  Cluster Throughput (last 5 days)
+-  Top Kafka Clusters - Billing
+-  Active Alerts 
+-  Audit Logs
+-  Kubernetes Fleet Status:
+  - Total, Healthy, Provisioning, Unhealthy
+-  Kafka Clusters Status:
+  - Total, Healthy, Provisioning, Unhealthy
 
----
+![Dashboard Overview](assets/images/console-overview.png)  
 
-##  Bootstrap Kafka Anywhere
+##  Navigation Menu
 
-- Bootstrap using **AWS**  
-  _(GCP and Azure coming soon)_
-- Bootstrap via **Kubernetes** using **Cluster API**  
-  _(vSphere support landing shortly)_
-- Use enterprise Kubernetes platforms:
-  - Rancher
-  - OpenShift
-  - Kube Manager
-- Or **Bring Your Own Kubernetes (BYOK)**
+The sidebar includes the following pages:
 
----
+- Network Management
+- Kubernetes Fleet
+- Clusters
+- Settings
+- Diagnostics
+- Artifact Registry
+- API Keys
+- Billing
 
-##  Networking, Access, and Integration
-
-- **Internal & External Access** Networking
-- Supports **CFK** and **Strimzi**
-- Auth via **OIDC** and **SASL_OAUTHBEARER**
-- Bring Your Own Certificates
-- Shared MDS: **RBAC** and **Centralized ACLs**
-- Customizable SKUs and advanced configuration
-- Supports **Warpstream**
-  - Warpstream Console integration
-  - Host-based routing + NLB
-  - Bring your own certificates
+![Sidebar Navigation](assets/images/sidebar.png)
 
 ---
 
-## Observability & Operations
+##  Settings Page
 
-- Server-side metrics and **built-in dashboard**
-- Forward metrics to:
-  - Datadog (if you're rich 😉)
-  - Remote-write destinations
-- **Playbooks** for:
-  - Tenant placement
-  - Tenant migration
-  - Disaster Recovery (DR)
-- Support for **Client Namespaces**
-- Chargeback and **historical metrics rollups**
-- **Fleet Health Agent** and **AI Operator**
-- In-situ **log & metric intelligence** using RAG-based Knowledge Base
+Tabs available:
+
+- Organizations
+- Team Members
+- Bootstrap Providers
+- Warpstream Accounts
+- DNS & Certificates
+- Identity Provider Management
+
+
+![Settings Page](assets/images/settings-page.png)  
+
+
+## Billing Page
+
+The **Billing** section is divided into two tabs:
+
+### 1. Current Month Analytics
+
+Provides visual insight into the current month’s usage and billing metrics.
+
+- Kafka Units by Cluster
+- Cluster Hours
+- Cost
+- Total Usage
+- Service-Wise Breakdown
+
+![Current Month Billing Analytics](assets/images/billing-analytics.png)  
 
 ---
 
-> Built for Platform Teams. Trusted by Experts. Ready for Day 0 to Day ∞.
+### 2. Invoices
+
+The invoices tab allows users to view, download, or share monthly invoices.
+
+- Table listing:
+  - Invoice Date
+  - Billing Period
+  - Amount
+  - Payment Status
+  - Download PDF
+  - Share Link
+
+![Invoice List](assets/images/invoices.png)  
