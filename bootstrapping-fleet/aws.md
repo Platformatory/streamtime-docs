@@ -14,4 +14,4 @@ nav_order: 1
 
 Use the provided Terraform module or AWS Console to create resources.
 
-![AWS Setup](../assets/screenshots/aws-setup.png)
+![Bootstrap Provider]({{site.base_url}}/assets/images/fleet-bootstrap-provider.png)

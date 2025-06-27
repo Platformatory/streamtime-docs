@@ -15,4 +15,4 @@ nav_order: 2
 
 OKE clusters can be integrated into the Streamtime control plane.
 
-![Oracle Setup](../assets/screenshots/oracle-setup.png)
+![Bootstrap Provider]({{site.base_url}}/assets/images/fleet-bootstrap-provider.png)

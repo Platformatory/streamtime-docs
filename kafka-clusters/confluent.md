@@ -14,4 +14,4 @@ Requires CFK license and helm setup.
 - Monitoring agent (MDS)
 - Tiered storage bucket
 
-![CFK Setup](../assets/screenshots/cfk-setup.png)
+![Cluster Type]({{ site.baseurl }}/assets/images/cluster-type.png) 

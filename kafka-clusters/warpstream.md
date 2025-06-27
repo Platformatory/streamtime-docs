@@ -14,4 +14,4 @@ Cost-optimized Kafka for S3 object storage.
 - Bucket name
 - Performance tiers
 
-![Warpstream](../assets/screenshots/warpstream-setup.png)
+![Cluster Type]({{ site.baseurl }}/assets/images/cluster-type.png) 

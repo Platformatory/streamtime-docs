@@ -14,4 +14,4 @@ nav_order: 4
 
 Currently in limited test rollout.
 
-![Azure Setup](../assets/screenshots/azure-setup.png)
+![Bootstrap Provider]({{site.base_url}}/assets/images/fleet-bootstrap-provider.png)

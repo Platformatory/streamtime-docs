@@ -14,4 +14,4 @@ nav_order: 3
 
 Use the `gcloud` CLI or Terraform for setup.
 
-![GCP Setup](../assets/screenshots/gcp-setup.png)
+![Bootstrap Provider]({{site.base_url}}/assets/images/fleet-bootstrap-provider.png)

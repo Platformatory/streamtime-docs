@@ -14,4 +14,4 @@ Kafka-compatible cloud-native messaging.
 - Auto-scaling enabled by default
 - Built-in observability hooks
 
-![AutoMQ](../assets/screenshots/automq-setup.png)
+![Cluster Type]({{ site.baseurl }}/assets/images/cluster-type.png) 

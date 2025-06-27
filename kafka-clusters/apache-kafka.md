@@ -16,4 +16,4 @@ Ideal for testing or DIY use cases.
 - Internal vs External access
 - Auth providers (TLS, SCRAM)
 
-![Apache Kafka](../assets/screenshots/apache-kafka.png)
+![Cluster Type]({{ site.baseurl }}/assets/images/cluster-type.png) 

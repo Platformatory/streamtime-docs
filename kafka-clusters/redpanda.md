@@ -14,4 +14,4 @@ JVM-free Kafka alternative optimized for low-latency use cases.
 - Partition replicas
 - Prometheus integration
 
-![Redpanda Setup](../assets/screenshots/redpanda-setup.png)
+![Cluster Type]({{ site.baseurl }}/assets/images/cluster-type.png) 

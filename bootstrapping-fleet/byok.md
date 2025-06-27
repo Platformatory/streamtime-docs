@@ -18,4 +18,4 @@ Use this for:
 - On-prem clusters
 - Rancher / OpenShift setups
 
-![BYOK Setup](../assets/screenshots/advanced-setup.png)
+![Bootstrap Provider]({{site.base_url}}/assets/images/fleet-bootstrap-provider.png)
