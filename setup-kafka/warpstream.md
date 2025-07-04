@@ -1,6 +1,6 @@
 ---
 title: "Warpstream"
-parent: Kafka Clusters
+parent: Setup Kafka
 nav_order: 4
 ---
 

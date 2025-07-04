@@ -1,26 +1,39 @@
 ---
 title: "Identity Providers"
 nav_order: 3
-parent: Get Started
+parent: Shared Cloud Accounts & Services
+
 ---
 
 # Identity Providers
 
-To secure access to your Streamtime platform, configure an external identity provider (IdP).
+Streamtime supports integration with external identity providers using OIDC (OpenID Connect) for OAuth Bearer authentication. This enables secure, centralized authentication for accessing Kafka clusters and management interfaces.
 
-## Supported Providers
+By configuring an identity provider, you can enforce single sign-on (SSO) and manage user access through platforms such as  Okta, Keycloak, Auth0, Azure AD, Google, or any OIDC-compliant provider.
 
-- Google Workspace (OIDC)
-- Azure Active Directory (OIDC)
-- Custom OIDC providers
+## How Streamtime Uses Identity Providers
 
-## What You Need
+- **OAuth Bearer Authentication**: Kafka clusters use OAuth Bearer tokens for client authentication.
+- **Centralized Access Control**: Manage user and group permissions from your identity provider.
+- **Single Sign-On (SSO)**: Users authenticate once and gain access to all authorized Streamtime services.
 
-- Client ID and Client Secret
-- Discovery URL (e.g. `https://accounts.google.com/.well-known/openid-configuration`)
-- Redirect URI: `<your-control-plane-url>/auth/callback`
+## Required OIDC Endpoints
 
-## Best Practices
+To integrate your identity provider, you must provide the following OIDC endpoints:
 
-- Use a separate client per environment (dev/staging/prod)
-- Set login restrictions (domain or group-based)
+- **Authorization Endpoint**: Used for user login and consent.
+- **Issuer URL**: The base URL of your identity provider, which includes the authorization and token endpoints.
+- **Token Endpoint**: Used to exchange authorization codes for access tokens.
+- **JWKS URL**: JSON Web Key Set endpoint for public keys used to verify token signatures.
+
+![OIDC Integration Example]({{ site.baseurl }}/assets/images/identity-provider.png)
+
+## Configuration Steps
+
+1. Register Streamtime as an application in your identity provider.
+2. Provide the OIDC issuer URL, client ID, client secret, authorization endpoint, token endpoint, and JWKS URL in the Streamtime platform.
+3. Assign users or groups who should have access to Kafka clusters.
+
+See the platform UI or CLI for detailed setup instructions.
+
+---

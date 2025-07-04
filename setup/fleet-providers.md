@@ -1,25 +1,38 @@
 ---
 title: "Fleet Providers"
 nav_order: 4
-parent: Get Started
+parent: Shared Cloud Accounts & Services
+
 ---
 
 # Fleet Providers
 
-Fleet providers define which cloud infrastructure Streamtime can provision Kubernetes clusters on.
+A Fleet Provider is a cloud platform where Streamtime provisions and manages Kubernetes fleets. Supported providers include AWS, GCP, OCI, and Azure.
 
-## Types of Providers
+To enable automated cluster management, you must create a cloud provider account and provide the necessary credentials to Streamtime.
 
-- Bring Your Own Kubernetes (BYOK)
-- Managed Services: AWS EKS, GCP GKE, Oracle OKE, Azure AKS
+## Steps to Add a Fleet Provider
 
-## Required Permissions
+1. **Create a Cloud Provider Account**  
+   Sign in to your chosen cloud provider (AWS, GCP, OCI, or Azure) and create an account or use an existing one.
 
-| Provider | Required IAM/Role Permissions |
-|----------|-------------------------------|
-| AWS EKS | eks:*, ec2:*, iam:* |
-| GCP GKE | container.*, compute.*, iam.* |
-| OCI OKE | container-engine.*, vcn.*, identity.* |
-| Azure AKS | Microsoft.ContainerService/* |
+![Fleet Provider]({{ site.baseurl }}/assets/images/fleet-provider.png)
 
-Each provider must also allow node pool auto-scaling and private networking.
+2. **Set Up Required Permissions**  
+   Create a service account, IAM user, or application registration with the necessary permissions to provision and manage Kubernetes clusters and related resources.
+
+3. **Generate Credentials**  
+   - **AWS**: Access Key ID and Secret Access Key (with EKS and related permissions)
+   - **GCP**: Service Account JSON key (with GKE and related permissions)
+   - **Azure**: Client ID, Client Secret, Tenant ID, and Subscription ID (with AKS and related permissions)
+   - **OCI**: User OCID, Tenancy OCID, API Key, and related details
+
+4. **Add Credentials to Streamtime**  
+   In the Streamtime platform UI or CLI, add your cloud provider credentials. These credentials are used to automate the creation and management of Kubernetes fleets.
+
+5. **Validate Connection**  
+   Streamtime will verify the credentials and permissions before enabling fleet provisioning.
+
+See the platform UI or CLI for detailed, provider-specific setup instructions.
+
+---

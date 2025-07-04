@@ -1,5 +1,5 @@
 ---
-title: Kafka Clusters
+title: Setup Kafka
 nav_order: 4
 layout: home
 ---

@@ -1,6 +1,6 @@
 ---
 title: "Apache Kafka"
-parent: Kafka Clusters
+parent: Setup Kafka
 nav_order: 2
 ---
 

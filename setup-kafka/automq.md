@@ -1,6 +1,6 @@
 ---
 title: "AutoMQ (Experimental)"
-parent: Kafka Clusters
+parent: Setup Kafka
 nav_order: 6
 ---
 

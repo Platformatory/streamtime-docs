@@ -1,6 +1,6 @@
 ---
 title: "Redpanda (Preview)"
-parent: Kafka Clusters
+parent: Setup Kafka
 nav_order: 5
 ---
 

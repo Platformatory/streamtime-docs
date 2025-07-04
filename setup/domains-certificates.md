@@ -1,25 +1,26 @@
 ---
 title: "Domains & Certificates"
-nav_order: 2
-parent: Get Started
+nav_order: 1
+parent: Shared Cloud Accounts & Services
+
 ---
+
 
 # Domains & Certificates
 
-Streamtime requires domain configuration for accessing workloads and endpoints.
+Streamtime uses your configured domain and TLS certificates to expose all Kubernetes and Kafka cluster workloads securely. Every service deployed—such as Kafka clusters, monitoring dashboards, logging endpoints, and schema registries—is made accessible through subdomains of your chosen domain, all protected by TLS encryption.
 
-## DNS Records
+All endpoints for your Kafka clusters (bootstrap), Prometheus, Grafana, Loki logs, and (if enabled) Schema Registry are automatically provisioned under your domain. This ensures unified, secure access to every workload and management interface deployed by Streamtime.
 
-You need to set up the following records with your DNS provider:
+## How to Configure
 
-- `*.stream.example.com` → External Load Balancer IP
-- `api.stream.example.com` → Control plane API
+1. **DNS Setup**: Point your DNS records to the Streamtime-managed ingress endpoints.
+2. **TLS Certificates**: Upload your own certificates or let Streamtime generate and manage them for you.
+3. **Validation**: Ensure all service URLs are reachable and secured with valid certificates.
 
-## Certificates
+![Domain & Certificates Configuration]({{ site.baseurl }}/assets/images/dns-certs.png)
 
-You can use:
+See the platform UI or CLI for step-by-step instructions on configuring your domain and certificates.
 
-- **Let’s Encrypt (default)**
-- **Bring your own certificate** (PEM format)
+---
 
-For production workloads, bring your own certs and rotate them using the control plane.

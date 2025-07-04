@@ -1,6 +1,6 @@
 ---
 title: "Confluent (CFK)"
-parent: Kafka Clusters
+parent: Setup Kafka
 nav_order: 3
 ---
 

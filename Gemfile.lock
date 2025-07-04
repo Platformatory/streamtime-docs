@@ -98,6 +98,7 @@ DEPENDENCIES
   jekyll (~> 4.4.1)
   jekyll-default-layout
   just-the-docs (= 0.10.1)
+  kramdown
 
 BUNDLED WITH
    2.5.23
