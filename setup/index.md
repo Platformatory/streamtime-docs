@@ -47,6 +47,6 @@ Supported providers include:
 
 Configure your fleet provider credentials and permissions to enable automated cluster management.
 
-![Fleet Provider Configuration]({{ site.baseurl }}/assets/images/fleet-provider.png)
+![Fleet Provider Configuration]({{ site.baseurl }}/assets/images/aws/fleet-provider.png)
 
 See [Fleet Providers](fleet-providers.html) for more information.

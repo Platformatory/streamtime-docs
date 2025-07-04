@@ -68,21 +68,21 @@ Kafka cluster creation is also a 4-step guided process:
 1. **Choose Cluster Type**  
    - Select the cluster type (CFK, Apache Kafka, WarpStream, Redpanda).
    - For BYOK, select "Apache Kafka".
-   ![Cluster Step 1](/assets/images/byok/cluster-step-1.png)
+   ![Cluster Step 1](/assets/images/apache-kafka/cluster-step-1.png)
 
 2. **Provider & Tenancy**  
    - Choose provider as BYOK.
    - Select tenancy mode (must match the BYOK fleet's tenancy).
    - Specify the number of Kafka units required.
-   ![Cluster Step 2](/assets/images/byok/cluster-step-2.png)
+   ![Cluster Step 2](/assets/images/apache-kafka/cluster-step-2.png)
 
 3. **Fleet Selection**  
    - Select the BYOK Kubernetes fleet you created in the previous steps.
-   ![Cluster Step 3](/assets/images/byok/cluster-step-3.png)
+   ![Cluster Step 3](/assets/images/apache-kafka/cluster-step-3.png)
 
 4. **Advanced Configuration**  
    - Choose authentication identity provider, storage options, Apache Kafka version, and enable/disable auto-upgrade as needed.
-   ![Cluster Step 4](/assets/images/byok/cluster-step-4.png)
+   ![Cluster Step 4](/assets/images/apache-kafka/cluster-step-4.png)
 
 ---
 
