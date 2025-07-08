@@ -12,6 +12,12 @@ Streamtime uses your configured domain and TLS certificates to expose all Kubern
 
 All endpoints for your Kafka clusters (bootstrap), Prometheus, Grafana, Loki logs, and (if enabled) Schema Registry are automatically provisioned under your domain. This ensures unified, secure access to every workload and management interface deployed by Streamtime.
 
+## Why Domains & Certificates?
+- **Unified Access**: All services are accessible under a single domain, simplifying management and access.
+- **Security**: TLS certificates ensure encrypted communication for all endpoints, protecting sensitive data in transit.
+- **Customizability**: You can upload your own TLS certificates or let Streamtime manage them for you, providing flexibility based on your security policies.
+- **Automatic Provisioning**: Streamtime automatically provisions and manages the necessary DNS records and TLS certificates for all services, reducing operational overhead.
+
 ## How to Configure
 
 1. **DNS Setup**: Point your DNS records to the Streamtime-managed ingress endpoints.

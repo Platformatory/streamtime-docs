@@ -1,7 +1,7 @@
 ---
 title: Tenancy
 nav_order: 4
-parent: Concept & Architecture
+parent: Concepts & Architecture
 ---
 
 # Tenancy

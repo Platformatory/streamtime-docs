@@ -11,6 +11,22 @@ A Fleet Provider is a cloud platform where Streamtime provisions and manages Kub
 
 To enable automated cluster management, you must create a cloud provider account and provide the necessary credentials to Streamtime.
 
+## Supported Fleet Providers
+
+| Provider | Description | Status/Notes |
+| --- | --- | --- |
+| AWS | Amazon Web Services, a widely used cloud platform. | - |
+| GCP | Google Cloud Platform, known for its data analytics and machine learning capabilities. | - |
+| OCI | Oracle Cloud Infrastructure, focused on enterprise applications and databases. | - |
+| Azure | Microsoft Azure, a comprehensive cloud platform with strong enterprise integration. | Experimental |
+
+Each fleet provider allows you to bootstrap and operate Kubernetes clusters, which serve as the foundation for running Kafka clusters and other workloads.
+
+## When to Use a Fleet Provider
+- **Multi-cloud Deployments**: When you want to leverage multiple cloud providers for redundancy or specific features.
+- **Regional Compliance**: If your workloads require deployment in specific regions for compliance or latency.
+- **Cost Optimization**: Choose a provider based on cost efficiency for your workloads.
+
 ## Steps to Add a Fleet Provider
 
 1. **Create a Cloud Provider Account**  

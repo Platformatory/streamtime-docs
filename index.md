@@ -1,39 +1,13 @@
 ---
-title: Introduction 
+title: Get Started 
 nav_order: 1
 layout: home
 
 ---
 
-# Streamtime BYOK (Bring Your Own Kubernetes) for Apache Kafka
+# Get Started
+Bring Your Own Kubernetes (BYOK) allows you to use your existing Kubernetes clusters with Streamtime. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
 
-This guide explains how Streamtime's BYOK (Bring Your Own Kubernetes) approach works for deploying and managing Apache Kafka clusters using Strimzi.
-
----
-
-## What is BYOK?
-BYOK (Bring Your Own Kubernetes) allows you to leverage your existing Kubernetes infrastructure to run Apache Kafka clusters managed by Streamtime. Instead of relying on Streamtime's managed cloud services, you can deploy Kafka directly on your own Kubernetes clusters, whether they are on-premises or in the cloud.
-This approach provides you with full control over your environment while still benefiting from Streamtime's automation and management capabilities.
-
-## Key Features
-- **Self-Hosted Kafka**: Deploy and manage Kafka clusters on your own Kubernetes infrastructure.
-- **Full Control**: You retain ownership of your Kafka environment, networking, and security policies.
-- **Flexible Deployment**: Use your existing Kubernetes clusters, whether on-premises, in the cloud, or in a hybrid setup.
-- **Enterprise-Grade Automation**: Streamtime automates Kafka operations, including scaling, monitoring, and maintenance, while you control the underlying infrastructure. 
-- **Seamless Integration**: Easily integrate Kafka into your existing IT and security landscape without relying on external cloud providers.
-- **Multi-Tenancy Support**: Deploy multiple Kafka clusters within a single Kubernetes cluster, allowing for efficient resource utilization and isolation between different teams or environments.
-
-## streamtime responsibilities
-- **Cluster Management**: Streamtime handles the deployment, scaling, and management of Kafka clusters on your Kubernetes infrastructure.
-- **Monitoring & Alerts**: Streamtime provides monitoring and alerting capabilities for your Kafka clusters, ensuring you are notified of any issues or performance bottlenecks.
-- **Updates & Upgrades**: Streamtime manages updates and upgrades to the Kafka software, ensuring you are always running a supported and secure version.
-- **Support**: Streamtime offers support for troubleshooting and resolving issues related to your Kafka clusters, leveraging its expertise in Kafka and Kubernetes.  
-
-{: .note }
-> Streamtime does not manage the underlying Kubernetes infrastructure, networking, or security policies. You are responsible for maintaining and securing your Kubernetes clusters, including configuring access controls, network policies, and storage options.
-
----
-## How to Get Started with BYOK
 
 ### Creating a BYOK Kubernetes Fleet
 

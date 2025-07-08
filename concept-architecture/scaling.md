@@ -1,7 +1,7 @@
 ---
 title: Scaling
 nav_order: 5
-parent: Concept & Architecture
+parent: Concepts & Architecture
 ---
 
 

@@ -7,8 +7,20 @@ nav_order: 5
 # Bootstrapping a Kubernetes Fleet with BYOK    
 Bring Your Own Kubernetes (BYOK) allows you to use your existing Kubernetes clusters with Streamtime. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
 
+## What is BYOK?
+BYOK (Bring Your Own Kubernetes) allows you to leverage your existing Kubernetes infrastructure to run Apache Kafka clusters managed by Streamtime. Instead of relying on Streamtime's managed cloud services, you can deploy Kafka directly on your own Kubernetes clusters, whether they are on-premises or in the cloud.
+This approach provides you with full control over your environment while still benefiting from Streamtime's automation and management capabilities.
+
 ## When to use BYOK
 BYOK is ideal when you have existing Kubernetes clusters that you want to integrate with Streamtime for Kafka management. It allows you to leverage your current infrastructure while benefiting from Streamtime's Kafka management capabilities.
+
+## Key Features
+- **Self-Hosted Kafka**: Deploy and manage Kafka clusters on your own Kubernetes infrastructure.
+- **Full Control**: You retain ownership of your Kafka environment, networking, and security policies.
+- **Flexible Deployment**: Use your existing Kubernetes clusters, whether on-premises, in the cloud, or in a hybrid setup.
+- **Enterprise-Grade Automation**: Streamtime automates Kafka operations, including scaling, monitoring, and maintenance, while you control the underlying infrastructure. 
+- **Seamless Integration**: Easily integrate Kafka into your existing IT and security landscape without relying on external cloud providers.
+- **Multi-Tenancy Support**: Deploy multiple Kafka clusters within a single Kubernetes cluster, allowing for efficient resource utilization and isolation between different teams or environments.
 
 
 ## How to Bootstrap a Kubernetes Fleet with BYOK

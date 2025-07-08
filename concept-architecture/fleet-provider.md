@@ -1,7 +1,7 @@
 ---
 title: Fleet Provider
 nav_order: 1
-parent: Concept & Architecture
+parent: Concepts & Architecture
 ---
 
 # Fleet Providers

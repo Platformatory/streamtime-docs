@@ -1,7 +1,7 @@
 ---
 title: Kubernetes Fleet
 nav_order: 2
-parent: Concept & Architecture
+parent: Concepts & Architecture
 ---
 
 # Kubernetes Fleet
