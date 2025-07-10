@@ -6,8 +6,17 @@ layout: home
 ---
 
 # Get Started
-Bring Your Own Kubernetes (BYOK) allows you to use your existing Kubernetes clusters with Streamtime. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
 
+The fastest way to deploying a streamtime private cloud is by bringing your own Kubernetes cluster, also known as BYOK. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
+
+### Pre-requisitres
+
+1. Any CNCF Kubernetes. We recommend the latest: 1.3.x
+2. You must provide a kubeconfig with a static, long-lived token
+3. Network connectivity between streamtime network and the k8s API endpoint. If private networking is required, you must ensure routability. We recommend atleast 128 available IP addresses (based on the number of clusters you intend to host)
+4. CSI with default storage class set
+5. A load balancer controller. 
+6. Node sizing based on our guidelines, based on # of max tenants
 
 ### Creating a BYOK Kubernetes Fleet
 
