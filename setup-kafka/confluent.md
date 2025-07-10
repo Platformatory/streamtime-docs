@@ -4,6 +4,31 @@ parent: Setup Kafka
 nav_order: 3
 ---
 
+## Video Tutorial: Creating a Confluent for Kubernetes (CFK) Cluster
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/cfk-create.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+---
+
 # Confluent for Kubernetes (CFK)    
 Confluent for Kubernetes (CFK) is a fully managed Kafka distribution optimized for Kubernetes environments. It provides a comprehensive set of features for deploying, managing, and scaling Kafka clusters with ease.
 ## Key Features
@@ -47,5 +72,8 @@ Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and
 - **Alerts**: Set up alerts for critical events and performance issues.
 - **Scaling**: Easily scale the Kafka cluster by adjusting the number of Kafka units or adding more nodes to the underlying Kubernetes fleet.
 ![Cluster Detail]({{ site.baseurl }}/assets/images/cfk/cluster-detail.png)
+
+
+
 ## Conclusion
 Confluent for Kubernetes (CFK) provides a powerful and flexible solution for deploying and managing Kafka clusters in Kubernetes environments. With its comprehensive feature set, including integration with the Confluent ecosystem, advanced monitoring capabilities, and Kubernetes-native design, CFK simplifies Kafka operations and enhances productivity for developers and operators alike. Whether you're running a small development cluster or a large-scale production environment, CFK offers the tools and features needed to succeed with Kafka on Kubernetes.

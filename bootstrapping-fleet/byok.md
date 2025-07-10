@@ -4,6 +4,31 @@ parent: Bootstrapping Your Fleet
 nav_order: 5
 ---
 
+## Video Tutorial: Bootstrapping a BYOK Fleet
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/byok-create.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;   
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+---
+
 # Bootstrapping a Kubernetes Fleet with BYOK    
 Bring Your Own Kubernetes (BYOK) allows you to use your existing Kubernetes clusters with Streamtime. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
 
@@ -46,3 +71,5 @@ Follow these steps to bootstrap a Kubernetes fleet using BYOK in Streamtime:
     - Click **Deploy**. Streamtime will validate your kubeconfig and configure the Kubernetes fleet.
     - Once deployed, the fleet status will show as "Healthy" and is ready for Kafka
     ![byok detail view]({{ site.baseurl }}/assets/images/byok/detail-view.png)
+
+

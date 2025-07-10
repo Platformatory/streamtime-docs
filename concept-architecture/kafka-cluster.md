@@ -13,7 +13,7 @@ A **Kafka Cluster** in Streamtime refers to the type of Kafka cluster you can de
 | Cluster | Description | Status/Notes |
 | --- | ----------- | --- |
 | CFK (Confluent for Kubernetes) | Confluent's distribution of Kafka, optimized for Kubernetes. | - |
-| Strimzi | An open-source project that provides a way to run Kafka on Kubernetes. | - |
+| Apache Kafka | An open-source project that provides a way to run Kafka on Kubernetes. | - |
 | WarpStream | A high-performance streaming platform built on Kafka. | - |
 | Redpanda (preview) | A modern Kafka alternative designed for high throughput and low latency. | Preview |
 | AutoMQ (experimental) | An experimental messaging queue built on Kafka. | experimental  |

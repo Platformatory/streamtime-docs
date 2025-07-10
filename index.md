@@ -5,6 +5,33 @@ layout: home
 
 ---
 
+## Video Tutorial: BYOK with Apache Kafka Cluster
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/byok_apache-kafka.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+<script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
+
+---
+
 # Get Started
 
 The fastest way to deploying a streamtime private cloud is by bringing your own Kubernetes cluster, also known as BYOK. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
@@ -17,6 +44,8 @@ The fastest way to deploying a streamtime private cloud is by bringing your own 
 4. CSI with default storage class set
 5. A load balancer controller. 
 6. Node sizing based on our guidelines, based on # of max tenants
+
+
 
 ### Creating a BYOK Kubernetes Fleet
 
@@ -67,7 +96,11 @@ Kafka cluster creation is also a 4-step guided process:
    - Choose authentication identity provider, storage options, Apache Kafka version, and enable/disable auto-upgrade as needed.
    ![Cluster Step 4](/assets/images/apache-kafka/cluster-step-4.png)
 
+
+
 ---
+
+
 
 
 With BYOK, Streamtime empowers you to run Kafka anywhere, with full control and enterprise-grade automation.

@@ -18,7 +18,7 @@ The following diagram illustrates the high-level architecture of Streamtime:
 
 - **Fleet Provider**: Supported cloud providers (AWS, GCP, OCI, Azure) where Kubernetes fleets are provisioned.
 - **Kubernetes Fleet**: Managed Kubernetes clusters that host Kafka clusters and other workloads.
-- **Kafka Cluster**: Different Kafka distributions supported (CFK, Strimzi, WarpStream, Redpanda, AutoMQ).
+- **Kafka Cluster**: Different Kafka distributions supported (CFK, Apache Kafka, WarpStream, Redpanda, AutoMQ).
 - **Kafka Unit Size**: Kafka clusters are sized by units (1 unit = 20 MBps throughput), allowing flexible scaling.
 - **Tenancy**: Resource isolation models—shared, isolated, and dedicated—applied at both Kubernetes and Kafka cluster levels.
 

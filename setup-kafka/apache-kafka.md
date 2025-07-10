@@ -4,6 +4,31 @@ parent: Setup Kafka
 nav_order: 2
 ---
 
+## Video Tutorial: Creating an Apache Kafka Cluster on BYOK
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/apache-kafka.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+--- 
+
 # Apache Kafka
 
 Apache Kafka is a popular open-source distributed event streaming platform. Streamtime enables you to deploy and manage Apache Kafka clusters on your Kubernetes fleets with full automation and observability.
@@ -41,3 +66,5 @@ Apache Kafka is a popular open-source distributed event streaming platform. Stre
     - Configure authentication (identity provider), storage options, and Apache Kafka version.
     - Enable or disable auto-upgrade based on your operational preferences.
     ![Advanced Configuration]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-4.png)
+
+

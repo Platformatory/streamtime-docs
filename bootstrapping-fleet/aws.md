@@ -4,6 +4,31 @@ parent: Bootstrapping Your Fleet
 nav_order: 1
 ---
 
+## Video Tutorial: Bootstrapping a Kubernetes Fleet on AWS
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/aws-create.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;       
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+--- 
+
 # Bootstrapping a Kubernetes Fleet on AWS
 
 Follow these four steps to create and configure a Kubernetes fleet on AWS using Streamtime.
@@ -63,3 +88,6 @@ Follow these four steps to create and configure a Kubernetes fleet on AWS using 
 - Once deployed, the fleet status will show as "Healthy" and is ready for Kafka cluster deployments.
 
 ![Kubernetes Fleet List]({{ site.baseurl }}/assets/images/aws/fleet-list.png)
+
+---
+
