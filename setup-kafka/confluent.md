@@ -73,7 +73,106 @@ Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and
 - **Scaling**: Easily scale the Kafka cluster by adjusting the number of Kafka units or adding more nodes to the underlying Kubernetes fleet.
 ![Cluster Detail]({{ site.baseurl }}/assets/images/cfk/cluster-detail.png)
 
+---
 
+# API Reference
+
+## Create a Confluent for Kubernetes (CFK) Cluster
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clusters/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "working-wallaby",
+    "cluster_type": "cfk",
+    "kafka_units": 3,
+    "provisioner_name": "",
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "cluster_access": "Internal & External",
+        "authentication_mechanism": "SASL/OAUTH",
+        "private_access": false,
+        "version": "7.7.0",
+        "auto_upgrade_version": false,
+        "node_count": 3,
+        "oauth": "okta-dev-47119201",
+        "additional_system_admin": "Administrators",
+        "additional_system_admin_type": "group",
+        "storage_tier_configuration": "Balanced",
+        "tiered_storage_bucket_name": "cluster-cfk-404",
+        "tiered_storage_provider": {
+            "aws_account": "platformatory",
+            "aws_region": "us-east-1"
+        },
+        "tiered_storage_create_bucket": true
+    },
+    "tags": [
+        {
+            "key": "environment",
+            "value": "non-prod"
+        }
+    ],
+    "organization": "<your-org-id>",
+    "cloud_provider": "aws",
+    "region": "us-east-1",
+    "infrastructure": "sympathetic-emu"
+    
+}'
+``` 
+
+**Response:**
+```json
+{
+    "id": "cdc0647e-51cc-458f-9fdc-6ea31143b95b",
+    "organization": "<your-org-id>",
+    "infrastructure": "sympathetic-emu",
+    "identifier": "working-wallaby",
+    "provisioner_name": "",
+    "destroyer_name": null,
+    "version_updater_name": null,
+    "cluster_type": "cfk",
+    "tenancy_mode": "Shared",
+    "kafka_units": 3,
+    "cloud_provider": "aws",
+    "region": "us-east-1",
+    "tags": [
+        {
+            "key": "environment",
+            "value": "non-prod"
+        }
+    ],
+    "advanced_config": {
+        "cluster_access": "Internal & External",
+        "authentication_mechanism": "SASL/OAUTH",
+        "private_access": false,
+        "version": "7.7.0",
+        "auto_upgrade_version": false,
+        "node_count": 3,
+        "oauth": "okta-dev-47119201",
+        "additional_system_admin": "Administrators",
+        "additional_system_admin_type": "group",
+        "storage_tier_configuration": "Balanced",
+        "tiered_storage_bucket_name": "cluster-cfk-404",
+        "tiered_storage_provider": {
+            "aws_account": "platformatory",
+            "aws_region": "us-east-1"
+        },
+        "tiered_storage_create_bucket": true
+    },
+    "console_url": null,
+    "client_properties": null,
+    "new_version": null,
+    "s3_manifests_file_path": null,
+    "status": "Pending",
+    "created_at": "2025-07-17T09:54:37.723465Z",
+    "updated_at": "2025-07-17T09:54:37.723481Z"
+}
+```
+
+---
 
 ## Conclusion
 Confluent for Kubernetes (CFK) provides a powerful and flexible solution for deploying and managing Kafka clusters in Kubernetes environments. With its comprehensive feature set, including integration with the Confluent ecosystem, advanced monitoring capabilities, and Kubernetes-native design, CFK simplifies Kafka operations and enhances productivity for developers and operators alike. Whether you're running a small development cluster or a large-scale production environment, CFK offers the tools and features needed to succeed with Kafka on Kubernetes.
+
+

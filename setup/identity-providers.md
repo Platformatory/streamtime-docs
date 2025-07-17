@@ -37,3 +37,54 @@ To integrate your identity provider, you must provide the following OIDC endpoin
 See the platform UI or CLI for detailed setup instructions.
 
 ---
+
+# API Reference
+
+## Create an Identity Provider
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/oauth-providers/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "organization": "<your-org-id>",
+    "identifier": "dev-47119201",
+    "issuer": "https://dev-47119201.okta.com/oauth2/default",
+    "jwks_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/keys",
+    "audience": "api://default",
+    "scope": "kafka",
+    "token_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/token",
+    "sub_claim_name": "sub",
+    "groups_claim_name": "groups",
+    "authorize_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/authorize",
+    "refresh_token": true,
+    "cfk_client_id": "<oidc-client-id>",
+    "cfk_client_secret": "<oidc-client-secret>"
+  }'
+```
+
+**Response:**
+```json
+{
+        "id": "b5d4bcdf-f702-464c-a2c8-4f1bbf93cc4a",
+        "organization": "acme",
+        "identifier": "dev-47119201",
+        "issuer": "https://dev-47119201.okta.com/oauth2/default",
+        "jwks_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/keys",
+        "audience": "api://default",
+        "scope": "kafka",
+        "token_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/token",
+        "sub_claim_name": "sub",
+        "groups_claim_name": "groups",
+        "authorize_endpoint_uri": "https://dev-47119201.okta.com/oauth2/default/v1/authorize",
+        "refresh_token": true,
+        "cfk_client_id": "<oidc-client-id>",
+        "cfk_client_secret": "<oidc-client-secret>",
+        "created_at": "2025-04-06T07:34:10.689912Z",
+        "updated_at": "2025-04-06T07:34:10.689935Z"
+    }
+```
+
+
+
+

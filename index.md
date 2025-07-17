@@ -102,6 +102,158 @@ Kafka cluster creation is also a 4-step guided process:
 
 
 
+# API Reference
 
-With BYOK, Streamtime empowers you to run Kafka anywhere, with full control and enterprise-grade automation.
+Streamtime provides a comprehensive REST API for programmatically managing fleets and Kafka clusters. Below are examples for the most common CREATE operations.
+
+
+### Authentication
+
+All API requests require authentication using a Bearer token:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+     -H "Content-Type: application/json" \
+     https://<streamtime-api-endpoint>/organizations/<your-org-id>/...
+```
+
+
+#### BYOK Fleet
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infrastructure/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "additional-alpaca",
+    "infra_type": "byok",
+    "domain": "<your-domain>.com",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "placement_config": {},
+    "organization": "acme"
+}'
+```
+
+**Response:**
+```json
+   {
+    "id": "bfca99b0-35a5-4490-9cc4-40296910f76d",
+    "organization": "acme",
+    "domain": "<your-domain>.com",
+    "identifier": "additional-alpaca",
+    "provisioner_name": null,
+    "destroyer_name": null,
+    "infra_type": "byok",
+    "tenancy_mode": "Shared",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "kubeconfig": null,
+    "kubeconfig_str": null,
+    "metadata": {},
+    "prometheus_endpoint": null,
+    "opencost_endpoint": null,
+    "loki_endpoint": null,
+    "loadbalancer_dns": null,
+    "placement_config": {},
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "advanced_properties": {},
+    "status": "Pending",
+    "created_at": "2025-07-17T04:37:33.316063Z",
+    "updated_at": "2025-07-17T04:37:33.316090Z",
+    "network": null
+}
+```   
+
+
+### 2. Create Kafka Cluster
+
+#### Apache Kafka Cluster
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/v1/clusters \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "dutch-mammal",
+    "cluster_type": "strimzi",
+    "kafka_units": 3,
+    "provisioner_name": "",
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "number_of_zones": "1",
+        "cluster_access": "Internal & External",
+        "private_access": false,
+        "version": "3.8.0",
+        "oauth": "okta-dev-47119201",
+        "tiered_storage_bucket_name": "apache-kafka-32421",
+        "tiered_storage_provider": {
+            "aws_account": "platformatory",
+            "aws_region": "us-east-1"
+        },
+        "tiered_storage_create_bucket": true
+    },
+    "tags": [
+        {
+            "key": "environment",
+            "value": "non-prod"
+        }
+    ],
+    "organization": "<your-org-id>",
+    "cloud_provider": "byok",
+    "region": "us-east-1",
+    "infrastructure": "additional-alpaca"
+}'
+```
+
+**Response:**
+```json
+{
+    "id": "1a0b72d5-96b9-4123-9cec-71446b6bf45c",
+    "organization": "<your-org-id>",
+    "infrastructure": "additional-alpaca",
+    "identifier": "dutch-mammal",
+    "provisioner_name": "",
+    "destroyer_name": null,
+    "version_updater_name": null,
+    "cluster_type": "strimzi",
+    "tenancy_mode": "Shared",
+    "kafka_units": 3,
+    "cloud_provider": "byok",
+    "region": "us-east-1",
+    "tags": [
+        {
+            "key": "environment",
+            "value": "non-prod"
+        }
+    ],
+    "advanced_config": {
+        "number_of_zones": "1",
+        "cluster_access": "Internal & External",
+        "private_access": false,
+        "version": "3.8.0",
+        "oauth": "okta-dev-47119201",
+        "tiered_storage_bucket_name": "apache-kafka-32421",
+        "tiered_storage_provider": {
+            "aws_account": "platformatory",
+            "aws_region": "us-east-1"
+        },
+        "tiered_storage_create_bucket": true
+    },
+    "console_url": null,
+    "client_properties": null,
+    "new_version": null,
+    "s3_manifests_file_path": null,
+    "status": "Pending",
+    "created_at": "2025-07-17T09:49:48.972570Z",
+    "updated_at": "2025-07-17T09:49:48.972586Z"
+}
+```
+
 

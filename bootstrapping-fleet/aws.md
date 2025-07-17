@@ -91,3 +91,68 @@ Follow these four steps to create and configure a Kubernetes fleet on AWS using 
 
 ---
 
+
+# API Reference
+
+## Create a Kubernetes Fleet on AWS
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infrastructure/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "narrow-impala",
+    "infra_type": "aws",
+    "domain": "<your-domain>.com",
+    "max_tenants": 3,
+    "max_kafka_units": 12,
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "vpc_id": "vpc-05ab2abs23359a6e",
+        "instance_type": "t3.large",
+        "cluster_public": false
+    },
+    "placement_config": {
+        "account": "plf-fleet-manager",
+        "region": "us-east-1"
+    },
+    "organization": "<your-org-id>"
+   }' 
+```
+
+**Response:**
+```json
+{
+    "id": "78d2d356-3898-4c3c-ac26-e5c9b0b595bf",
+    "organization": "acme",
+    "domain": "<your-domain>.com",
+    "identifier": "narrow-impala",
+    "provisioner_name": null,
+    "destroyer_name": null,
+    "infra_type": "aws",
+    "tenancy_mode": "Shared",
+    "max_tenants": 3,
+    "max_kafka_units": 12,
+    "kubeconfig": null,
+    "kubeconfig_str": null,
+    "metadata": {},
+    "prometheus_endpoint": null,
+    "opencost_endpoint": null,
+    "loki_endpoint": null,
+    "loadbalancer_dns": null,
+    "placement_config": {
+        "account": "plf-fleet-manager",
+        "region": "us-east-1"
+    },
+    "advanced_config": {
+        "vpc_id": "vpc-05ab2abs23359a6e",
+        "instance_type": "t3.large",
+        "cluster_public": false
+    },
+    "advanced_properties": {},
+    "status": "Pending",
+    "created_at": "2025-07-17T04:31:32.844883Z",
+    "updated_at": "2025-07-17T04:31:32.844911Z",
+    "network": null
+}
+```

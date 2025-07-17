@@ -52,3 +52,43 @@ Each fleet provider allows you to bootstrap and operate Kubernetes clusters, whi
 See the platform UI or CLI for detailed, provider-specific setup instructions.
 
 ---
+
+# API Reference
+
+## Create a Fleet Provider for AWS
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/fleet-providers/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "organization": "<your-org-id>",
+    "identifier": "plf-fleet-manager",
+    "provider_type": "aws",
+    "configuration": {
+        "aws_access_key": "<aws-access-key>",
+        "aws_access_secret": "<aws-access-secret>"
+    }
+  }'
+```
+
+**Response:** 
+```json
+{
+        "id": "74a6a81e-3f28-44e7-8e94-39f2e222b71d",
+        "organization": "acme",
+        "identifier": "plf-fleet-manager",
+        "provider_type": "aws",
+        "configuration": {
+            "aws_access_key": "<aws-access-key>",
+            "aws_access_secret": "<aws-access-secret>"
+        },
+        "created_at": "2025-04-06T06:34:22.291391Z",
+        "updated_at": "2025-04-06T06:34:22.291412Z"
+    }
+```
+
+
+
+
+
