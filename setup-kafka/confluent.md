@@ -172,7 +172,4 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clust
 
 ---
 
-## Conclusion
-Confluent for Kubernetes (CFK) provides a powerful and flexible solution for deploying and managing Kafka clusters in Kubernetes environments. With its comprehensive feature set, including integration with the Confluent ecosystem, advanced monitoring capabilities, and Kubernetes-native design, CFK simplifies Kafka operations and enhances productivity for developers and operators alike. Whether you're running a small development cluster or a large-scale production environment, CFK offers the tools and features needed to succeed with Kafka on Kubernetes.
-
 
