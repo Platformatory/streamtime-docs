@@ -10,7 +10,7 @@ Oracle Cloud Infrastructure (OCI) is supported as a bootstrap provider for creat
 
 
 
-#### Prerequisites:
+### Prerequisites:
 
   **1. Before you can create a Kubernetes fleet in **StreamTime**, you need a user that belongs to a group with the right level of permissions in OCI.**  
   * **Create a Group** in OCI for StreamTime users (e.g., streamtime-admins).  
@@ -24,16 +24,16 @@ Oracle Cloud Infrastructure (OCI) is supported as a bootstrap provider for creat
   **2. Generate an API key for the user. Refer to the official documentation-**  [Managing API Keys](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm#two)
 <br>
 
-### Steps to Create a Bootstrap Provider on OCI in StreamTime
+#### Steps to Create a Bootstrap Provider on Oracle in StreamTime
 
 
-**Step 1. Create a Bootstrap Provider**
+**Step-1: Create a Bootstrap Provider**
 Creating a Bootstrap Provider showing identifier field and cloud provider options.
 
 Navigate to **Settings → Bootstrap Providers → Select OCI OKE → Next**  
 ![][image1]
 
-**Step 2. Fill in the Configuration Form**  
+**Step-2: Fill in the Configuration Form**  
 Using the configuration file downloaded during API key creation, provide the following details,
 
 ![][image2]
@@ -54,9 +54,9 @@ By defining and applying these tags at the StreamTime level, you get end-to-end 
 [Learn more about defined tags in Oracle Cloud Infrastructure](https://docs.oracle.com/en-us/iaas/Content/Tagging/Tasks/managingtagsandtagnamespaces.htm#overviewtags)  
 
 
-[image1]: ../assets/images/oci/img1.png
+[image1]: ../assets/images/oci/create-bootstrap-provider-basic-info.png
 
-[image2]: ../assets/images/oci/img2.png
+[image2]: ../assets/images/oci/create-bootstrap-provider-oci-credentials.png
 ---
 
 ## When to Use Oracle (OKE)
@@ -83,7 +83,7 @@ By defining and applying these tags at the StreamTime level, you get end-to-end 
 
 
 
-**Prerequisites:** 
+### Prerequisites:
 
 * An OCI account with appropriate permissions.  
 * API keys configured in Streamtime for OCI access.  
@@ -117,9 +117,10 @@ Basic Configuration step with fields for Identifier, Tenancy, Base Domain, Alert
 
   * The root domain used for accessing services in the fleet.
 
-  * For example: if you set example.com, your workloads might be exposed as service.example.com.
+  * For example: if you set example.com, your workloads will be exposed as service.example.com.
 
-  * The Base Domain must be configured prior to fleet creation if it’s not already set in the Settings panel.
+  * The Base Domain must be configured prior to fleet creation if it’s not already set in the Settings panel., Refer to the docs on [Domains](https://docs.streamtime.ai/setup/domains-certificates.html)
+
 
 * **Alert Channels**
 
@@ -154,7 +155,7 @@ OCI Placement configuration form with fields for Account, Region, and Compartmen
   * Example: fantastic-guan (your configured account).
 
 * **Region**
-  *  The OCI region where your Kubernetes fleet (and CFK cluster) will be deployed.
+  *  The OCI region where your Kubernetes fleet (and Kafka Cluster cluster) will be deployed.
 
   * Example: ap-hyderabad-1.
 
@@ -169,9 +170,9 @@ OCI Placement configuration form with fields for Account, Region, and Compartmen
 
   <br>
 
-  In the OCI Console, you can locate your Compartment OCID by navigating to:  
+  **In the OCI Console, you can locate your Compartment OCID by navigating to:**  
 
-      OCI Console → Identity & Security → Compartments → [Your Compartment] → OCID
+    OCI Console → Identity & Security → Compartments → [Your Compartment] → OCID
 
 **Step-4: Advanced Configuration**   
 **![][image6]**
@@ -216,9 +217,9 @@ OCI Placement configuration form with fields for Account, Region, and Compartmen
 
     * If left blank, you won’t be able to SSH into nodes directly (still manageable via Kubernetes API).
 
-[image3]: ../assets/images/oci/img3.png
-[image4]: ../assets/images/oci/img4.png
-[image5]: ../assets/images/oci/img5.png
-[image6]: ../assets/images/oci/img6.png
+[image3]: ../assets/images/oci/bootstrap-provider-selection.png
+[image4]: ../assets/images/oci/basic-configuration-oci.png
+[image5]: ../assets/images/oci/oci-placement-configuration.png
+[image6]: ../assets/images/oci/oci-advance-configuration.png
 
 ---
