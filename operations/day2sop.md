@@ -5,33 +5,6 @@ layout: Operations
 
 ---
 
-**Table of Contents**
-
-[ Introduction](#heading=)
-[Scope](#heading=)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[In Scope](#2.1-in-scope)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Out of Scope](#2.2-out-of-scope)
-
-[Day 2 Operations Overview](#heading=)
-[Support Model & SLA5](#4.-support-model-&-sla)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Support Model Structure](#heading=)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Communication Channels](#heading=)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[SLA Definitions](#heading=)
-[Kubernetes Day 2 SOPs](#5.-kubernetes-day-2-sops)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[1 Cluster Health Verification](#5.1-cluster-health-verification)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[2 Namespace Creation & Resource Quota Adjustment7](#5.2-namespace-creation-&-resource-quota-adjustment)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.3 Node Maintenance & Drain](#5.3-node-maintenance-&-drain)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.4 Restart Kafka Brokers (CFK)](#5.4-restart-kafka-brokers-\(cfk\))
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.5 Retrieve Logs (within 1 \- 2 hour SLA)](#5.5-retrieve-logs-\(within-1---2-hour-sla\))
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.6 System Status Assessment](#5.6-system-status-assessment)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.7 JMX Metrics Retrieval (Kafka & CFK)](#5.7-jmx-metrics-retrieval-\(kafka-&-cfk\))
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.8 Enhanced / Extended Alerts Setup](#5.8-enhanced-/-extended-alerts-setup)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.9 Cluster Creation](#5.9-cluster-creation)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.10 Credential Addition](#5.10-credential-addition)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.11 Confluent Platform (CP) Upgrades](#5.11-confluent-platform-\(cp\)-upgrades)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.12 Operator Upgrades](#5.12-operator-upgrades)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.13 Rollback Procedure](#5.13-rollback-procedure)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[5.14 Download Logs](#5.14-download-logs)
 
 # Introduction
 
@@ -464,7 +437,7 @@ To provision new Kubernetes clusters or namespaces for CFK workloads and ensure 
 **Procedure**
 1. Review release notes for the target CFK version (check compatibility with Kubernetes and CP)
 2. Backup existing CFK configuration:
-```$\> kubectl get confluent \-n \<namespace\> \-o yaml \> cfk-all-backup.yaml```
+```$> kubectl get confluent -n <namespace> -o yaml > cfk-all-backup.yaml```
 3. Upgrade the CFK Operator Helm chart or manifest:  
    * For Helm: 
      ```$> helm upgrade cfk confluentinc/confluent-for-kubernetes --version <target-version>```
