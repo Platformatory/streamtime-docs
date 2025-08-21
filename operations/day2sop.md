@@ -140,7 +140,7 @@ This section documents step-by-step procedures for core Kubernetes operational t
 * Access to monitoring tools (Prometheus/Grafana or equivalent)
 
 **Procedure**
-1. Check node readiness and nsure all nodes have STATUS=Ready.
+1. Check node readiness and ensure all nodes have STATUS=Ready.
 ```kubectl get nodes -o wide```
     
 2. Check control plane components and verify etcd, scheduler, and controller-manager are healthy.
@@ -151,6 +151,7 @@ This section documents step-by-step procedures for core Kubernetes operational t
 
 4. Check persistent volumes. All PVs should be in Bound state.
 ```$> kubectl get pv```
+
 5. Check cluster events
 ```$> kubectl get events --sort-by=.metadata.creationTimestamp```
 
@@ -172,8 +173,8 @@ This section documents step-by-step procedures for core Kubernetes operational t
 * Approved change request
 
 **Procedure**
-1. Create a new namespace
-```$\> kubectl create namespace \<namespace-name\>```
+1. Create a new namespace:
+```$> kubectl create namespace <namespace-name>```
 2. Apply a resource quota
     ```
     cat \<\<EOF | kubectl apply \-f \-  
@@ -202,6 +203,7 @@ Check that the quota matches approved values.
 
 **Rollback**
 * To delete namespace:
+
 ```$> kubectl delete namespace <namespace-name>```
 
 * To revert quota changes, restore from the previous YAML definition.
@@ -226,7 +228,7 @@ Check that the quota matches approved values.
 
 3. Perform maintenance (OS updates, hardware replacement, etc.).  
 4. Bring node back into scheduling:  
-   $\> kubectl uncordon \<node-name\>
+   $> kubectl uncordon <node-name>
 
 **Validation**
 
