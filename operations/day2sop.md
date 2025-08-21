@@ -141,18 +141,18 @@ This section documents step-by-step procedures for core Kubernetes operational t
 
 **Procedure**
 1. Check node readiness and nsure all nodes have STATUS=Ready.
-	```kubectl get nodes -o wide```
+```kubectl get nodes -o wide```
     
 2. Check control plane components and verify etcd, scheduler, and controller-manager are healthy.
-	```$> kubectl get componentstatuses```
+```$> kubectl get componentstatuses```
 
 3. Check pod health across namespaces. No pods should be stuck in CrashLoopBackOff or Pending state.
-    ```$> kubectl get pods --all-namespaces```
+```$> kubectl get pods --all-namespaces```
 
 4. Check persistent volumes. All PVs should be in Bound state.
-	```$> kubectl get pv```
+```$> kubectl get pv```
 5. Check cluster events
-    ```$> kubectl get events --sort-by=.metadata.creationTimestamp```
+```$> kubectl get events --sort-by=.metadata.creationTimestamp```
 
 **Validation**
 * All nodes show Ready status.  
@@ -173,7 +173,7 @@ This section documents step-by-step procedures for core Kubernetes operational t
 
 **Procedure**
 1. Create a new namespace
-	```$\> kubectl create namespace \<namespace-name\>```
+```$\> kubectl create namespace \<namespace-name\>```
 2. Apply a resource quota
     ```
     cat \<\<EOF | kubectl apply \-f \-  
@@ -190,16 +190,20 @@ This section documents step-by-step procedures for core Kubernetes operational t
     EOF
     ```
 **Update quota if needed**
+
 ```$> kubectl edit resourcequota <quota-name> -n <namespace-name>```
 
 **Validation**
+
 ```$> kubectl describe namespace <namespace-name>```
 ```$> kubectl describe resourcequota -n <namespace-name>```
+
 Check that the quota matches approved values.
 
 **Rollback**
 * To delete namespace:
 ```$> kubectl delete namespace <namespace-name>```
+
 * To revert quota changes, restore from the previous YAML definition.
 
 ### 3. Node Maintenance & Drain {#5.3-node-maintenance-&-drain}
