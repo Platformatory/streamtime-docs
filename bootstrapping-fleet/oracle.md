@@ -30,7 +30,7 @@ Oracle Cloud Infrastructure (OCI) is supported as a bootstrap provider for creat
 **Step-1: Create a Bootstrap Provider**
 Navigate to **Settings → Bootstrap Providers → Select OCI OKE → Next**  
 
-![Creating a Bootstrap Provider showing identifier field and cloud provider options.][image1]
+![Creating a Bootstrap Provider]({{ site.baseurl }}/assets/images/oci/create-bootstrap-provider-basic-info.png)
 
 
 
@@ -39,7 +39,7 @@ Navigate to **Settings → Bootstrap Providers → Select OCI OKE → Next**
 
 **Step-2: Fill in the Configuration Form**  
 
-![Using the configuration file downloaded during API key creation, provide the following details][image2]
+![bootstrap provider oci credentials]({{ site.baseurl }}/assets/images/oci/create-bootstrap-provider-oci-credentials.png)
 
 - **Tenancy OCID** – OCID of the OCI Tenancy in which the resources should be created.  
 - **User OCID** – OCID of the IAM user StreamTime will use to create and manage resources.  
@@ -56,10 +56,6 @@ Navigate to **Settings → Bootstrap Providers → Select OCI OKE → Next**
 By defining and applying these tags at the StreamTime level, you get end-to-end visibility and control over your OCI resources without needing to manually tag them later.  
 [Learn more about defined tags in Oracle Cloud Infrastructure](https://docs.oracle.com/en-us/iaas/Content/Tagging/Tasks/managingtagsandtagnamespaces.htm#overviewtags)  
 
-
-[image1]: ../assets/images/oci/create-bootstrap-provider-basic-info.png
-
-[image2]: ../assets/images/oci/create-bootstrap-provider-oci-credentials.png
 ---
 
 ## When to Use Oracle (OKE)
@@ -101,14 +97,14 @@ By defining and applying these tags at the StreamTime level, you get end-to-end 
 **Step-1:Bootstrap provider selection**  
 Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE** 
 
-
-**![Selection screen to choose a Bootstrap Provider, including Bring Your Own Kubernetes, AWS EKS, GCP GKE, OCI OKE, and Azure AKS.][image3]**
+![bootstrap-provider]({{ site.baseurl }}/assets/images/oci/bootstrap-provider-selection.png)
 
 <br> 
 
 **Step-2: Basic Configuration** 
  Basic Configuration step with fields for Identifier, Tenancy, Base Domain, Alert Channels, and sliders for Max Tenants and Max Kafka Units
-**![Basic Configuration step with fields for Identifier, Tenancy, Base Domain, Alert Channels, and sliders for Max Tenants and Max Kafka Units][image4]**
+
+![ocibasic-configuration]({{ site.baseurl }}/assets/images/oci/basic-configuration-oci.png)
 
 * **Identifier**
 
@@ -137,7 +133,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
 * **Max Tenants**
 
-  * The maximum number of tenants (isolated workspaces or projects) that can be hosted in this fleet.
+  * The maximum number of tenants (kafka clusters) that can be hosted in this fleet.
 
   * Example: If you set 5, you can host up to 5 different tenants (clusters) on this fleet.
 
@@ -155,7 +151,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
 **Step-3: Placement Configuration** 
 
-**![OCI Placement configuration form with fields for Account, Region, and Compartment OCID.][image5]**
+![oci-placement-configuration]({{ site.baseurl }}/assets/images/oci/oci-placement-configuration.png)
 
 * **Account** 
   * This is the OCI account you already onboarded into Streamtime (via API keys).
@@ -186,7 +182,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
 **Step-4: Advanced Configuration**  
 
-**![Advance configuration form with fields for VCN, Node Shape, KMS Key OCID,Checkbox for Public cluster, API Server Allowed CIDRs and SSH Public Key.][image6]**
+![oci-advance-configuration]({{ site.baseurl }}/assets/images/oci/oci-advance-configuration.png)
 
 * **VCN (Virtual Cloud Network)**
 
@@ -228,11 +224,6 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
     * If left blank, you won’t be able to SSH into nodes directly (still manageable via Kubernetes API).
 
-[image3]: ../assets/images/oci/bootstrap-provider-selection.png
-[image4]: ../assets/images/oci/basic-configuration-oci.png
-[image5]: ../assets/images/oci/oci-placement-configuration.png
-[image6]: ../assets/images/oci/oci-advance-configuration.png
-
 ---
 
 ## **Creating a Confluent for Kubernetes (CFK) Cluster on OCI with StreamTime**
@@ -259,15 +250,12 @@ The user or group must have sufficient permissions in OCI to deploy workloads in
 **Step-1: Select Cluster Type**
 Navigate to **Clusters → Create Cluster →** select **Confluent Platform** (Commercial) **→** Click **Begin Configuration**.
 
-
-
-![Cluster Type selection screen showing options for Confluent Platform, Apache Kafka, WarpStream, Redpanda, and AutoMQ. ][image7]
+![Kafka-ClusterTypeSelection]({{ site.baseurl }}/assets/images/oci/create-Kafka-ClusterTypeSelection.png)
 
 **Step-2: Basic Configuration**
 Configure the core identity and placement of your CFK cluster.
 
-
-![The Basic Configuration form that includes the Identifier field that is filled as juicy-antelope here (Is auto-generated or can be filled manually), a tag that can be set (Multiple tags can be added), and the cloud provider OCI is selected with your preferred region, tenancy and and Kafka Units slider.][image9]
+![Kafka-Basic_configuration]({{ site.baseurl }}/assets/images/oci/create-Kafka-Basic-configuratio.png)
 
 * **Identifier**  
   * Human-readable cluster ID  
@@ -309,7 +297,7 @@ Configure the core identity and placement of your CFK cluster.
 * This ensures that StreamTime deploys the Confluent Platform inside your existing OKE-based fleet.
 
 
-![Fleet Selection dialog showing available OKE fleets and capacity/health status, with “juicy-cockroach” selected][image10]
+![Kafka-Fleet-Selection]({{ site.baseurl }}/assets/images/oci/create-Kafka-Fleet-Selection.png)
 
 Good to know: StreamTime validates Fleet health and versions before proceeding (e.g., Kubernetes API reachable, CNI/CSI ready, LB quota).
 
@@ -318,7 +306,8 @@ Good to know: StreamTime validates Fleet health and versions before proceeding (
 **Step-4: Advanced Configuration**
 Fine‑tune networking, security, components, and storage.
 
-**![Advance configuration of the OKE cluster][image11]**
+![Kafka-Advance-Configuration]({{ site.baseurl }}/assets/images/oci/create-Kafka-Advance-configuration.png)
+
 
 * **Optimization Goal**
 You have three choices for controlling how the cluster manages egress networking (traffic going out of the cluster):
@@ -409,10 +398,5 @@ Choose where offloaded Kafka data will be stored:
 
 --- 
 
-[image7]: ../assets/images/oci/create-Kafka-ClusterTypeSelection.png
 
-[image9]: ../assets/images/oci/create-Kafka-Basic-configuratio.png
 
-[image10]: ../assets/images/oci/create-Kafka-Fleet-Selection.png
-
-[image11]: ../assets/images/oci/create-Kafka-Advance-configuration.png
