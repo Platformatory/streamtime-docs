@@ -42,29 +42,175 @@ Confluent for Kubernetes (CFK) is a fully managed Kafka distribution optimized f
 - **Multi-Cloud Support**: Can be deployed across multiple cloud providers, ensuring high availability and disaster recovery.
 
 ## How to Deploy CFK
-Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and can be done through the Streamtime UI. Here’s a step-by-step guide:
+Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and can be done through the Streamtime UI. 
 
-1. **Create a Kafka Cluster**:
-   - Use the Streamtime UI to create a new Kafka cluster.
-   - Select "Confluent for Kubernetes" as the distribution type.
-   ![Create Kafka Cluster]({{ site.baseurl }}/assets/images/cfk/cluster-type.png)
+#### **What StreamTime Creates for You**
 
-2. **Configure Cluster Settings**:
-   - Choose a cloud provider (AWS, GCP, OCI, Azure) or use BYOK (Bring Your Own Kubernetes).
-   - Specify the region.
-   - Specify the number of Kafka units (1 unit = 20 MBps throughput).
-   - Set the tenancy model (`shared`, `isolated`, or `dedicated`).
-   ![Cluster Basic Configuration]({{ site.baseurl }}/assets/images/cfk/cluster-basic-config.png)
+* **CFK Components**: Kafka brokers (KRaft or ZooKeeper‑based depending on CP version), Schema Registry (if enabled), REST Proxy/Control Center (when selected), and supporting services.  
+* **Kubernetes Objects**: Namespaces, Deployments/StatefulSets, Services (LB/ClusterIP), PersistentVolumeClaims.  
+* **Networking**: LoadBalancers/ingress according to your **Outbound Access** and **Private Access** choices.  
+* **Storage**: Block Volumes‑backed Persistent Volumes sized per your config.
 
-3. **Fleet Selection**:
-   - Choose the Kubernetes fleet where the Kafka cluster will be deployed.
-   - Ensure the fleet is healthy and ready for deployment.
-   ![Cluster Fleet Selection]({{ site.baseurl }}/assets/images/cfk/cluster-fleet-selection.png)
+### **Prerequisites**
 
-4. **Advanced Configuration**:
-   - Optionally configure advanced settings such as replication factor, partition count, and resource limits.
-   
-   ![Cluster Advanced Configuration]({{ site.baseurl }}/assets/images/cfk/cluster-advanced-config.png)
+* **A Kubernetes Fleet**  
+Before you can create a CFK cluster, ensure that you have a **Kubernetes Fleet** already bootstrapped on any supported cloud platform using StreamTime.
+
+* **Cluster-Level Permissions**  
+The user or group must have sufficient permissions in OCI to deploy workloads into the fleet. This includes access to compute, networking, and Kubernetes resources in the selected compartment.
+
+#### **Steps to Create a CFK Cluster in StreamTime**
+
+**Step-1: Select Cluster Type**
+Navigate to **Clusters → Create Cluster →** select **Confluent Platform** (Commercial) **→** Click **Begin Configuration**.
+
+![Kafka-ClusterTypeSelection]({{ site.baseurl }}/assets/images/cfk/create-Kafka-ClusterTypeSelection.png)
+
+**Step-2: Basic Configuration**
+Configure the core identity and placement of your CFK cluster.
+
+![Kafka-Basic_configuration]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Basic-configuratio.png)
+
+* **Identifier**  
+  * Human-readable cluster ID  
+  * Auto-generated (editable). Use lowercase letters and hyphens; must be unique per project.  
+  * *Example*: `juicy-antelope`
+
+* **Tags**  
+  * Key/value labels applied to StreamTime objects  
+  * Useful for environment, owner, cost-center, etc.  
+  * *Example*: `environment=non-prod`
+
+* **Cloud Provider**  
+  * Target cloud for deployment  
+  * *Guidance*: Choose any cloud provider of your choice (Example shown for **OCI**) 
+* **Region**  
+  * OCI region where the Fleet is created  
+  * Must match an existing Fleet region  
+  * *Example*: `ap-hyderabad-1`  
+* **Tenancy**  
+  * Defines the resource sharing model  
+  * Options: **Shared**, **Dedicated** or **Isolated,** Refer to the docs on [Tenancy](https://docs.streamtime.ai/concept-architecture/tenancy.html#tenancy)  
+* **Kafka Units (KU)**  
+  * Baseline throughput capacity  
+  * Each KU ≈ 20 MB/s aggregate  
+* **Alert Channels**  
+  * Health and incident notifications  
+  * Optional; choose Slack/Email channels configured in Settings
+
+<br>
+
+**Sizing Tip-**
+1 KU (\~20 MB/s) is good for dev/test or light prod. For production with replication factor \= 3 and bursty writes, consider higher suitable KU to avoid broker IO saturation.
+
+<br>
+
+**Step‑3: Fleet Selection**
+* Select the OKE Fleet that will host this CFK cluster.  
+* Pick a Fleet with sufficient free capacity (OCPUs/RAM), available LB quotas, and the required Kubernetes version for your CFK/CP version.  
+* This ensures that StreamTime deploys the Confluent Platform inside your existing Kubernetes fleet.
+
+
+![Kafka-Fleet-Selection]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Fleet-Selection.png)
+
+Good to know: StreamTime validates Fleet health and versions before proceeding (e.g., Kubernetes API reachable, CNI/CSI ready, LB quota).
+
+<br>
+
+**Step-4: Advanced Configuration**
+Fine‑tune networking, security, components, and storage.
+
+![Kafka-Advance-Configuration]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Advance-configuration.png)
+
+
+* **Optimization Goal**
+You have three choices for controlling how the cluster manages egress networking (traffic going out of the cluster):
+
+  - **Cost** → Optimized for lowest cost.  
+    - Limits or routes outbound traffic through shared, cheaper paths.  
+    - Best for dev/test clusters where traffic is light.  
+
+  - **Balanced (default)** → Mix between performance and cost.  
+    - Suitable for most production environments.  
+    - Provides decent throughput with moderate costs.  
+
+  - **Performance** → Optimized for maximum throughput and lowest latency.  
+    - Uses premium networking resources.  
+    - Best for high-throughput, latency-sensitive production workloads.  
+
+
+<br>
+
+* **Cluster Access**
+Controls how clients connect to Kafka brokers:
+
+  - **Internal** → Only workloads inside the OKE VCN (Virtual Cloud Network) can access Kafka. (Good for private, secure setups where clients run in the same fleet.)  
+  - **External** → Only external/public clients can connect (via public endpoints).  
+  - **Internal & External** → Both OCI internal apps and external clients can connect.  
+
+<br>
+
+* **Authentication Mechanism**
+Defines how clients authenticate to Kafka:
+
+  - **SASL/OAUTH** → OAuth-based authentication.  
+    - More secure, integrates with identity providers.  
+    - Recommended for production.  
+
+  - **SASL/PLAIN** → Username/password-based authentication.  
+    - Simpler but less secure.  
+    - More suitable for dev/test.  
+
+<br>
+
+* **Additional System Admins**
+You can assign extra system administrators who will have full access to manage the CFK cluster.  
+
+<br>
+
+* **Admin Type**  
+Instead of adding users one by one, you can assign an IAM Group. All members of that group will inherit admin privileges.  
+
+<br>
+
+* **Storage Tier Configuration**
+Defines how Kafka tiered storage manages log segment offloading to external storage:
+
+  - **Aggressive** → Offloads data to external storage quickly, keeping local disk usage minimal.  
+    (Suitable when you want to optimize for cost and use cloud storage heavily)  
+
+  - **Balanced** → Default option. Keeps a healthy balance between local disk and external storage usage.  
+
+  - **Conservative** → Keeps data locally for longer before offloading to external storage.  
+    (Useful if you want faster local access and rely less on cloud storage)  
+
+<br>
+
+* **Tiered Storage Bucket Name**
+The name of the bucket where Kafka log segments will be stored once offloaded.  
+
+<br>
+
+* **Tiered Storage Provider**
+Choose where offloaded Kafka data will be stored:
+
+  - **AWS**  
+    - **AWS Account** → Your AWS account ID.  
+    - **Region** → The AWS region where your S3 bucket exists.  
+
+  - **OCI**  
+    - **OCI Account** → Your Oracle Cloud Infrastructure account ID (Tenancy OCID).  
+    - **Region** → The OCI region where the bucket exists.  
+    - **Compartment ID** → OCID of the compartment where the storage bucket resides.  
+    - **Identity Domain OCID** → OCID of the identity domain used for access and authentication.  
+
+
+
+**Once all steps are complete-**  
+- Review the configuration.  
+- Click **Create Cluster**.  
+
+--- 
 
 ## Monitoring and Management
 - **Metrics Dashboards**: Visualize key metrics such as throughput, latency, and error rates.
