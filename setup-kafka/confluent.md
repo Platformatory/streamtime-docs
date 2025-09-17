@@ -46,7 +46,7 @@ Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and
 
 #### **What StreamTime Creates for You**
 
-* **CFK Components**: Kafka brokers (KRaft or ZooKeeper‑based depending on CP version), Schema Registry (if enabled), REST Proxy/Control Center (when selected), and supporting services.  
+* **CFK Components**: Kafka brokers with KRaft, Schema Registry (if enabled), Control Center.
 * **Kubernetes Objects**: Namespaces, Deployments/StatefulSets, Services (LB/ClusterIP), PersistentVolumeClaims.  
 * **Networking**: LoadBalancers/ingress according to your **Outbound Access** and **Private Access** choices.  
 * **Storage**: Block Volumes‑backed Persistent Volumes sized per your config.
@@ -55,26 +55,31 @@ Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and
 
 * **A Kubernetes Fleet**  
 Before you can create a CFK cluster, ensure that you have a **Kubernetes Fleet** already bootstrapped on any supported cloud platform using StreamTime.
+[How to deploy A Kubernetes fleet.]({{ site.baseurl }}/bootstrapping-fleet/) 
 
-* **Cluster-Level Permissions**  
-The user or group must have sufficient permissions in OCI to deploy workloads into the fleet. This includes access to compute, networking, and Kubernetes resources in the selected compartment.
+
+* **Bootstrap Provider Permissions for Tiered Storage Setup**  
+A Bootstrap Provider configured with an user that has permission to create Object Storage buckets for Tiered Storage and Users for granting access to the created bucket. If the bucket is already created, the user will need permissions to create a credentials (Ex - Access Key in AWS, Customer Secret Key in OCI) and have access to the bucket. 
+
 
 #### **Steps to Create a CFK Cluster in StreamTime**
 
 **Step-1: Select Cluster Type**
+
 Navigate to **Clusters → Create Cluster →** select **Confluent Platform** (Commercial) **→** Click **Begin Configuration**.
 
 ![Kafka-ClusterTypeSelection]({{ site.baseurl }}/assets/images/cfk/create-Kafka-ClusterTypeSelection.png)
 
 **Step-2: Basic Configuration**
-Configure the core identity and placement of your CFK cluster.
+
+Configure the sizing and placement of your CFK cluster.
 
 ![Kafka-Basic_configuration]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Basic-configuratio.png)
 
 * **Identifier**  
   * Human-readable cluster ID  
-  * Auto-generated (editable). Use lowercase letters and hyphens; must be unique per project.  
-  * *Example*: `juicy-antelope`
+  * You can use the auto-generated identifier or provide your own, which must be unique per organization. (Auto-generated names are provided only for UI convenience and not intended for real-world cluster names, hence use meaningful identifiers)
+  * *Example*: `clickstream-pipe`
 
 * **Tags**  
   * Key/value labels applied to StreamTime objects  
@@ -90,7 +95,7 @@ Configure the core identity and placement of your CFK cluster.
   * *Example*: `ap-hyderabad-1`  
 * **Tenancy**  
   * Defines the resource sharing model  
-  * Options: **Shared**, **Dedicated** or **Isolated,** Refer to the docs on [Tenancy](https://docs.streamtime.ai/concept-architecture/tenancy.html#tenancy)  
+  * Options: **Shared**, **Dedicated** or **Isolated,** Refer to the docs on [Tenancy]({{ site.baseurl }}/concept-architecture/tenancy.html#tenancy)  
 * **Kafka Units (KU)**  
   * Baseline throughput capacity  
   * Each KU ≈ 20 MB/s aggregate  
@@ -105,25 +110,24 @@ Configure the core identity and placement of your CFK cluster.
 
 <br>
 
-**Step‑3: Fleet Selection**
-* Select the OKE Fleet that will host this CFK cluster.  
-* Pick a Fleet with sufficient free capacity (OCPUs/RAM), available LB quotas, and the required Kubernetes version for your CFK/CP version.  
+**Step‑3: Fleet Selection** (This step applies only to Administrator users.)
+* Select the Kubernetes Fleet that will host this CFK cluster.  
+* Choose preferred Kubernetes cluster for deploying Confluent Platform.  
 * This ensures that StreamTime deploys the Confluent Platform inside your existing Kubernetes fleet.
 
 
 ![Kafka-Fleet-Selection]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Fleet-Selection.png)
 
-Good to know: StreamTime validates Fleet health and versions before proceeding (e.g., Kubernetes API reachable, CNI/CSI ready, LB quota).
-
 <br>
 
-**Step-4: Advanced Configuration**
+**Step-4: Advanced Configuration** (This step applies only to Administrator users.)
+
 Fine‑tune networking, security, components, and storage.
 
 ![Kafka-Advance-Configuration]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Advance-configuration.png)
 
 
-* **Optimization Goal**
+* **Optimization Goal**   
 You have three choices for controlling how the cluster manages egress networking (traffic going out of the cluster):
 
   - **Cost** → Optimized for lowest cost.  
@@ -141,73 +145,98 @@ You have three choices for controlling how the cluster manages egress networking
 
 <br>
 
-* **Cluster Access**
+* **Cluster Access**    
 Controls how clients connect to Kafka brokers:
 
-  - **Internal** → Only workloads inside the OKE VCN (Virtual Cloud Network) can access Kafka. (Good for private, secure setups where clients run in the same fleet.)  
-  - **External** → Only external/public clients can connect (via public endpoints).  
-  - **Internal & External** → Both OCI internal apps and external clients can connect.  
+  - **Internal** → Only accessible within the Kubernetes cluster (ideal for private, secure setups where client workloads run in the same cluster).
+  - **External** → Accessible from outside the Kubernetes cluster (needed when clients run outside the cluster).
+  - **Internal & External** → Both internal and external clients can connect.  
 
 <br>
 
-* **Authentication Mechanism**
+* **Authentication Mechanism**    
 Defines how clients authenticate to Kafka:
 
   - **SASL/OAUTH** → OAuth-based authentication.  
     - More secure, integrates with identity providers.  
-    - Recommended for production.  
+    - Recommended by StreamTime.  
 
   - **SASL/PLAIN** → Username/password-based authentication.  
     - Simpler but less secure.  
-    - More suitable for dev/test.  
+ 
 
 <br>
 
-* **Additional System Admins**
+* **Additional System Admin**   
 You can assign extra system administrators who will have full access to manage the CFK cluster.  
 
 <br>
 
-* **Admin Type**  
+* **Additional System Admin Type**  
 Instead of adding users one by one, you can assign an IAM Group. All members of that group will inherit admin privileges.  
 
 <br>
 
-* **Storage Tier Configuration**
-Defines how Kafka tiered storage manages log segment offloading to external storage:
+* **Storage Tier Configuration**    
+Defines how Kafka tiered storage manages log segment offloading to tiered storage:
 
-  - **Aggressive** → Offloads data to external storage quickly, keeping local disk usage minimal.  
+  - **Aggressive** → Offloads data to tiered storage quickly, keeping local disk usage minimal.  
     (Suitable when you want to optimize for cost and use cloud storage heavily)  
 
-  - **Balanced** → Default option. Keeps a healthy balance between local disk and external storage usage.  
+  - **Balanced** → Default option. Keeps a healthy balance between local disk and tiered storage usage.  
 
-  - **Conservative** → Keeps data locally for longer before offloading to external storage.  
-    (Useful if you want faster local access and rely less on cloud storage)  
-
-<br>
-
-* **Tiered Storage Bucket Name**
-The name of the bucket where Kafka log segments will be stored once offloaded.  
+  - **Conservative** → Keeps data locally for longer before offloading to tiered storage.
+    - (Useful if you want faster local access and rely less on cloud storage)  
+    - (Requires larger local disk size, which increases infrastructure cost.)
 
 <br>
 
-* **Tiered Storage Provider**
-Choose where offloaded Kafka data will be stored:
+* **Tiered Storage Bucket Name**    
+The name of the Object Storage bucket which will be used for tiered storage. Ensure that this is globally unique for a provider.    
+Tip: Use a naming convention that is unique for your organization and use numbers to ensure global uniqueness. 
+
+<br>
+
+* **Tiered Storage Provider**   
+All Confluent Platform clusters created by StreamTime have Tiered Storage enabled for lowering storage costs. Learn more [here](https://docs.confluent.io/platform/current/clusters/tiered-storage.html)
+
+
+  Choose where offloaded Kafka data will be stored:
 
   - **AWS**  
-    - **AWS Account** → Your AWS account ID.  
+    - **AWS Account** → Your AWS account identifier configured as a Bootstrap Provider in the Organization Settings. Ensure the user configured for this Provider has the following policy -
+      ```json
+      { 
+        "Version" : "2012-10-17", 
+        "Statement" : [ 
+          { 
+            "Effect" : "Allow", 
+            "Action" : [ 
+              "s3:*" 
+              ], 
+              "Resource" : "<bucket-name>" 
+          } 
+        ]
+      }
+      ```
+
+ 
     - **Region** → The AWS region where your S3 bucket exists.  
 
   - **OCI**  
     - **OCI Account** → Your Oracle Cloud Infrastructure account ID (Tenancy OCID).  
+    Your OCI account identifier configured as a Bootstrap Provider in the Organization Settings. Ensure the user configured for this Provider has the following policy -    
+    ```Allow group <group-name> to manage buckets in compartment id <compartment-id>```     
+    
+      ```Allow group <group-name> to manage objects in compartment id <compartment-id>```
     - **Region** → The OCI region where the bucket exists.  
     - **Compartment ID** → OCID of the compartment where the storage bucket resides.  
-    - **Identity Domain OCID** → OCID of the identity domain used for access and authentication.  
+
+<br>
 
 
-
-**Once all steps are complete-**  
-- Review the configuration.  
+**Once all steps are complete-**    
+- Review the configuration shown on the right side of the screen.
 - Click **Create Cluster**.  
 
 --- 
