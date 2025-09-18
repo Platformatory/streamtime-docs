@@ -173,8 +173,7 @@ You can assign extra system administrators who will have full access to manage t
 <br>
 
 * **Additional System Admin Type**  
-Instead of adding users one by one, you can assign an IAM Group. All members of that group will inherit admin privileges.  
-
+Specifies the type of principal mentioned in Additional System Admin. If the admin name provided is a group in the identity provider, set the Additional System Admin Type as Group, else, set it as user
 <br>
 
 * **Storage Tier Configuration**    

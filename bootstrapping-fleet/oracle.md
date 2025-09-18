@@ -52,6 +52,7 @@ Navigate to **Settings → Bootstrap Providers → Select OCI OKE → Next**
   * Align deployments with cost centers or projects  
   * Enforce governance policies  
   * Simplify reporting and auditing across your environment  
+- **Identity Domain OCID** – OCID of the OCI Identity Domain for creating an user for object storage bucket access. If not provided, the default domain in the tenancy is used. This is required in scenarios where the user does not have access to the default Identity Domain and needs to use a different Identity Domain.
 
 By defining and applying these tags at the StreamTime level, you get end-to-end visibility and control over your OCI resources without needing to manually tag them later.  
 [Learn more about defined tags in Oracle Cloud Infrastructure](https://docs.oracle.com/en-us/iaas/Content/Tagging/Tasks/managingtagsandtagnamespaces.htm#overviewtags)  
@@ -114,7 +115,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
 * **Tenancy**
 
-  * Defines how resources are shared, refer the docs for more information [Tenancy in Streamtime](https://docs.streamtime.ai/concept-architecture/tenancy.html#tenancy)
+  * Defines how resources are shared, refer the docs for more information [Tenancy in Streamtime]({{ site.baseurl }}/concept-architecture/tenancy.html#tenancy)
 
 * **Base Domain**
 
@@ -122,7 +123,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
   * For example: if you set example.com, your workloads will be exposed as service.example.com.
 
-  * The Base Domain must be configured prior to fleet creation if it’s not already set in the Settings panel., Refer to the docs on [Domains](https://docs.streamtime.ai/setup/domains-certificates.html)
+  * The Base Domain must be configured prior to fleet creation if it’s not already set in the Settings panel., Refer to the docs on [Domains]({{ site.baseurl }}/setup/domains-certificates.html)
 
 
 * **Alert Channels**
@@ -141,7 +142,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
   * The maximum Kafka capacity units (a resource abstraction Streamtime uses for sizing Kafka clusters).
 
-  * One “Kafka Unit” typically maps to a certain amount of broker resources (CPU, memory, storage, throughput). Refer, [Scaling Kafka Clusters in Streamtime](https://docs.streamtime.ai/concept-architecture/tenancy.html#tenancy)
+  * One “Kafka Unit” typically maps to a certain amount of broker resources (CPU, memory, storage, throughput). Refer, [Scaling Kafka Clusters in Streamtime]({{ site.baseurl }}/concept-architecture/tenancy.html#tenancy)
 
   * Setting this defines how much Kafka workload this fleet can handle.
 
@@ -156,7 +157,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 * **Account** 
   * This is the OCI account you already onboarded into Streamtime (via API keys).
 
-  * Example: fantastic-guan (your configured account).
+  * Example: data-platform-oci  (your configured account).
 
 * **Region**
   *  The OCI region where your Kubernetes fleet (and Kafka Cluster cluster) will be deployed.
