@@ -5,6 +5,20 @@ layout: home
 
 ---
 
+## Quick start
+
+To get started with StreamTime, docker compose is the recommended way for single user and trial deployments. For production workloads, we recommend deploying StreamTime on Kubernetes using the helm chart.
+
+To get started, run
+
+```bash
+STREAMTIME_SUPER_USER_EMAILS=<your-email> docker compose -f oci://ghcr.io/platformatory/streamtime up -d
+```
+
+> Replace <your-email> with you email.
+
+Once the containers are up, visit http://localhost:3000 and enter `root` as the organization. The `root` organization is a special organization that can be used to create other organizations and the super user has complete administrator privileges for all organizations.
+
 ## Video Tutorial: BYOK with Apache Kafka Cluster
 
 <video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
