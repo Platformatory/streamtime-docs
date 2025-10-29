@@ -15,7 +15,7 @@ To get started, run
 STREAMTIME_SUPER_USER_EMAILS=<your-email> docker compose -f oci://ghcr.io/platformatory/streamtime up -d
 ```
 
-> Replace <your-email> with you email.
+> Replace `<your-email>` with your email.
 
 Once the containers are up, visit http://localhost:3000 and enter `root` as the organization. The `root` organization is a special organization that can be used to create other organizations and the super user has complete administrator privileges for all organizations.
 
