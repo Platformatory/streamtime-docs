@@ -33,12 +33,15 @@ You'll need:
 
 ## 1. Sizing guidelines
 
-The reference deployment runs on **`t3.xlarge`** nodes with
-`minSize=1, maxSize=3, desiredSize=2` — a known-working baseline for a
-single fleet. Scale the node count and instance type up with your target
-Kafka Unit (KU) tier and tenancy model (shared/isolated/dedicated), and
-leave headroom above your current KU target so a node isn't pinned at
-capacity before autoscaling kicks in.
+A fleet is sized in **Kafka Units (KU)**, where 1 KU = 20 MB/s of
+throughput, up to a **maximum of 40 KU per cluster**. The recommended node
+size is **4 vCPU / 16 GB RAM per Kafka unit** — for AWS that maps directly
+to `t3.xlarge`, which is what the reference deployment uses:
+`minSize=1, maxSize=3, desiredSize=2` at the lower end of the range. Scale
+the node count and instance type up toward the 40 KU ceiling based on your
+target tier and tenancy model (shared/dedicated), and leave headroom above
+your current KU target so a node isn't pinned at capacity before
+autoscaling kicks in.
 
 ## 2. IRSA role and policy
 
