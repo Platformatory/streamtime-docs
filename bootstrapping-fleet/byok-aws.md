@@ -132,7 +132,20 @@ Size your subnets for your target node count with headroom, not just the
 starting count — undersized subnets surface as pods stuck in a `Pending`
 state as the cluster grows.
 
-## 4. Generating a kubeconfig for the Streamtime Agent's automatic installation
+## 4. Load balancer and storage class
+
+- **Load balancer**: Streamtime exposes its endpoints through a standard
+  Kubernetes `Service` of type `LoadBalancer`. On EKS this provisions a
+  load balancer automatically — no separate load balancer controller
+  needs to be installed.
+- **Default storage class**: Streamtime runs several components that
+  need persistent storage. Your cluster must have a default
+  `StorageClass` configured — on EKS this means the EBS CSI driver addon
+  is installed and a `StorageClass` is marked as default. Without one,
+  Streamtime's storage-backed components will stay stuck in a `Pending`
+  state and bootstrapping the fleet will not complete.
+
+## 5. Generating a kubeconfig for the Streamtime Agent's automatic installation
 
 Streamtime expects a static token in the kubeconfig for user
 authentication when using Automatic Installation of the agent. See
