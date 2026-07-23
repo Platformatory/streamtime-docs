@@ -7,122 +7,141 @@ nav_order: 6
 # BYOK with AWS: Prerequisites
 
 This page covers the AWS-account and EKS-cluster prerequisites specific to
-BYOK on AWS — sizing, IAM/IRSA, networking, and the kubeconfig format the
-orchestrator expects. See [Advanced Usage (BYOK)](byok.html) for the
+BYOK on AWS — sizing, the IAM role Streamtime needs, and the kubeconfig
+format Streamtime expects. See [Advanced Usage (BYOK)](byok.html) for the
 provider-agnostic walkthrough of the Streamtime UI flow itself.
 
----
-
-## Before you start
-
-You'll need:
-
-- An AWS account with permissions to create an EKS cluster, a managed node
-  group, IAM roles, and an IAM OIDC provider. Confirm your account ID with
-  `aws sts get-caller-identity` — use the **`Account`** field (the 12-digit
-  number), never the `UserId` field. Using the wrong one is the most common
-  cause of `AccessDenied` errors when creating the cluster or nodegroup.
-- `aws` CLI v2, `eksctl` (for OIDC association), and `kubectl`.
-- Subnets across at least two AZs, already created. The default VPC's
-  per-AZ subnets work for a first cluster.
-
-> `scripts/provision-streamtime-byok.sh` automates every step below end to
-> end against a fresh or existing cluster.
+This page assumes you already have a working EKS cluster (OIDC provider
+associated, `kubectl` access configured) — that setup is standard EKS
+administration and isn't specific to Streamtime.
 
 ---
 
-## 1. Sizing guidelines
+## 1. Recommended EKS sizing for bring-your-own clusters
 
-A fleet is sized in **Kafka Units (KU)**, where 1 KU = 20 MB/s of
-throughput, up to a **maximum of 40 KU per cluster**. The recommended node
-size is **4 vCPU / 16 GB RAM per Kafka unit** — for AWS that maps directly
-to `t3.xlarge`, which is what the reference deployment uses:
-`minSize=1, maxSize=3, desiredSize=2` at the lower end of the range. Scale
-the node count and instance type up toward the 40 KU ceiling based on your
-target tier and tenancy model (shared/dedicated), and leave headroom above
-your current KU target so a node isn't pinned at capacity before
-autoscaling kicks in.
+One Kafka Unit (KU) is Streamtime's measure of Kafka throughput and
+resource need (1 KU = 20 MB/s). Use the table below to size an EKS
+cluster that will host Streamtime.
 
-## 2. IRSA role and policy
+| Cluster capacity | Platform nodes | Kafka / data nodes | Node size (balanced) |
+|---|---|---|---|
+| 1–3 units | 3 | 3 | 2 vCPU / 8 GB (`m6i.large`) |
+| 4+ units | 3 | Match capacity (one data node per unit, minimum 3) | Scale vCPU/memory with capacity |
 
-An OIDC identity provider must be associated with the cluster before any
-IRSA role can work, and **this has to be redone for every new cluster** —
-a fresh cluster gets a fresh OIDC ID, and any role still trusting the old
-one will fail with `AccessDenied: ... AssumeRoleWithWebIdentity`:
+Guidance:
 
-```bash
-eksctl utils associate-iam-oidc-provider --cluster <cluster> --region <region> --approve
-aws eks describe-cluster --name <cluster> --region <region> \
-  --query 'cluster.identity.oidc.issuer' --output text
-# the hex string after /id/ is your OIDC ID — save it
+- These sizes assume the cluster is dedicated to Streamtime. Don't pack
+  unrelated workloads onto the same nodes.
+- Platform nodes run monitoring, operators, and the agent. Kafka/data
+  nodes run your brokers.
+- You may combine platform and Kafka nodes into a single node group if
+  you prefer a simpler layout (for example, 6 nodes for 1–3 units of
+  capacity).
+- Spread nodes across availability zones for resilience.
+- No cluster should run with fewer than 3 nodes: for the node group's
+  autoscaling config, use `minSize=3, desiredSize=3, maxSize=6` as a
+  starting point, and raise `maxSize` further for higher-capacity tiers.
+- Use general-purpose-plus memory-optimized instance families (the `m5`/`m6i`
+  series) rather than burstable `t`-series instances, which aren't suitable
+  for sustained Kafka workloads.
+
+## 2. IAM role for Streamtime
+
+Streamtime uses a single IRSA (IAM Roles for Service Accounts) role,
+trusted by your cluster's OIDC provider, for its in-cluster service
+accounts — including the one used to create and write to the S3 bucket
+that backs log/metrics storage.
+
+Create the role with this trust policy, scoped to the `streamtime-agent`,
+`cluster-autoscaler`, and `kafka-fleet-manager-loki` service accounts:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [{
+    "Effect": "Allow",
+    "Principal": {
+      "Federated": "arn:aws:iam::<account-id>:oidc-provider/<oidc-host>"
+    },
+    "Action": "sts:AssumeRoleWithWebIdentity",
+    "Condition": {
+      "StringEquals": {
+        "<oidc-host>:aud": "sts.amazonaws.com"
+      },
+      "StringLike": {
+        "<oidc-host>:sub": [
+          "system:serviceaccount:streamtime-agent:streamtime-agent*",
+          "system:serviceaccount:kube-system:cluster-autoscaler*",
+          "system:serviceaccount:monitoring:kafka-fleet-manager-loki*"
+        ]
+      }
+    }
+  }]
+}
 ```
 
-The only IRSA role BYOK requires is for the **EBS CSI driver**. The
-Streamtime agent itself doesn't need direct AWS API access — it operates
-through a Kubernetes `cluster-admin` binding (see [Section 5](#5-generating-a-kubeconfig-for-automatic-installation)),
-not an IAM role.
+Attach the AWS-managed `AmazonS3FullAccess` policy, then add the
+following inline policy:
 
-Create the EBS CSI role with a trust policy scoped to the OIDC provider,
-condition `<oidc-host>:sub = system:serviceaccount:kube-system:ebs-csi-controller-sa`,
-and attach the `AmazonEBSCSIDriverPolicy` managed policy. If you're
-rebuilding a cluster and the role already exists, update its trust policy
-to the new OIDC provider rather than recreating the role — and if your SSO
-role can't call `iam:UpdateAssumeRolePolicy`, create a new role (e.g.
-suffixed `_v3`) instead of fighting the permission.
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {"Sid": "STSValidation", "Effect": "Allow",
+      "Action": ["sts:GetCallerIdentity"], "Resource": "*"},
+    {"Sid": "EKSCluster", "Effect": "Allow", "Action": "eks:*",
+      "Resource": "arn:aws:eks:<region>:<account-id>:cluster/<cluster-name>"},
+    {"Sid": "EKSNodegroups", "Effect": "Allow", "Action": "eks:*",
+      "Resource": "arn:aws:eks:<region>:<account-id>:nodegroup/<cluster-name>/*"},
+    {"Sid": "EC2Describe", "Effect": "Allow",
+      "Action": ["ec2:DescribeSubnets", "ec2:DescribeSecurityGroups",
+                 "ec2:DescribeInstances", "ec2:DescribeInstanceTypes"],
+      "Resource": "*"},
+    {"Sid": "IAMEKSRoles", "Effect": "Allow",
+      "Action": ["iam:PassRole", "iam:GetRole", "iam:ListAttachedRolePolicies",
+                 "iam:ListRolePolicies", "iam:GetRolePolicy"],
+      "Resource": "arn:aws:iam::<account-id>:role/streamtime-eks-*"},
+    {"Sid": "IAMServiceLinkedRole", "Effect": "Allow",
+      "Action": ["iam:GetRole", "iam:CreateServiceLinkedRole"],
+      "Resource": "arn:aws:iam::<account-id>:role/aws-service-role/eks-nodegroup.amazonaws.com/*"},
+    {"Sid": "IAMStoragePolicyManage", "Effect": "Allow",
+      "Action": ["iam:CreatePolicy", "iam:DeletePolicy",
+                 "iam:GetPolicy", "iam:ListPolicies"],
+      "Resource": "arn:aws:iam::<account-id>:policy/streamtime-storage-*"},
+    {"Sid": "IAMStoragePolicyAttach", "Effect": "Allow",
+      "Action": ["iam:AttachRolePolicy", "iam:DetachRolePolicy",
+                 "iam:ListAttachedRolePolicies", "iam:GetRole",
+                 "iam:UpdateAssumeRolePolicy"],
+      "Resource": "arn:aws:iam::<account-id>:role/<irsa-role-name>"}
+  ]
+}
+```
 
-Before installing the addon, double-check the trust policy doesn't still
-contain a literal placeholder OIDC ID — that's the most common cause of the
-addon's controller pods crash-looping with `AccessDenied` on
-`AssumeRoleWithWebIdentity`.
+> **Note for review:** this is copied verbatim from
+> `provision-eks-byok.sh`, which is the script Streamtime uses to
+> provision its own reference clusters end to end — so the policy covers
+> more than S3/Loki access; it also grants `eks:*` on the cluster and
+> nodegroups, and `iam:*` scoped to `streamtime-eks-*`/`streamtime-storage-*`
+> resources. Worth confirming with Avinash whether an already-existing
+> BYOK cluster's role needs this full scope, or just the S3 + trust-policy
+> portion, before this goes live.
 
 ## 3. IP addressing for pods and services
 
-The VPC CNI assigns each pod a routable IP from its node's subnet, so
-subnet size — not just node count — caps how many pods will schedule.
-Undersized subnets showing up as pods stuck `Pending` is a known failure
-mode; size subnets for your target node count with headroom, not just the
-starting count.
+Size your subnets for your target node count with headroom, not just the
+starting count — undersized subnets surface as pods stuck in a `Pending`
+state as the cluster grows.
 
-## 4. Load balancer and default storage class
+## 4. Generating a kubeconfig for the Streamtime Agent's automatic installation
 
-- **Load balancer**: no separate AWS Load Balancer Controller install is
-  needed. Kong Ingress is exposed via a `Service` of type `LoadBalancer`,
-  which EKS's in-tree cloud provider turns into a classic ELB
-  automatically.
-- **EBS CSI driver + default StorageClass**: EKS 1.23+ dropped the in-tree
-  EBS provisioner, so `aws-ebs-csi-driver` must be installed as an addon
-  (using the IRSA role above), and a default `StorageClass` must exist:
-  ```yaml
-  apiVersion: storage.k8s.io/v1
-  kind: StorageClass
-  metadata:
-    name: ebs-sc
-    annotations:
-      storageclass.kubernetes.io/is-default-class: 'true'
-  provisioner: ebs.csi.aws.com
-  volumeBindingMode: WaitForFirstConsumer
-  parameters:
-    type: gp3
-  ```
-  Skipping this is the most common cause of a stuck bootstrap: without a
-  default `StorageClass`, Loki and Prometheus (and any other PVC-backed
-  workload) stay `Pending` forever, which surfaces as the bootstrap
-  workflow timing out after roughly 30 minutes. If that happens, check
-  `kubectl get pods -A | grep Pending`, apply the `StorageClass` above if
-  it's missing, then:
-  ```bash
-  helm uninstall kafka-fleet-manager-loki -n monitoring
-  kubectl delete pvc --all -n monitoring
-  ```
-  and retry the fleet.
+Streamtime expects a static token in the kubeconfig for user
+authentication when using Automatic Installation of the agent. See
+[Advanced Usage (BYOK)](byok.html) for more on the Automatic Installation
+flow.
 
-## 5. Generating a kubeconfig for automatic installation
-
-The fleet-manager orchestrator expects a **static bearer token**, not an
-exec-based credential plugin, and it's strict about the exact structure —
-getting this wrong surfaces as `TypeError: string indices must be integers,
-not 'str'` in the bootstrap workflow rather than as an upload-time
-validation error.
+Assuming the kubeconfig is set to the EKS cluster, the following commands
+can be used to generate a kubeconfig with a static token for an EKS
+cluster:
 
 1. Create a service account and bind it to `cluster-admin`:
    ```bash
@@ -162,16 +181,11 @@ validation error.
      user:
        token: <token>
    ```
-   Three rules the workflow enforces strictly:
+   Three rules Streamtime enforces strictly:
    - `clusters[].name` must be a short cluster name, **not** the cluster ARN.
    - `users[].user` must be a **nested object** containing `token:` — a flat
      `user: <token>` string will fail.
    - Spaces only, no tabs, anywhere in the file.
-5. Paste the file contents into the fleet's kubeconfig field in the
-   Streamtime UI (or `POST /organizations/<org>/fleets/<fleet_id>/kubeconfig/`
-   if you're driving it via API).
-
-After upload, `InstallStreamtimeAgentWorkflow` and
-`BootstrapFleetClusterWorkflow` install the fleet's Helm charts (Kong,
-Strimzi, Confluent operator, Prometheus, Loki, and others). Watch
-`kubectl get pods -n streamtime-agent -w` and the Temporal UI for progress.
+5. Upload the kubeconfig as a Secret in the **Agent Management** section
+   of the fleet. See the [Kubeconfig section](byok.html) of the BYOK
+   documentation for the full walkthrough.
