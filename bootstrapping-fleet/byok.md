@@ -1,177 +1,129 @@
 ---
-title: "BYOK with AWS"
+title: "Advanced Usage (BYOK)"
 parent: Bootstrapping Your Fleet
-nav_order: 2
+nav_order: 5
 ---
 
-# Bring Your Own Kubernetes (BYOK) with AWS
+## Video Tutorial: Bootstrapping a BYOK Fleet
 
-With BYOK, you provision and own the EKS cluster yourself and connect it to
-Streamtime, instead of having Streamtime provision the cluster for you. This
-page covers what your AWS account and cluster need before you onboard it as
-a fleet.
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/byok-create.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
 
----
+<style>
+    video {
+        width: 100%;
+        height: auto;   
+    }
+</style>
 
-## Before you start
-
-You'll need:
-
-- An AWS account with permissions to create an EKS cluster, a managed node
-  group, IAM roles, and an IAM OIDC provider. Confirm your account ID with
-  `aws sts get-caller-identity` — use the **`Account`** field (the 12-digit
-  number), never the `UserId` field. Using the wrong one is the most common
-  cause of `AccessDenied` errors when creating the cluster or nodegroup.
-- `aws` CLI v2, `eksctl` (for OIDC association), and `kubectl`.
-- Subnets across at least two AZs, already created. The default VPC's
-  per-AZ subnets work for a first cluster.
-
-> `scripts/provision-streamtime-byok.sh` automates every step below end to
-> end against a fresh or existing cluster.
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
 
 ---
 
-## 1. Sizing guidelines
+# Bootstrapping a Kubernetes Fleet with BYOK    
+Bring Your Own Kubernetes (BYOK) allows you to use your existing Kubernetes clusters with Streamtime. This guide covers the steps to bootstrap a Kubernetes fleet using BYOK.
 
-A fleet is sized in **Kafka Units (KU)**, where 1 KU = 20 MB/s of
-throughput, up to a **maximum of 40 KU per cluster**. The recommended node
-size is **4 vCPU / 16 GB RAM per Kafka unit** — for AWS that maps directly
-to `t3.xlarge`, which is what the reference deployment uses:
-`minSize=1, maxSize=3, desiredSize=2` at the lower end of the range. Scale
-the node count and instance type up toward the 40 KU ceiling based on your
-target tier and tenancy model (shared/dedicated), and leave headroom above
-your current KU target so a node isn't pinned at capacity before
-autoscaling kicks in.
+## What is BYOK?
+BYOK (Bring Your Own Kubernetes) allows you to leverage your existing Kubernetes infrastructure to run Apache Kafka clusters managed by Streamtime. Instead of relying on Streamtime's managed cloud services, you can deploy Kafka directly on your own Kubernetes clusters, whether they are on-premises or in the cloud.
+This approach provides you with full control over your environment while still benefiting from Streamtime's automation and management capabilities.
 
-## 2. IRSA role and policy
+## When to use BYOK
+BYOK is ideal when you have existing Kubernetes clusters that you want to integrate with Streamtime for Kafka management. It allows you to leverage your current infrastructure while benefiting from Streamtime's Kafka management capabilities.
 
-An OIDC identity provider must be associated with the cluster before any
-IRSA role can work, and **this has to be redone for every new cluster** —
-a fresh cluster gets a fresh OIDC ID, and any role still trusting the old
-one will fail with `AccessDenied: ... AssumeRoleWithWebIdentity`:
+## Key Features
+- **Self-Hosted Kafka**: Deploy and manage Kafka clusters on your own Kubernetes infrastructure.
+- **Full Control**: You retain ownership of your Kafka environment, networking, and security policies.
+- **Flexible Deployment**: Use your existing Kubernetes clusters, whether on-premises, in the cloud, or in a hybrid setup.
+- **Enterprise-Grade Automation**: Streamtime automates Kafka operations, including scaling, monitoring, and maintenance, while you control the underlying infrastructure. 
+- **Seamless Integration**: Easily integrate Kafka into your existing IT and security landscape without relying on external cloud providers.
+- **Multi-Tenancy Support**: Deploy multiple Kafka clusters within a single Kubernetes cluster, allowing for efficient resource utilization and isolation between different teams or environments.
+
+
+## How to Bootstrap a Kubernetes Fleet with BYOK
+Follow these steps to bootstrap a Kubernetes fleet using BYOK in Streamtime:
+1. **Select BYOK as Bootstrap Provider**
+    - In the Streamtime UI, click "Create Kubernetes Fleet".    
+    - Choose **BYOK** as your bootstrap provider.
+    ![Bootstrap Provider Selection]({{ site.baseurl }}/assets/images/byok/step-1.png)
+
+2. **Configure Tenancy & Sizing**
+    - Select the tenancy model: `shared`, `isolated`, or `dedicated`.
+    - Define your base domain, set the maximum tenancy (number of Kafka clusters per fleet), and specify the maximum Kafka units (throughput capacity).
+    - Choose the appropriate node size based on your workload (e.g., 1 Kafka unit = 20 MBps, recommended node: 4 vCPU / 16 GB RAM).
+    ![Tenancy & Sizing Configuration]({{ site.baseurl }}/assets/images/byok/step-2.png)
+3. **Placement Configuration**
+    - Optionally, specify provider and region details for placement metadata to optimize for latency, compliance, or cost.
+    - This step is optional but recommended for better performance and compliance.  
+    ![Placement Configuration]({{ site.baseurl }}/assets/images/byok/step-3.png)
+4. **Upload Your Kubernetes Configuration**
+    - Upload your Kubernetes `kubeconfig` file. This file contains the necessary credentials and configuration to connect to your existing Kubernetes clusters.
+    ![Upload Kubeconfig]({{ site.baseurl }}/assets/images/byok/step-4.png)
+5. **Deploy and Validate**
+    - Click **Deploy**. Streamtime will validate your kubeconfig and configure the Kubernetes fleet.
+    - Once deployed, the fleet status will show as "Healthy" and is ready for Kafka
+    ![byok detail view]({{ site.baseurl }}/assets/images/byok/detail-view.png)
+
+
+# API Reference
+
+## Create a Kubernetes Fleet with BYOK
 
 ```bash
-eksctl utils associate-iam-oidc-provider --cluster <cluster> --region <region> --approve
-aws eks describe-cluster --name <cluster> --region <region> \
-  --query 'cluster.identity.oidc.issuer' --output text
-# the hex string after /id/ is your OIDC ID — save it
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infrastructure/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "additional-alpaca",
+    "infra_type": "byok",
+    "domain": "<your-domain>.com",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "placement_config": {},
+    "organization": "<your-org-id>"
+}'
 ```
 
-The only IRSA role BYOK requires is for the **EBS CSI driver**. The
-Streamtime agent itself doesn't need direct AWS API access — it operates
-through a Kubernetes `cluster-admin` binding (see [Section 5](#5-generating-a-kubeconfig-for-automatic-installation)),
-not an IAM role.
-
-Create the EBS CSI role with a trust policy scoped to the OIDC provider,
-condition `<oidc-host>:sub = system:serviceaccount:kube-system:ebs-csi-controller-sa`,
-and attach the `AmazonEBSCSIDriverPolicy` managed policy. If you're
-rebuilding a cluster and the role already exists, update its trust policy
-to the new OIDC provider rather than recreating the role — and if your SSO
-role can't call `iam:UpdateAssumeRolePolicy`, create a new role (e.g.
-suffixed `_v3`) instead of fighting the permission.
-
-Before installing the addon, double-check the trust policy doesn't still
-contain a literal placeholder OIDC ID — that's the most common cause of the
-addon's controller pods crash-looping with `AccessDenied` on
-`AssumeRoleWithWebIdentity`.
-
-## 3. IP addressing for pods and services
-
-The VPC CNI assigns each pod a routable IP from its node's subnet, so
-subnet size — not just node count — caps how many pods will schedule.
-Undersized subnets showing up as pods stuck `Pending` is a known failure
-mode; size subnets for your target node count with headroom, not just the
-starting count.
-
-## 4. Load balancer and default storage class
-
-- **Load balancer**: no separate AWS Load Balancer Controller install is
-  needed. Kong Ingress is exposed via a `Service` of type `LoadBalancer`,
-  which EKS's in-tree cloud provider turns into a classic ELB
-  automatically.
-- **EBS CSI driver + default StorageClass**: EKS 1.23+ dropped the in-tree
-  EBS provisioner, so `aws-ebs-csi-driver` must be installed as an addon
-  (using the IRSA role above), and a default `StorageClass` must exist:
-  ```yaml
-  apiVersion: storage.k8s.io/v1
-  kind: StorageClass
-  metadata:
-    name: ebs-sc
-    annotations:
-      storageclass.kubernetes.io/is-default-class: 'true'
-  provisioner: ebs.csi.aws.com
-  volumeBindingMode: WaitForFirstConsumer
-  parameters:
-    type: gp3
-  ```
-  Skipping this is the most common cause of a stuck bootstrap: without a
-  default `StorageClass`, Loki and Prometheus (and any other PVC-backed
-  workload) stay `Pending` forever, which surfaces as the bootstrap
-  workflow timing out after roughly 30 minutes. If that happens, check
-  `kubectl get pods -A | grep Pending`, apply the `StorageClass` above if
-  it's missing, then:
-  ```bash
-  helm uninstall kafka-fleet-manager-loki -n monitoring
-  kubectl delete pvc --all -n monitoring
-  ```
-  and retry the fleet.
-
-## 5. Generating a kubeconfig for automatic installation
-
-The fleet-manager orchestrator expects a **static bearer token**, not an
-exec-based credential plugin, and it's strict about the exact structure —
-getting this wrong surfaces as `TypeError: string indices must be integers,
-not 'str'` in the bootstrap workflow rather than as an upload-time
-validation error.
-
-1. Create a service account and bind it to `cluster-admin`:
-   ```bash
-   kubectl create serviceaccount streamtime-admin -n kube-system
-   kubectl create clusterrolebinding streamtime-admin-binding \
-     --clusterrole=cluster-admin \
-     --serviceaccount=kube-system:streamtime-admin
-   ```
-2. Generate a token (shown once — save it):
-   ```bash
-   kubectl create token streamtime-admin -n kube-system --duration=24h
-   ```
-   Regenerate with the same command and re-upload if a long-running BYOK
-   cluster's fleet connection drops after the token expires.
-3. Grab the endpoint and CA data:
-   ```bash
-   aws eks describe-cluster --name <cluster> --region <region> --query 'cluster.endpoint' --output text
-   aws eks describe-cluster --name <cluster> --region <region> --query 'cluster.certificateAuthority.data' --output text
-   ```
-4. Assemble the kubeconfig in exactly this shape:
-   ```yaml
-   apiVersion: v1
-   kind: Config
-   clusters:
-   - cluster:
-       server: https://<endpoint>
-       certificate-authority-data: <ca-data>
-     name: <cluster-name>
-   contexts:
-   - context:
-       cluster: <cluster-name>
-       user: streamtime-admin
-     name: <cluster-name>-context
-   current-context: <cluster-name>-context
-   users:
-   - name: streamtime-admin
-     user:
-       token: <token>
-   ```
-   Three rules the workflow enforces strictly:
-   - `clusters[].name` must be a short cluster name, **not** the cluster ARN.
-   - `users[].user` must be a **nested object** containing `token:` — a flat
-     `user: <token>` string will fail.
-   - Spaces only, no tabs, anywhere in the file.
-5. Paste the file contents into the fleet's kubeconfig field in the
-   Streamtime UI (or `POST /organizations/<org>/fleets/<fleet_id>/kubeconfig/`
-   if you're driving it via API).
-
-After upload, `InstallStreamtimeAgentWorkflow` and
-`BootstrapFleetClusterWorkflow` install the fleet's Helm charts (Kong,
-Strimzi, Confluent operator, Prometheus, Loki, and others). Watch
-`kubectl get pods -n streamtime-agent -w` and the Temporal UI for progress.
+**Response:**
+```json
+{
+    "id": "bfca99b0-35a5-4490-9cc4-40296910f76d",
+    "organization": "acme",
+    "domain": "<your-domain>.com",
+    "identifier": "additional-alpaca",
+    "provisioner_name": null,
+    "destroyer_name": null,
+    "infra_type": "byok",
+    "tenancy_mode": "Shared",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "kubeconfig": null,
+    "kubeconfig_str": null,
+    "metadata": {},
+    "prometheus_endpoint": null,
+    "opencost_endpoint": null,
+    "loki_endpoint": null,
+    "loadbalancer_dns": null,
+    "placement_config": {},
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "advanced_properties": {},
+    "status": "Pending",
+    "created_at": "2025-07-17T04:37:33.316063Z",
+    "updated_at": "2025-07-17T04:37:33.316090Z",
+    "network": null
+}
+```
