@@ -117,15 +117,6 @@ following inline policy:
 }
 ```
 
-> **Note for review:** this is copied verbatim from
-> `provision-eks-byok.sh`, which is the script Streamtime uses to
-> provision its own reference clusters end to end — so the policy covers
-> more than S3/Loki access; it also grants `eks:*` on the cluster and
-> nodegroups, and `iam:*` scoped to `streamtime-eks-*`/`streamtime-storage-*`
-> resources. Worth confirming with Avinash whether an already-existing
-> BYOK cluster's role needs this full scope, or just the S3 + trust-policy
-> portion, before this goes live.
-
 ## 3. IP addressing for pods and services
 
 Size your subnets for your target node count with headroom, not just the
