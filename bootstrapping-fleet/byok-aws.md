@@ -6,22 +6,24 @@ nav_order: 6
 
 # BYOK with AWS: Prerequisites
 
-This page covers the AWS-account and EKS-cluster prerequisites specific to
-BYOK on AWS — sizing, the IAM role Streamtime needs, and the kubeconfig
-format Streamtime expects. See [Advanced Usage (BYOK)](byok.html) for the
-provider-agnostic walkthrough of the Streamtime UI flow itself.
+This page covers the prerequisites required for using an AWS EKS cluster
+through Bring Your Own Kubernetes (BYOK) in Streamtime — sizing, the IAM
+role Streamtime needs, and the kubeconfig format Streamtime expects. See
+[Advanced Usage (BYOK)](byok.html) for the provider-agnostic walkthrough
+of the Streamtime UI flow itself.
 
 This page assumes you already have a working EKS cluster (OIDC provider
 associated, `kubectl` access configured) — that setup is standard EKS
-administration and isn't specific to Streamtime.
+administration.
 
 ---
 
 ## 1. Recommended EKS sizing for bring-your-own clusters
 
 One Kafka Unit (KU) is Streamtime's measure of Kafka throughput and
-resource need (1 KU = 20 MB/s). Use the table below to size an EKS
-cluster that will host Streamtime.
+resource need (1 KU = 20 MB/s). The following table can be used as a
+reference to size an EKS cluster that will be used to run Kafka using
+Streamtime — actual sizing might vary depending on your workload.
 
 | Cluster capacity | Platform nodes | Kafka / data nodes | Node size (balanced) |
 |---|---|---|---|
@@ -50,7 +52,7 @@ Guidance:
 Streamtime uses a single IRSA (IAM Roles for Service Accounts) role,
 trusted by your cluster's OIDC provider, for its in-cluster service
 accounts — including the one used to create and write to the S3 bucket
-that backs log/metrics storage.
+that backs log/metrics storage and Kafka tiered storage.
 
 Create the role with this trust policy, scoped to the `streamtime-agent`,
 `cluster-autoscaler`, and `kafka-fleet-manager-loki` service accounts:
@@ -121,7 +123,10 @@ following inline policy:
 
 Size your subnets for your target node count with headroom, not just the
 starting count — undersized subnets surface as pods stuck in a `Pending`
-state as the cluster grows.
+state as the cluster grows. As a rough reference point, a production
+fleet typically runs on the order of **100–200 pods and services**
+combined (Kafka brokers, operators, monitoring, and the agent), scaling
+up toward the higher end for larger KU tiers.
 
 ## 4. Load balancer and storage class
 
@@ -131,17 +136,19 @@ state as the cluster grows.
   needs to be installed.
 - **Default storage class**: Streamtime runs several components that
   need persistent storage. Your cluster must have a default
-  `StorageClass` configured — on EKS this means the EBS CSI driver addon
-  is installed and a `StorageClass` is marked as default. Without one,
-  Streamtime's storage-backed components will stay stuck in a `Pending`
-  state and bootstrapping the fleet will not complete.
+  `StorageClass` configured — `gp3` is recommended. On EKS this means
+  the EBS CSI driver addon is installed and a `StorageClass` using the
+  `gp3` volume type is marked as default. Without one, Streamtime's
+  storage-backed components will stay stuck in a `Pending` state and
+  bootstrapping the fleet will not complete.
 
 ## 5. Generating a kubeconfig for the Streamtime Agent's automatic installation
 
 Streamtime expects a static token in the kubeconfig for user
-authentication when using Automatic Installation of the agent. See
-[Advanced Usage (BYOK)](byok.html) for more on the Automatic Installation
-flow.
+authentication when using Automatic Installation of the agent. This
+kubeconfig is only used to install the Streamtime Agent, and the token
+in it should be short-lived. See [Advanced Usage (BYOK)](byok.html) for
+more on the Automatic Installation flow.
 
 Assuming the kubeconfig is set to the EKS cluster, the following commands
 can be used to generate a kubeconfig with a static token for an EKS
@@ -158,38 +165,44 @@ cluster:
    ```bash
    kubectl create token streamtime-admin -n kube-system --duration=24h
    ```
-   Regenerate with the same command and re-upload if a long-running BYOK
-   cluster's fleet connection drops after the token expires.
 3. Grab the endpoint and CA data:
    ```bash
    aws eks describe-cluster --name <cluster> --region <region> --query 'cluster.endpoint' --output text
    aws eks describe-cluster --name <cluster> --region <region> --query 'cluster.certificateAuthority.data' --output text
    ```
-4. Assemble the kubeconfig in exactly this shape:
-   ```yaml
-   apiVersion: v1
-   kind: Config
-   clusters:
-   - cluster:
-       server: https://<endpoint>
-       certificate-authority-data: <ca-data>
-     name: <cluster-name>
-   contexts:
-   - context:
-       cluster: <cluster-name>
-       user: streamtime-admin
-     name: <cluster-name>-context
-   current-context: <cluster-name>-context
-   users:
-   - name: streamtime-admin
-     user:
-       token: <token>
-   ```
-   Three rules Streamtime enforces strictly:
-   - `clusters[].name` must be a short cluster name, **not** the cluster ARN.
-   - `users[].user` must be a **nested object** containing `token:` — a flat
-     `user: <token>` string will fail.
-   - Spaces only, no tabs, anywhere in the file.
-5. Upload the kubeconfig as a Secret in the **Agent Management** section
-   of the fleet. See the [Kubeconfig section](byok.html) of the BYOK
-   documentation for the full walkthrough.
+
+### Step 4: assemble the kubeconfig
+
+Assemble the kubeconfig in exactly this shape:
+
+```yaml
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    server: https://<endpoint>
+    certificate-authority-data: <ca-data>
+  name: <cluster-name>
+contexts:
+- context:
+    cluster: <cluster-name>
+    user: streamtime-admin
+  name: <cluster-name>-context
+current-context: <cluster-name>-context
+users:
+- name: streamtime-admin
+  user:
+    token: <token>
+```
+
+Three rules Streamtime enforces strictly:
+- `clusters[].name` must be a short cluster name, **not** the cluster ARN.
+- `users[].user` must be a **nested object** containing `token:` — a flat
+  `user: <token>` string will fail.
+- Spaces only, no tabs, anywhere in the file.
+
+### Step 5: upload the kubeconfig
+
+Upload/paste the kubeconfig file as a Secret in the **Agent Management**
+section of the fleet. See the [Kubeconfig section](byok.html) of the
+BYOK documentation.
