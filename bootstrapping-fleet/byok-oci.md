@@ -32,12 +32,8 @@ Streamtime — actual sizing might vary depending on your workload.
 | 16          | 16 OCPU          | 64 GB               |
 | 32          | 32 OCPU (cap     | 128 GB              |
 |             |         reached) |                     |
-| 64          | 32 OCPU          | 256 GB              |
-| 128+        | 32 OCPU          | 512 GB (cap reached)|
 
-CPU scales 1:1 with Kafka Units and caps at 32 OCPU; memory scales at 4 GB
-per Kafka Unit and caps at 512 GB — the two caps are reached at different
-Kafka Unit counts, so don't assume memory stops growing once CPU does.
+CPU scales 1:1 with Kafka Units and caps at 32 OCPU
 
 Guidance:
 
