@@ -2,6 +2,7 @@
 title: Monitoring
 nav_order: 2
 parent: Operations
+has_children: true
 ---
 
 ## Video Walkthrough: Monitoring a Kubernetes Cluster
@@ -77,3 +78,11 @@ Streamtime provides comprehensive monitoring for both Kubernetes infrastructure 
 
 
 Use the Streamtime UI dashboards to monitor all aspects of your clusters and quickly respond to any issues.
+
+---
+
+## Sending telemetry to your own monitoring product
+
+If your team already uses Datadog, Grafana Cloud, or New Relic, Streamtime can forward a copy of your fleet and Kafka metrics and logs there, so you can alert on Streamtime infrastructure alongside everything else you monitor.
+
+See [Bring Your Own Observability]({{ site.baseurl }}/operations/monitoring/byo-observability.html).
