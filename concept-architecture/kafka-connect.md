@@ -51,7 +51,7 @@ Creating a Kafka Connect cluster is a guided 3-step process.
   - **Name** — a short name for the plugin.
   - **URL** — a direct HTTPS link to the connector plugin's `.zip` archive.
   - **Checksum** (optional) — a SHA-512 checksum to verify the downloaded plugin.
-- **Ingress Authentication** — choose **Basic Auth** or **OAuth2** to protect this Kafka Connect cluster's management endpoint. If you choose OAuth2, select the identity provider to use.
+- **API Authentication** — choose **Basic Auth** or **OAuth2** to protect this Kafka Connect cluster's management endpoint. If you choose OAuth2, select the identity provider to use.
 
 Once you click **Create**, Streamtime builds and deploys the Kafka Connect cluster in the background. Its status moves from `Pending` → `Provisioning` → `Healthy`.
 
@@ -164,6 +164,36 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka
     "updated_at": "2026-09-10T04:12:03.000Z"
 }
 ```
+
+### Validate a Connector Configuration
+
+Corresponds to the **Test Connection** action in the UI — validates a connector configuration against the Kafka Connect cluster without creating the connector.
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka-connects/<connect-id>/connectors/validate/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "connector_class": "io.debezium.connector.postgresql.PostgresConnector",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.hostname": "db.example.com",
+        "database.user": "debezium",
+        "database.password": "<password>",
+        "database.dbname": "orders",
+        "topic.prefix": "orders"
+    }
+  }'
+```
+
+**Response:**
+```json
+{
+    "workflow_id": "kafka-connector-validate-pg-orders-source-..."
+}
+```
+
+The validation runs asynchronously — poll the returned operation's status to see whether the configuration passed.
 
 ### List Connectors
 
