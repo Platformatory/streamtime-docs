@@ -102,10 +102,10 @@ Enabling **Schema Registry** during Advanced Configuration provisions a second W
 **Listing schemas.** If Schema Registry is enabled, the same dialog includes a command to list registered subjects against its REST endpoint:
 
 ```bash
-curl https://<schema-registry-endpoint>/subjects
+curl -u <username>:<password> https://<schema-registry-endpoint>/subjects
 ```
 
-WarpStream's Schema Registry implements the standard Confluent Schema Registry REST API, so any client or tool built against that API (subjects, schema versions, compatibility checks) works against it unmodified. The endpoint doesn't require authentication for these requests.
+WarpStream's Schema Registry implements the standard Confluent Schema Registry REST API, so any client or tool built against that API (subjects, schema versions, compatibility checks) works against it unmodified. All requests require HTTP Basic Auth — obtain a username and password for the Schema Registry from the WarpStream console, same as the Kafka SASL credentials above.
 
 ---
 
