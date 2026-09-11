@@ -45,6 +45,44 @@ A few architectural choices carry through into how you configure and operate a W
 {: .note }
 Streamtime only deletes the bucket when it created it for you. A bucket you pointed the cluster at yourself is never deleted when the cluster is removed.
 
+Example bucket-scoped IAM policy, minimally covering these permissions:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "WarpStreamObjectAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::<bucket-name>/*"
+    },
+    {
+      "Sid": "WarpStreamListBucket",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::<bucket-name>"
+    },
+    {
+      "Sid": "WarpStreamBucketLifecycle",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket"
+      ],
+      "Resource": "arn:aws:s3:::<bucket-name>"
+    }
+  ]
+}
+```
+
+{: .note }
+Drop the `WarpStreamBucketLifecycle` statement if you're pointing the cluster at a bucket that already exists — it's only needed when Streamtime creates (and later deletes) the bucket for you.
+
 ---
 
 ## Creating a WarpStream Cluster
@@ -96,6 +134,25 @@ Enabling **Schema Registry** during Advanced Configuration provisions a second W
 **Endpoints.** An Internal cluster is reachable at a standard in-cluster address (`ws.<namespace>.svc.cluster.local:9092`). An External cluster is reachable at a bootstrap hostname of the form `<cluster>-bootstrap.<your-domain>` on port 443, with per-agent hostnames following the same pattern.
 
 **TLS and authentication.** All connections use TLS. Client authentication is SASL over TLS — obtain a username and password for the cluster from the WarpStream console, linked from the cluster's detail page in Streamtime.
+
+{: .note }
+If your fleet's domain uses automatic certificate issuance (the default — see Prerequisites), the cluster's certificate is issued by a real, publicly-trusted CA and no extra client configuration is needed. If instead you supplied your own certificate (BYO PEM, used when your DNS provider isn't supported for automatic issuance — see Troubleshooting below) and that certificate is self-signed rather than chained to a publicly-trusted root, clients must trust it explicitly via a local truststore, or TLS validation will fail.
+
+To build a truststore from a self-signed cert with `keytool`:
+
+```bash
+keytool -import -trustcacerts -alias warpstream-ca -file ca-cert.pem \
+  -keystore truststore.jks -storepass <truststore-password>
+```
+
+Then point your client at it in `client.properties`:
+
+```properties
+ssl.truststore.location=/path/to/truststore.jks
+ssl.truststore.password=<truststore-password>
+```
+
+Non-Java clients (e.g. librdkafka-based) typically don't need a JKS truststore at all — point `ssl.ca.location` directly at the PEM file instead.
 
 **Client configuration.** The cluster detail page's **Test Kafka Connection** dialog gives you a ready-to-use `client.properties` file and equivalent CLI commands for the cluster — copy these directly into your Kafka client rather than assembling connection settings by hand.
 
