@@ -2,6 +2,29 @@
 title: Kafka Connect
 nav_order: 7
 parent: Concepts & Architecture
+## Video Tutorial: Creating a Kafka Connect Cluster and Connector
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/kafka-connect.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<style>
+    video {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
 ---
 
 # Kafka Connect
@@ -27,6 +50,8 @@ Kafka Connect clusters are built with your chosen connector plugins baked in, so
 - Username and password/token (optional — leave blank for an unauthenticated registry)
 - Destination namespace (optional — needed for registries that require pushing under an owned namespace)
 
+![Container Registry Settings]({{ site.baseurl }}/assets/images/kafka-connect/container-registry.png)
+
 You only need to do this once per organization; every Kafka Connect cluster you create afterward reuses it.
 
 ---
@@ -40,9 +65,13 @@ Creating a Kafka Connect cluster is a guided 3-step process.
 - **Identifier** — a unique name for this Kafka Connect cluster.
 - **Provider** — the Kafka Connect distribution to deploy. Today there is a single supported option, pre-selected for you.
 
+![Basic Configuration]({{ site.baseurl }}/assets/images/kafka-connect/create-step-1.png)
+
 ### 2. Kafka Cluster Selection
 
 - **Kafka Cluster** — the Kafka cluster this Kafka Connect cluster will read from and write to. Streamtime automatically sets up secure, certificate-based authentication between them — no manual credential configuration needed.
+
+![Kafka Cluster Selection]({{ site.baseurl }}/assets/images/kafka-connect/create-step-2.png)
 
 ### 3. Advanced Configuration
 
@@ -52,6 +81,8 @@ Creating a Kafka Connect cluster is a guided 3-step process.
   - **URL** — a direct HTTPS link to the connector plugin's `.zip` archive.
   - **Checksum** (optional) — a SHA-512 checksum to verify the downloaded plugin.
 - **API Authentication** — choose **Basic Auth** or **OAuth2** to protect this Kafka Connect cluster's management endpoint. If you choose OAuth2, select the identity provider to use.
+
+![Advanced Configuration]({{ site.baseurl }}/assets/images/kafka-connect/create-step-3.png)
 
 Once you click **Create**, Streamtime builds and deploys the Kafka Connect cluster in the background. Its status moves from `Pending` → `Provisioning` → `Healthy`.
 
@@ -65,6 +96,8 @@ Once created, a Kafka Connect cluster has three tabs:
 - **Monitoring** — a link to open this Kafka Connect cluster's dashboards, if configured.
 - **Connectors** — the list of Connectors running on this cluster (see below).
 
+![Kafka Connect Cluster Overview]({{ site.baseurl }}/assets/images/kafka-connect/cluster-overview.png)
+
 ---
 
 ## Creating a Connector
@@ -75,7 +108,11 @@ From the **Connectors** tab, click **+ Create Connector**.
 2. **Connector type** — choose from the list of available connector types, grouped by **Source** and **Sink**. This list is kept up to date automatically in the background.
 3. **Configuration** — once you pick a connector type, Streamtime automatically fetches and displays the exact configuration fields for that connector — required fields, optional fields, defaults, and helpful descriptions all come directly from the connector itself, so this section always matches what you selected.
 
+![Creating a Connector]({{ site.baseurl }}/assets/images/kafka-connect/connector-create.png)
+
 Before creating, you can click **Test Connection** to validate your configuration without creating the connector yet. When you're ready, click **Create** — you'll see a confirmation and be returned to the Connectors list, where the new connector's status will move from `Provisioning` to `Running` automatically.
+
+![Connectors List]({{ site.baseurl }}/assets/images/kafka-connect/connectors-list.png)
 
 ---
 
@@ -85,6 +122,8 @@ Each connector's detail page shows:
 
 - **Status Snapshot** — the connector's live state (including the state of each of its tasks), refreshed automatically.
 - **Configuration** — the connector's current settings, with an **Edit** option to update them using the same guided form used at creation.
+
+![Connector Detail]({{ site.baseurl }}/assets/images/kafka-connect/connector-detail.png)
 
 Available actions:
 
@@ -105,6 +144,15 @@ Available actions:
 | Paused | The connector is temporarily stopped. |
 | Failed | The connector has encountered an error — check its Status Snapshot for details. |
 | Deleting | The connector is being removed. |
+
+---
+
+## Troubleshooting
+
+- **Kafka Connect cluster stuck in `Provisioning`** — connector plugins are baked into a container image and pushed to your configured Container Registry. If the registry isn't configured, or its credentials are wrong, the build can't complete. Check **Settings → Container Registry** and confirm the registry is reachable.
+- **Connector stuck in `Failed`** — open the connector's detail page and check its **Status Snapshot**; it surfaces the underlying error reported by Kafka Connect itself (e.g. a missing required field, an unreachable external system, or a bad connector class).
+- **"Test Connection" or create fails with a config validation error** — the error lists the specific fields Kafka Connect rejected. A common cause is submitting mutually exclusive fields for the same connector type (e.g. both an include list and an exclude list) — leave the ones you don't need blank rather than empty strings.
+- **A connector type you expect isn't in the list** — the available connector/plugin list is cached and refreshed periodically. If you just added a custom plugin, use the refresh action on the connector type step, or wait for the next automatic refresh.
 
 ---
 
