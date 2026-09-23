@@ -14,7 +14,6 @@ WarpStream is a Kafka API-compatible streaming platform that writes directly to 
 
 - **Object-storage economics**: When you want Kafka's durability guarantees backed by S3 rather than provisioned block storage, and don't want to size or manage local disks.
 - **Bursty or unpredictable traffic**: Agents are stateless, so scaling out doesn't involve rebalancing data across disks.
-- **Schema Registry alongside Kafka**: WarpStream can provision a Schema Registry cluster in the same workflow, without standing up a separate service.
 - **Cost-sensitive workloads**: Storage and throughput are billed on usage rather than pre-provisioned capacity.
 
 ---
@@ -27,6 +26,8 @@ A few architectural choices carry through into how you configure and operate a W
 - **Agents, not brokers.** WarpStream's compute units are called Agents. They're Kafka-protocol-compatible, but because they don't hold local state, scaling agent count in and out is cheap and doesn't move data around.
 - **Two independent sizing knobs.** Kafka Units control the data plane — how many agents run and how much compute they get. Cluster Tier (see Advanced Configuration) is a separate setting that determines the pricing and SLA of the WarpStream control plane your cluster registers against. Sizing one does not size the other.
 - **TLS is always on.** WarpStream's listener uses a single TLS configuration shared by internal and external traffic — there's no option to run a cluster without TLS, regardless of which access mode you choose.
+
+For more on WarpStream's architecture, see the [WarpStream documentation](https://docs.warpstream.com/warpstream/overview/architecture).
 
 ---
 
@@ -121,11 +122,14 @@ Select the Kubernetes fleet that will host the WarpStream agents.
 
 ## Schema Registry (Optional)
 
-Enabling **Schema Registry** during Advanced Configuration provisions a second WarpStream cluster dedicated to schema storage, alongside your Kafka cluster. A few things to know:
+Enabling **Schema Registry** during Advanced Configuration provisions a Schema Registry alongside your Kafka cluster.
 
-- It gets its own endpoint, separate from the Kafka bootstrap endpoint.
-- It shares the same Cluster Tier and region as the Kafka cluster — there's no independent tier selection for it.
-- It runs as a single instance rather than scaling with Kafka Units.
+**Authentication.** Schema Registry has HTTP Basic Auth enabled — every request must include a username and password. To get credentials:
+
+1. Log in to the WarpStream console and select the Schema Registry cluster.
+2. Open its **Credentials** tab and create a new credential. Copy the username and password — the password is shown only once.
+
+Use these credentials with any Schema Registry client, e.g. `basic.auth.credentials.source=USER_INFO` and `basic.auth.user.info=<username>:<password>` for Confluent serializers. For more details, see the [WarpStream Schema Registry documentation](https://docs.warpstream.com/warpstream/schema-registry/warpstream-byoc-schema-registry).
 
 ---
 
@@ -133,7 +137,7 @@ Enabling **Schema Registry** during Advanced Configuration provisions a second W
 
 **Endpoints.** An Internal cluster is reachable at a standard in-cluster address (`ws.<namespace>.svc.cluster.local:9092`). An External cluster is reachable at a bootstrap hostname of the form `<cluster>-bootstrap.<your-domain>` on port 443, with per-agent hostnames following the same pattern.
 
-**TLS and authentication.** All connections use TLS. Client authentication is SASL over TLS — obtain a username and password for the cluster from the WarpStream console, linked from the cluster's detail page in Streamtime.
+**TLS and authentication.** All connections use TLS. Client authentication is SASL over TLS — obtain a username and password for the cluster from the WarpStream console.
 
 {: .note }
 If your fleet's domain uses automatic certificate issuance (the default — see Prerequisites), the cluster's certificate is issued by a real, publicly-trusted CA and no extra client configuration is needed. If instead you supplied your own certificate (BYO PEM, used when your DNS provider isn't supported for automatic issuance — see Troubleshooting below) and that certificate is self-signed rather than chained to a publicly-trusted root, clients must trust it explicitly via a local truststore, or TLS validation will fail.
@@ -162,7 +166,7 @@ Non-Java clients (e.g. librdkafka-based) typically don't need a JKS truststore a
 curl -u <username>:<password> https://<schema-registry-endpoint>/subjects
 ```
 
-WarpStream's Schema Registry implements the standard Confluent Schema Registry REST API, so any client or tool built against that API (subjects, schema versions, compatibility checks) works against it unmodified. All requests require HTTP Basic Auth — obtain a username and password for the Schema Registry from the WarpStream console, same as the Kafka SASL credentials above.
+WarpStream's Schema Registry implements the standard Confluent Schema Registry REST API, so any client or tool built against that API (subjects, schema versions, compatibility checks) works against it unmodified. All requests require HTTP Basic Auth — see [Schema Registry](#schema-registry-optional) above for how to get credentials.
 
 ---
 
