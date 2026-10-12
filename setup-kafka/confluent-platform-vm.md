@@ -76,6 +76,10 @@ The endpoint list can include Kafka bootstrap and broker endpoints, Schema Regis
 
 ![Kafka client properties and CA certificate in the Test Kafka Connection dialog]({{ site.baseurl }}/assets/images/byovm/kafka-connection-configuration.png)
 
+The same dialog provides the Control Center credentials when the selected topology includes Control Center. It also provides ready-to-copy commands for common Kafka operations, including listing topics, creating a topic, and producing messages.
+
+![Redacted Control Center credentials and Kafka commands in the Test Kafka Connection dialog]({{ site.baseurl }}/assets/images/byovm/kafka-connection-commands-control-center.png)
+
 ```bash
 kafka-topics \
   --bootstrap-server <cluster>-bootstrap.<base-domain>:9092 \
