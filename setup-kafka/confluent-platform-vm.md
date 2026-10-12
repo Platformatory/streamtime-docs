@@ -25,9 +25,15 @@ Make sure that:
 
 1. Open **Kafka Clusters** and click **Create Kafka Cluster**.
 2. Select **Confluent Platform (VM)**. Streamtime automatically selects **BYOVM** as the provider.
+
+   ![Select Confluent Platform VM and the BYOVM provider]({{ site.baseurl }}/assets/images/byovm/kafka-platform-selection.png)
+
 3. In **Basic Configuration**:
    - Enter a unique cluster identifier.
    - Choose the retention mode and, for finite retention, the retention period.
+
+   ![Configure the Confluent Platform cluster identifier and retention]({{ site.baseurl }}/assets/images/byovm/kafka-basic-configuration.png)
+
 4. In **Fleet Selection**, select a healthy BYOVM fleet.
 5. In **Advanced Configuration**:
    - Select a stable Confluent Platform package version.
@@ -37,6 +43,8 @@ Make sure that:
 6. Review the configuration and click **Deploy**.
 
 Streamtime provisions persistent TLS and access material, installs the components assigned by the fleet topology, and reconciles the cluster. A healthy cluster remains on its detail page instead of reopening the setup wizard, even if an older reconciliation marker is present.
+
+![A healthy Confluent Platform VM cluster overview]({{ site.baseurl }}/assets/images/byovm/kafka-cluster-overview.png)
 
 ## Production-minimum topology
 
@@ -53,6 +61,8 @@ This topology requires eight VMs. Development topologies do not deploy Control C
 
 After deployment, open the cluster's **Endpoints** page. For every displayed endpoint, create a DNS record that points the displayed DNS name to its **DNS record** value. Kafka clients must be able to resolve the bootstrap name and each advertised broker name; resolving only the bootstrap name is not sufficient.
 
+![BYOVM Kafka endpoints and their DNS record values]({{ site.baseurl }}/assets/images/byovm/kafka-endpoints.png)
+
 The endpoint list can include Kafka bootstrap and broker endpoints, Schema Registry, Kafka Connect, REST Proxy, and Control Center according to the fleet topology.
 
 ## Connect a Kafka client
@@ -63,6 +73,8 @@ The endpoint list can include Kafka bootstrap and broker endpoints, Schema Regis
 4. Copy the `ca-certificate.pem` content into a file next to `client.properties`.
 5. Restrict both files to the users or services that need cluster access.
 6. Run one of the displayed Kafka CLI commands, for example:
+
+![Kafka client properties and CA certificate in the Test Kafka Connection dialog]({{ site.baseurl }}/assets/images/byovm/kafka-connection-configuration.png)
 
 ```bash
 kafka-topics \
@@ -82,12 +94,24 @@ If the dialog reports that the connection configuration is unavailable, reconcil
 
 Production topologies expose a **Control Center** endpoint on the **Endpoints** page. Open the HTTPS URL and use the **Control Center Credentials** shown in **Test Kafka Connection**. The Control Center username and password are shown only for a topology that includes Control Center.
 
+![Control Center sign-in prompt with empty credential fields]({{ site.baseurl }}/assets/images/byovm/control-center-login.png)
+
+After signing in, use the cluster overview to verify broker, topic, partition, and replication health.
+
+![Control Center cluster overview]({{ site.baseurl }}/assets/images/byovm/control-center-overview.png)
+
 {: .warning }
 > Control Center credentials grant access to the cluster UI. Handle them as secrets and do not share screenshots that expose the password.
 
 ## Monitor the cluster
 
 Open the cluster and select **Monitoring**. For Confluent Platform (VM), click **Open Dashboards** to open the Grafana endpoint published by the BYOVM fleet. The cluster status view also reports the health of topology components such as brokers, controllers, Schema Registry, Kafka Connect, REST Proxy, and Control Center when present.
+
+![Open the BYOVM Grafana dashboards from the Monitoring tab]({{ site.baseurl }}/assets/images/byovm/kafka-open-dashboards.png)
+
+Grafana organizes the supplied dashboards by fleet and component. Select the dashboard that matches the service or host you want to investigate.
+
+![Grafana dashboards available for a BYOVM Confluent Platform fleet]({{ site.baseurl }}/assets/images/byovm/kafka-grafana-dashboard.png)
 
 ## API: retrieve connection configuration
 
