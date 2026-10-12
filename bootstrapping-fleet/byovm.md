@@ -29,8 +29,7 @@ Before creating the fleet, prepare the following:
   - Amazon Linux 2023
 - Capacity for Confluent Platform data, logs, and shared monitoring services. Size the VMs and disks for your expected retention and throughput.
 
-{: .warning }
-> Streamtime records each host's SSH fingerprint during the first connection. Do not rebuild or replace a VM behind the same address without reviewing the stored fingerprint and the replacement procedure for your environment.
+> **WARNING:** Streamtime records each host's SSH fingerprint during the first connection. Do not rebuild or replace a VM behind the same address without reviewing the stored fingerprint and the replacement procedure for your environment.
 
 ## Choose a topology
 
