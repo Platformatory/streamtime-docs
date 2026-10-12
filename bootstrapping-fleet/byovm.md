@@ -50,7 +50,7 @@ The shared-services placement provides the ingress and observability services us
 1. In the Streamtime UI, open **Fleets** and click **Create Kubernetes Fleet**.
 2. Select **Bring Your Own Virtual Machine** as the bootstrap provider.
 
-   ![Select Bring Your Own Virtual Machine as the fleet provider]({{ site.baseurl }}/assets/images/byovm/fleet-provider-selection.png)
+   ![Select Bring Your Own Virtual Machine as the fleet provider](../assets/images/byovm/fleet-provider-selection.png)
 
 3. In **Basic Configuration**:
    - Enter a unique fleet identifier.
@@ -61,22 +61,22 @@ The shared-services placement provides the ingress and observability services us
    - Select **Development** or **Production**.
    - Select **Minimum** or **Full - High Availability**. The form displays the required VM count.
 
-   ![Select the fleet environment and topology]({{ site.baseurl }}/assets/images/byovm/fleet-placement-production-minimum.png)
+   ![Select the fleet environment and topology](../assets/images/byovm/fleet-placement-production-minimum.png)
 
 5. In **Advanced Configuration**:
    - Upload the SSH private key.
    - For every Confluent Platform node, enter a unique host name, IP address or FQDN, SSH user, and SSH port.
    - Enter the same information for each shared-services VM in the separate section.
 
-   ![Upload the SSH private key and configure a Confluent Platform host]({{ site.baseurl }}/assets/images/byovm/fleet-host-configuration-ssh.png)
+   ![Upload the SSH private key and configure a Confluent Platform host](../assets/images/byovm/fleet-host-configuration-ssh.png)
 
    Continue through the generated Confluent Platform node forms until every required VM is configured.
 
-   ![Configure the remaining Confluent Platform hosts]({{ site.baseurl }}/assets/images/byovm/fleet-host-configuration-nodes.png)
+   ![Configure the remaining Confluent Platform hosts](../assets/images/byovm/fleet-host-configuration-nodes.png)
 
    Configure the shared-services VM separately at the end of the form.
 
-   ![Configure the shared-services host]({{ site.baseurl }}/assets/images/byovm/fleet-host-configuration-shared-services.png)
+   ![Configure the shared-services host](../assets/images/byovm/fleet-host-configuration-shared-services.png)
 
 6. Review the host-to-role mapping and click **Deploy**.
 
@@ -86,7 +86,7 @@ Streamtime validates the SSH key, connects to every host, verifies the operating
 
 When the fleet is ready, its status changes to **Healthy**. Open the fleet detail page to:
 
-![A healthy production-minimum BYOVM fleet]({{ site.baseurl }}/assets/images/byovm/fleet-healthy-overview.png)
+![A healthy production-minimum BYOVM fleet](../assets/images/byovm/fleet-healthy-overview.png)
 
 - Review the topology and host-to-role mapping.
 - Use **Host Management** to inspect the latest status, services, and endpoints for every VM.
@@ -95,7 +95,7 @@ When the fleet is ready, its status changes to **Healthy**. Open the fleet detai
 
 Use **Host Management** to verify the service assignment and status of every VM.
 
-![BYOVM fleet Host Management view]({{ site.baseurl }}/assets/images/byovm/fleet-host-management.png)
+![BYOVM fleet Host Management view](../assets/images/byovm/fleet-host-management.png)
 
 After the fleet is healthy, continue with [Confluent Platform on BYOVM]({{ site.baseurl }}/setup-kafka/confluent-platform-vm.html).
 
