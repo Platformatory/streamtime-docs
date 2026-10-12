@@ -8,8 +8,8 @@ nav_order: 7
 
 Streamtime deploys Confluent Platform to a [BYOVM fleet]({{ site.baseurl }}/bootstrapping-fleet/byovm.html) with `cp-ansible`. The topology selected when the fleet was created controls which components are installed and where they run.
 
-{: .note }
-> Confluent Platform (VM) can be deployed only to a BYOVM fleet. The cluster uses Dedicated tenancy, so the wizard does not ask for tenancy mode or Kafka Units.
+
+> **NOTE:** Confluent Platform (VM) can be deployed only to a BYOVM fleet. The cluster uses Dedicated tenancy, so the wizard does not ask for tenancy mode or Kafka Units.
 
 ## Before you begin
 
@@ -89,8 +89,8 @@ kafka-topics \
 
 The generated client configuration includes the cluster's bootstrap address, SASL mechanism, persistent username and password, and the relative CA path. Credentials remain stable across normal reconciliations.
 
-{: .warning }
-> `client.properties` contains a usable password, and the CA file is part of the connection bundle. Store them in your secret manager, do not commit them to source control, and rotate access according to your organization's policy.
+
+> **WARNING:** `client.properties` contains a usable password, and the CA file is part of the connection bundle. Store them in your secret manager, do not commit them to source control, and rotate access according to your organization's policy.
 
 If the dialog reports that the connection configuration is unavailable, reconcile the cluster and try again. Streamtime backfills the persistent access credential for existing BYOVM clusters during reconciliation.
 
@@ -104,8 +104,8 @@ After signing in, use the cluster overview to verify broker, topic, partition, a
 
 ![Control Center cluster overview](../assets/images/byovm/control-center-overview.png)
 
-{: .warning }
-> Control Center credentials grant access to the cluster UI. Handle them as secrets and do not share screenshots that expose the password.
+
+> **WARNING:** Control Center credentials grant access to the cluster UI. Handle them as secrets and do not share screenshots that expose the password.
 
 ## Monitor the cluster
 
