@@ -10,7 +10,7 @@ Bring Your Own Virtual Machines (BYOVM) lets Streamtime install and operate Conf
 
 Use BYOVM when you need VM-based Confluent Platform, must keep the infrastructure in your own network, or cannot run the workload on Kubernetes.
 
-{: .note }
+
 > BYOVM fleets use **Dedicated** tenancy and can host the **Confluent Platform (VM)** Kafka workload. Kubernetes workloads cannot be placed on a BYOVM fleet.
 
 ## Prerequisites
