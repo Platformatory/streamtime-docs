@@ -24,10 +24,11 @@ Make sure you understand the following:
 ## Steps to Create a Kafka Cluster
 
 1. **Select Cluster Platform**  
-   - Choose the Kafka platform that fits your use case: Apache Kafka, CFK, Warpstream, Redpanda, or AutoMQ.
+   - Choose the Kafka platform that fits your use case: Apache Kafka, CFK, Confluent Platform (VM), Warpstream, Redpanda, or AutoMQ.
 
 2. **Configure Cluster Basics**  
    - Set the cluster name, tenancy mode, and number of Kafka units.
+   - Confluent Platform (VM) uses Dedicated tenancy on BYOVM, so its wizard omits tenancy and Kafka Unit controls.
 
 3. **Select Fleet Placement**  
    - Select the fleet where the cluster will be deployed.
@@ -48,6 +49,7 @@ Make sure you understand the following:
 |--------------|------------------------------|------------------------|
 | Apache Kafka | OSS / Benchmarking           | Full DIY control       |
 | CFK          | Enterprise + full Confluent  | Requires license key   |
+| [Confluent Platform (VM)]({{ site.baseurl }}/setup-kafka/confluent-platform-vm.html) | Confluent Platform on customer-owned Linux VMs | Requires a Dedicated BYOVM fleet |
 | Warpstream   | Cost-optimized + remote logs | S3-based architecture  |
 | Redpanda     | Low-latency, JVM-free        | Preview feature        |
 | AutoMQ       | Cloud-native Kafka engine    | Experimental support   |

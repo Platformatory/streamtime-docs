@@ -6,8 +6,16 @@ layout: home
 
 # Bootstrapping Your Fleet
 
-Creating a Kubernetes fleet in Streamtime is the foundational step for deploying and managing Kafka clusters. A **Kubernetes fleet** is a managed group of Kubernetes clusters provisioned on your chosen cloud provider (AWS, GCP, OCI, Azure) or using BYOK (Bring Your Own Kubernetes).
+Creating a fleet in Streamtime is the foundational step for deploying and managing Kafka clusters. A fleet can be a Kubernetes environment provisioned on your chosen cloud provider, an existing Kubernetes cluster connected through BYOK (Bring Your Own Kubernetes), or customer-owned Linux virtual machines connected through BYOVM (Bring Your Own Virtual Machines).
 ![Kubernetes Fleet Creation]({{ site.baseurl }}/assets/images/aws/fleet-bootstrap-provider.png)
+
+Choose the guide that matches the infrastructure you want Streamtime to manage:
+
+| Fleet type | Use it when |
+| --- | --- |
+| Managed Kubernetes | Streamtime should provision the Kubernetes infrastructure in AWS, GCP, OCI, or Azure. |
+| [BYOK]({{ site.baseurl }}/bootstrapping-fleet/byok.html) | You already operate a Kubernetes cluster. |
+| [BYOVM]({{ site.baseurl }}/bootstrapping-fleet/byovm.html) | You want Confluent Platform installed directly on Linux virtual machines that you operate. |
 
 ## Overview
 

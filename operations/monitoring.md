@@ -72,6 +72,13 @@ Streamtime provides comprehensive monitoring for both Kubernetes infrastructure 
 - **Apache kafka**
   - KRaft (Kafka Raft) metrics
 
+- **Confluent Platform (VM) on BYOVM**
+  - Open the cluster's **Monitoring** tab and click **Open Dashboards** to launch the Grafana endpoint supplied by the fleet's shared-services VM.
+  - Use the cluster status view to check brokers, KRaft controllers, and optional services such as Schema Registry, Kafka Connect, REST Proxy, and Control Center.
+  - Use the fleet's **Host Management** view to refresh VM health and inspect the services and endpoints observed on each host.
+
+![Grafana dashboards for a BYOVM Confluent Platform fleet](../assets/images/byovm/kafka-grafana-dashboard.png)
+
 ![cluster health]({{site.baseurl}}/assets/images/monitoring/cluster-health.png)
 
 ---
