@@ -22,12 +22,14 @@ Before creating the fleet, prepare the following:
 - SSH access from Streamtime to every VM, using the same unencrypted RSA, Ed25519, or ECDSA private key. Passphrase-protected keys are not supported.
 - An SSH user that can run privileged installation tasks with `sudo`.
 - Network connectivity between the VMs for the Confluent Platform components in the selected topology.
-- A supported 64-bit Linux release:
+- A 64-bit Linux release accepted by Streamtime's host preflight:
   - Debian 12
   - Ubuntu 20.04, 22.04, or 24.04
   - RHEL-compatible 8, 9, or 10, including Rocky Linux, AlmaLinux, Oracle Linux, and CentOS
   - Amazon Linux 2023
 - Capacity for Confluent Platform data, logs, and shared monitoring services. Size the VMs and disks for your expected retention and throughput.
+
+> **IMPORTANT:** The Streamtime preflight list is broader than the operating systems supported by every Confluent Platform release. Streamtime does not currently filter the package-version choices by each VM's operating system. Before provisioning the fleet or upgrading Confluent Platform, verify that the exact operating-system distribution and version is supported by your intended Confluent Platform version in Confluent's [supported operating systems matrix](https://docs.confluent.io/platform/current/installation/system-requirements.html#operating-systems). When the Confluent matrix is narrower than the Streamtime preflight list, follow the Confluent matrix.
 
 > **WARNING:** Streamtime records each host's SSH fingerprint during the first connection. Do not rebuild or replace a VM behind the same address without reviewing the stored fingerprint and the replacement procedure for your environment.
 
