@@ -117,6 +117,35 @@ Grafana organizes the supplied dashboards by fleet and component. Select the das
 
 ![Grafana dashboards available for a BYOVM Confluent Platform fleet](../assets/images/byovm/kafka-grafana-dashboard.png)
 
+## Upgrade and redeploy Confluent Platform
+
+Streamtime upgrades Confluent Platform in place on the existing BYOVM hosts. Before starting, confirm that the cluster and fleet are **Healthy**, every VM is reachable over SSH, and you have completed your organization's backup and maintenance-window procedures.
+
+1. Open the Kafka cluster and select **Manage**.
+2. On the **confluent-platform** component, open the actions menu and select **Upgrade version**.
+
+   ![Open the Confluent Platform component menu and select Upgrade version](../assets/images/byovm/kafka-upgrade-action.png)
+
+3. Select a target Confluent Platform version. The target must be a newer stable `cp-ansible` release; Streamtime rejects the installed version, older versions, and releases it cannot validate.
+4. Start the upgrade and monitor the workflow status. Do not start another lifecycle operation while the upgrade is running.
+5. When the workflow completes, confirm that its result reports `status: healthy`, `action: UPDATE`, and the expected source version, target version, and completed upgrade path. Click **Return To Components**, then verify the cluster status and component health.
+
+![A completed Confluent Platform upgrade workflow](../assets/images/byovm/kafka-upgrade-completed.png)
+
+The upgrade workflow uses `cp-ansible` to converge the selected version across the existing hosts. It applies the package and service changes, reapplies Streamtime's VM-specific configuration, refreshes monitoring targets, and verifies the published DNS records. The fleet topology, host assignments, TLS material, Kafka client credentials, and Control Center credentials remain in place.
+
+> **NOTE:** Confluent Platform (VM) does not provide the **Restart deployments** action used by Helm-based Kafka workloads. For BYOVM, an upgrade is the supported in-place redeployment path; it does not create replacement VMs or a new fleet.
+
+### Retry a failed upgrade
+
+The deployment steps are convergent, so a retry continues from the package and service state already present on each VM. If an upgrade ends in **Error**:
+
+1. Review the workflow error and correct the underlying problem. Check SSH and `sudo` access, package-repository connectivity, available disk space, inter-host connectivity, and DNS.
+2. Return to **Manage**, open **Upgrade version**, and select the same intended target version.
+3. Start the upgrade again and wait for the workflow to return the cluster to **Healthy**.
+
+You normally do not need to recreate the Kafka cluster or its BYOVM fleet to retry a failed upgrade.
+
 ## API: retrieve connection configuration
 
 Users with permission to read secrets can retrieve the same connection bundle through the API:
