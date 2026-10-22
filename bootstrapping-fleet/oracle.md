@@ -128,9 +128,7 @@ Navigate to  **Bootstrap Providers → Add Kubernetes Fleet → Select OCI OKE**
 
 * **Alert Channels**
 
-  * Where Streamtime will send alerts for fleet events (scaling issues, failures, upgrades, etc.).
-
-  * Can be things like Slack channels, Email etc
+  * Where Streamtime sends alerts for this fleet and everything it hosts. Optional. See [Alert Channels]({{ site.baseurl }}/bootstrapping-fleet/#alert-channels).
 
 * **Max Tenants**
 
