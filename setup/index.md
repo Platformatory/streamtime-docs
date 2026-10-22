@@ -71,3 +71,27 @@ Configure your fleet provider credentials and permissions to enable automated cl
 ![Fleet Provider Configuration]({{ site.baseurl }}/assets/images/fleet-provider.png)
 
 See [Fleet Providers](fleet-providers.html) for more information.
+
+---
+
+# API Reference
+
+Streamtime's REST API manages everything the console does, scoped to
+your organization: `https://<streamtime-api-endpoint>/organizations/<your-org-id>/…`
+
+Every request carries a bearer token:
+
+```bash
+curl -H "Authorization: Bearer YOUR_API_TOKEN" \
+     -H "Content-Type: application/json" \
+     "https://<streamtime-api-endpoint>/organizations/<your-org-id>/…"
+```
+
+Operations that start work return immediately; poll the resource
+(`GET` on the object you created) until its status settles — fleets
+until **Healthy**, workloads until **Running**.
+
+Each guide shows its own create calls with SDK variants:
+
+- Create a fleet: [Bootstrapping Your Fleet → API Reference](/bootstrapping-fleet/byok.html#api-reference)
+- Create an Apache Kafka cluster: [Apache Kafka → API Reference](/setup-kafka/apache-kafka.html#api-reference)
