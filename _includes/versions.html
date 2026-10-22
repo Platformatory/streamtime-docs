@@ -1,0 +1,57 @@
+{%- comment -%}
+  Top-level version switcher: the docs site's release-version picker.
+
+  Rendered site-wide by header_custom.html, in the page header.
+  "latest" (the default) is the live main tree at /; every other
+  version is a snapshot under /<version>/, created at release time by
+  scripts/version-snapshot.sh and listed in _data/versions.yml.
+
+  Selecting a version swaps the URL prefix and keeps the rest of the
+  path, so you land on the same page (or that version's index) in the
+  other line. The active entry is marked from page.version_snapshot or
+  from the current URL prefix. The dropdown is a plain <details>
+  element: keyboard and screen-reader usable without JavaScript;
+  assets/js/versions.js only adds close-on-outside-click.
+{%- endcomment -%}
+{%- assign parts = page.url | split: "/" -%}
+{%- assign prefix = parts[1] -%}
+{%- assign page_version = "" -%}
+{%- if page.version_snapshot -%}
+{%- assign page_version = page.version_snapshot | append: "" -%}
+{%- else -%}
+{%- assign parts = page.url | split: "/" -%}
+{%- assign prefix = parts[1] -%}
+{%- for v in site.data.versions.versions -%}
+{%- assign vname = v.version | append: "" -%}
+{%- if vname != "latest" and vname == prefix -%}{%- assign page_version = vname -%}{%- endif -%}
+{%- endfor -%}
+{%- if page_version == "" -%}{%- assign page_version = "latest" -%}{%- endif -%}
+{%- endif -%}
+<details class="st-versions" data-versions>
+  <summary class="st-versions__button" aria-haspopup="true" aria-controls="st-versions-menu">
+    <svg viewBox="0 0 16 16" aria-hidden="true" class="st-versions__icon"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zm0 1.4a5.1 5.1 0 110 10.2A5.1 5.1 0 018 2.9zM7.3 4.2v4.1l3.1 1.8.6-1-2.4-1.4V4.2h-1.3z"/></svg>
+    <span class="st-versions__current">{{ page_version }}</span>
+    <svg viewBox="0 0 16 16" aria-hidden="true" class="st-versions__caret"><path d="M4 6.5L8 10l4-3.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+  </summary>
+  <div class="st-versions__menu" id="st-versions-menu" role="menu" aria-label="Documentation version">
+    {%- for v in site.data.versions.versions -%}
+    {%- assign vname = v.version | append: "" -%}
+    {%- assign active = false -%}
+    {%- if vname == page_version -%}{%- assign active = true -%}{%- endif -%}
+    {%- if vname == "latest" -%}
+      {%- assign href = "/" -%}
+    {%- else -%}
+      {%- assign href = "/" | append: vname | append: "/" -%}
+    {%- endif -%}
+    <a class="st-versions__item{% if active %} st-versions__item--active{% endif %}"
+       role="menuitem" href="{{ href | relative_url }}" {% if active %}aria-current="true"{% endif %}>
+      {{ vname }}{%- if vname == "latest" %} <span class="st-versions__tag">current</span>{% endif -%}
+    </a>
+    {%- for note in v.notes -%}
+    <span class="st-versions__note">
+      {%- if note.url -%}<a href="{{ note.url | relative_url }}">{{ note.text }}</a>{%- else -%}{{ note.text }}{%- endif -%}
+    </span>
+    {%- endfor -%}
+    {%- endfor -%}
+  </div>
+</details>

@@ -1,0 +1,23 @@
+# Snapshotted documentation versions.
+#
+# "latest" always means the current main tree served at /; it needs no
+# snapshot and is the switcher's default. Every other version the
+# switcher offers must have a directory under _versions/<version>/
+# created at release time by scripts/version-snapshot.sh, which appends
+# the entry below the list and reminds you to add the directory to the
+# include list in _config.yml (Jekyll ignores underscore directories
+# otherwise). Snapshot pages carry permalink/nav_exclude/search_exclude,
+# so they live in their own URL space (/<version>/...) and are reached
+# through the switcher, not the sidebar or search.
+#
+# notes: callouts shown under the entry in the dropdown (text, optional
+# url) — e.g. end-of-support warnings.
+versions:
+  - version: latest
+    default: true
+    notes: []
+
+  - version: "1.1"
+    snapshot_date: 2026-10-22
+    notes:
+      - text: "Version 1.0 is no longer supported."
