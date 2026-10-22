@@ -15,14 +15,20 @@ heading_anchors: true
 include:
   - _versions/
   - _versions/1.1/
+  - _versions/1.1/about/
   - _versions/1.1/architecture/
   - _versions/1.1/bootstrapping-fleet/
   - _versions/1.1/concept-architecture/
+  - _versions/1.1/configuration/
   - _versions/1.1/examples/
+  - _versions/1.1/fleet-management/
+  - _versions/1.1/getting-started/
   - _versions/1.1/operations/
+  - _versions/1.1/operations/alerts-diagnostics/
   - _versions/1.1/operations/monitoring/
   - _versions/1.1/setup-kafka/
   - _versions/1.1/setup/
+  - _versions/1.1/workloads/
 plugins:
   - jekyll-default-layout
 callouts:

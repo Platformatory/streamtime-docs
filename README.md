@@ -30,6 +30,12 @@ bundle install && bundle exec jekyll build   # output in _site/
 
 | Path | What |
 |---|---|
+| `index.md` | About Streamtime (site root) |
+| `about/` | Architecture (Mermaid), deployment topologies, core concepts |
+| `getting-started/` | Installation, Configuration, User Management, Package Management |
+| `fleet-management/` | Fleet bootstrap per path (BYOK, AWS, Azure, GCP, Oracle, BYOK-with-cloud) |
+| `workloads/` | One page per workload (Apache Kafka, Confluent, WarpStream, Redpanda, AutoMQ) |
+| `operations/` | Scheduled Operations, Alerts & Diagnostics, Troubleshooting |
 | `*.md`, `*/*.md` | Content. Task pages use the tabbed interface (below). |
 | `architecture/` | Mermaid-based architecture page |
 | `_includes/tabs.html`, `code-tabs.html`, `tabset.html` | The UI/API/CLI/MCP tab component (CSS-only, works without JS) |
