@@ -44,12 +44,16 @@ Apache Kafka is a popular open-source distributed event streaming platform. Stre
 
 ---
 
-## Steps to Create an Apache Kafka Cluster
+## Create an Apache Kafka Cluster
 
+Before you start: a fleet in **Running** (or **Healthy**) state. Pick whichever
+interface below suits you — they all do the same thing.
+
+{% capture ui %}
 1. **Select Cluster Platform**
    - In the Streamtime UI, start by creating a new Kafka cluster.
    - Choose **Apache Kafka** as the cluster platform.
-    ![Cluster Type]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-1.png)
+   ![Cluster Type]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-1.png)
 
 2. **Configure Cluster Basics**
    - Set the cluster name.
@@ -63,16 +67,15 @@ Apache Kafka is a popular open-source distributed event streaming platform. Stre
    ![Fleet Selection]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-3.png)
 
 4. **Advanced Configuration**
-    - Configure authentication (identity provider), storage options, and Apache Kafka version.
-    - Enable or disable auto-upgrade based on your operational preferences.
-    ![Advanced Configuration]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-4.png)
+   - Configure authentication (identity provider), storage options, and Apache Kafka version.
+   - Enable or disable auto-upgrade based on your operational preferences.
+   ![Advanced Configuration]({{ site.baseurl }}/assets/images/apache-kafka/cluster-step-4.png)
 
----
+The cluster appears in the list with the status **Provisioning**, then
+**Running**.
+{% endcapture %}
 
-# API Reference
-
-## Create an Apache Kafka Cluster
-
+{% capture http %}
 ```bash
 curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka/ \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
@@ -116,45 +119,95 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka
     "organization": "<your-org-id>",
     "infrastructure": "sympathetic-emu",
     "identifier": "dutch-mammal",
-    "provisioner_name": "",
-    "destroyer_name": null,
-    "version_updater_name": null,
     "cluster_type": "strimzi",
     "tenancy_mode": "Shared",
     "kafka_units": 3,
-    "cloud_provider": "aws",
-    "region": "us-east-1",
-    "tags": [
-        {
-            "key": "environment",
-            "value": "non-prod"
-        }
-    ],
-    "advanced_config": {
-        "number_of_zones": "1",
-        "cluster_access": "Internal & External",
-        "private_access": false,
-        "version": "3.8.0",
-        "oauth": "okta-dev-47119201",
-        "tiered_storage_bucket_name": "apache-kafka-32421",
-        "tiered_storage_provider": {
-            "aws_account": "platformatory",
-            "aws_region": "us-east-1"
-        },
-        "tiered_storage_create_bucket": true
-    },
-    "console_url": null,
-    "client_properties": null,
-    "new_version": null,
-    "s3_manifests_file_path": null,
     "status": "Pending",
     "created_at": "2025-07-17T09:49:48.972570Z",
     "updated_at": "2025-07-17T09:49:48.972586Z"
 }
 ```
+
 Poll the cluster until its status reports **Running**:
 
 ```bash
 curl -X GET "https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka/dutch-mammal/" \
   -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
+
+*Fields shown are derived from the committed OpenAPI snapshot; not executed
+against a live deployment.*
+{% endcapture %}
+
+{% capture python %}
+```python
+from streamtime_sdk.api.default import organizations_kafka_create
+from streamtime_sdk.models import KafkaCreate
+
+organizations_kafka_create(
+    organization="<your-org-id>",
+    body=KafkaCreate(
+        identifier="dutch-mammal",
+        cluster_type=KafkaClusterType.STRIMZI,
+        kafka_units=3,
+        tenancy_mode=KafkaTenancyMode.SHARED,
+        infrastructure="sympathetic-emu",
+    ),
+)
+```
+{% endcapture %}
+
+{% capture typescript %}
+```typescript
+import { organizationsKafkaCreate } from "@streamtime/api";
+
+await organizationsKafkaCreate({
+  path: { organization: "<your-org-id>" },
+  body: {
+    identifier: "dutch-mammal",
+    cluster_type: "strimzi",
+    kafka_units: 3,
+    tenancy_mode: "Shared",
+    infrastructure: "sympathetic-emu",
+  },
+});
+```
+{% endcapture %}
+
+{% capture go %}
+```go
+resp, err := http.Post(
+    "https://<streamtime-api-endpoint>/organizations/<org>/kafka/",
+    "application/json",
+    strings.NewReader(`{"identifier":"dutch-mammal","cluster_type":"strimzi",`+
+        `"kafka_units":3,"tenancy_mode":"Shared","infrastructure":"sympathetic-emu"}`),
+)
+// Set Authorization: Bearer <token> on the request.
+```
+{% endcapture %}
+
+{% capture api %}{% include code-tabs.html id="create-kafka-api" curl=http python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+```bash
+streamtime kafka create \
+  --identifier dutch-mammal \
+  --workload strimzi \
+  --fleet sympathetic-emu \
+  --kafka-units 3
+```
+
+Then check on it:
+
+```bash
+streamtime kafka status dutch-mammal
+```
+{% endcapture %}
+
+{% capture mcp %}
+MCP reads cluster state; it does not create clusters. Ask in plain
+language, e.g. *"what is the status of the dutch-mammal cluster?"*, or use
+the `get_cluster_status` and `list_kafka_providers` tools.
+{% endcapture %}
+
+{% include tabs.html id="create-kafka" ui=ui api=api cli=cli mcp=mcp %}
