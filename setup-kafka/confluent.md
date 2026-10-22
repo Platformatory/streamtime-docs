@@ -4,29 +4,6 @@ parent: Setup Kafka
 nav_order: 3
 ---
 
-## Video Tutorial: Creating a Confluent for Kubernetes (CFK) Cluster
-
-<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
-    <source src="{{ '/assets/videos/cfk-create.webm' | relative_url }}" type="video/webm">
-  Your browser does not support the video tag.
-</video>
-
-<style>
-    video {
-        width: 100%;
-        height: auto;
-    }
-</style>
-
-<link
-  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
-  rel="stylesheet"
-/>
-
 ---
 
 # Confluent for Kubernetes (CFK)    
@@ -57,10 +34,8 @@ Deploying Confluent for Kubernetes (CFK) using Streamtime is straightforward and
 Before you can create a CFK cluster, ensure that you have a **Kubernetes Fleet** already bootstrapped on any supported cloud platform using StreamTime.
 [How to deploy A Kubernetes fleet.]({{ site.baseurl }}/bootstrapping-fleet/) 
 
-
 * **Bootstrap Provider Permissions for Tiered Storage Setup**  
 A Bootstrap Provider configured with an user that has permission to create Object Storage buckets for Tiered Storage and Users for granting access to the created bucket. If the bucket is already created, the user will need permissions to create a credentials (Ex - Access Key in AWS, Customer Secret Key in OCI) and have access to the bucket. 
-
 
 #### **Steps to Create a CFK Cluster in StreamTime**
 
@@ -115,7 +90,6 @@ Alerts for this cluster go to the alert channels of the fleet that hosts it. See
 * Choose preferred Kubernetes cluster for deploying Confluent Platform.  
 * This ensures that StreamTime deploys the Confluent Platform inside your existing Kubernetes fleet.
 
-
 ![Kafka-Fleet-Selection]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Fleet-Selection.png)
 
 <br>
@@ -125,7 +99,6 @@ Alerts for this cluster go to the alert channels of the fleet that hosts it. See
 Fine‑tune networking, security, components, and storage.
 
 ![Kafka-Advance-Configuration]({{ site.baseurl }}/assets/images/cfk/create-Kafka-Advance-configuration.png)
-
 
 * **Optimization Goal**   
 You have three choices for controlling how the cluster manages egress networking (traffic going out of the cluster):
@@ -141,7 +114,6 @@ You have three choices for controlling how the cluster manages egress networking
   - **Performance** → Optimized for maximum throughput and lowest latency.  
     - Uses premium networking resources.  
     - Best for high-throughput, latency-sensitive production workloads.  
-
 
 <br>
 
@@ -199,7 +171,6 @@ Tip: Use a naming convention that is unique for your organization and use number
 * **Tiered Storage Provider**   
 All Confluent Platform clusters created by StreamTime have Tiered Storage enabled for lowering storage costs. Learn more [here](https://docs.confluent.io/platform/current/clusters/tiered-storage.html)
 
-
   Choose where offloaded Kafka data will be stored:
 
   - **AWS**  
@@ -232,7 +203,6 @@ All Confluent Platform clusters created by StreamTime have Tiered Storage enable
     - **Compartment ID** → OCID of the compartment where the storage bucket resides.  
 
 <br>
-
 
 **Once all steps are complete-**    
 - Review the configuration shown on the right side of the screen.
@@ -345,5 +315,4 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clust
 ```
 
 ---
-
 

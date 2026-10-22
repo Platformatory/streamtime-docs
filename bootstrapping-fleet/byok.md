@@ -4,29 +4,6 @@ parent: Bootstrapping Your Fleet
 nav_order: 5
 ---
 
-## Video Tutorial: Bootstrapping a BYOK Fleet
-
-<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
-    <source src="{{ '/assets/videos/byok-create.webm' | relative_url }}" type="video/webm">
-  Your browser does not support the video tag.
-</video>
-
-<style>
-    video {
-        width: 100%;
-        height: auto;
-    }
-</style>
-
-<link
-  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
-  rel="stylesheet"
-/>
-
 ---
 
 # Bootstrapping a Kubernetes Fleet with BYOK
@@ -160,7 +137,3 @@ e.g. *"is the additional-alpaca fleet healthy yet?"*, or use the
 
 The same flow, end to end:
 
-<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
-    <source src="{{ '/assets/videos/byok_apache-kafka.webm' | relative_url }}" type="video/webm">
-  Your browser does not support the video tag.
-</video>

@@ -13,7 +13,16 @@ heading_anchors: true
 # under _versions/<version>/ and serve under /<version>/ — see
 # _data/versions.yml and _includes/versions.html.
 include:
-  - _versions
+  - _versions/
+  - _versions/1.1/
+  - _versions/1.1/architecture/
+  - _versions/1.1/bootstrapping-fleet/
+  - _versions/1.1/concept-architecture/
+  - _versions/1.1/examples/
+  - _versions/1.1/operations/
+  - _versions/1.1/operations/monitoring/
+  - _versions/1.1/setup-kafka/
+  - _versions/1.1/setup/
 plugins:
   - jekyll-default-layout
 callouts:

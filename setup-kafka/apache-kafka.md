@@ -4,29 +4,6 @@ parent: Setup Kafka
 nav_order: 2
 ---
 
-## Video Tutorial: Creating an Apache Kafka Cluster on BYOK
-
-<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
-    <source src="{{ '/assets/videos/apache-kafka.webm' | relative_url }}" type="video/webm">
-  Your browser does not support the video tag.
-</video>
-
-<style>
-    video {
-        width: 100%;
-        height: auto;
-    }
-</style>
-
-<link
-  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
-  rel="stylesheet"
-/>
-
 --- 
 
 # Apache Kafka

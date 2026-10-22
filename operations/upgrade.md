@@ -4,29 +4,6 @@ nav_order: 1
 parent: Operations
 ---
 
-## Video Tutorial: Upgrading a Kafka Cluster
-
-<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
-    <source src="{{ '/assets/videos/upgrade.webm' | relative_url }}" type="video/webm">
-  Your browser does not support the video tag.
-</video>
-
-<style>
-    video {
-        width: 100%;
-        height: auto;
-    }
-</style>
-
-<link
-  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
-  rel="stylesheet"
-/>
-<link
-  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
-  rel="stylesheet"
-/>
-
 ---
 
 # Upgrade Kafka Clusters
@@ -47,7 +24,6 @@ Upgrading Kafka clusters in Streamtime is a straightforward process that ensures
 5. **Monitor Progress**:  
    - Monitor the upgrade progress in the Streamtime UI.
    - The system will provide updates on the status of the upgrade.
-
 
 ![Upgrade Kafka Cluster](/assets/images/upgrade.png)
 

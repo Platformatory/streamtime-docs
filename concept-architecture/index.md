@@ -1,6 +1,6 @@
 ---
 title: "Concepts & Architecture"
-nav_order: 2
+nav_order: 7
 layout: home
 ---
 
