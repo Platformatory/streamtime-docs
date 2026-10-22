@@ -127,3 +127,82 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infra
     "network": null
 }
 ```
+
+## Watch it (BYOK fleet → Apache Kafka cluster)
+
+The same flow, end to end:
+
+<video class="video-js vjs-theme-city" controls preload="auto" width="640" height="264" data-setup='{}'>
+    <source src="{{ '/assets/videos/byok_apache-kafka.webm' | relative_url }}" type="video/webm">
+  Your browser does not support the video tag.
+</video>
+
+<link
+  href="https://unpkg.com/video.js@7/dist/video-js.min.css"
+  rel="stylesheet"
+/>
+<link
+  href="https://unpkg.com/@videojs/themes@1/dist/city/index.css"
+  rel="stylesheet"
+/>
+
+<script src="https://vjs.zencdn.net/8.22.0/video.min.js"></script>
+
+---
+
+# API Reference
+
+## Create a Kubernetes Fleet with BYOK
+
+```bash
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infrastructure/ \
+  -H "Authorization: Bearer YOUR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identifier": "additional-alpaca",
+    "infra_type": "byok",
+    "domain": "<your-domain>.com",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "tenancy_mode": "Shared",
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "placement_config": {},
+    "organization": "<your-org-id>"
+}'
+```
+
+**Response:**
+```json
+{
+    "id": "bfca99b0-35a5-4490-9cc4-40296910f76d",
+    "organization": "acme",
+    "domain": "<your-domain>.com",
+    "identifier": "additional-alpaca",
+    "provisioner_name": null,
+    "destroyer_name": null,
+    "infra_type": "byok",
+    "tenancy_mode": "Shared",
+    "max_tenants": 4,
+    "max_kafka_units": 17,
+    "kubeconfig": null,
+    "kubeconfig_str": null,
+    "metadata": {},
+    "prometheus_endpoint": null,
+    "opencost_endpoint": null,
+    "loki_endpoint": null,
+    "loadbalancer_dns": null,
+    "placement_config": {},
+    "advanced_config": {
+        "kubeconfig": "<your-kubeconfig-string>"
+    },
+    "advanced_properties": {},
+    "status": "Pending",
+    "created_at": "2025-07-17T04:37:33.316063Z",
+    "updated_at": "2025-07-17T04:37:33.316090Z",
+    "network": null
+}
+```
+
+Poll the fleet until its status reports **Healthy**.

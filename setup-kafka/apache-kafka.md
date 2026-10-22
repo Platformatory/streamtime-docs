@@ -74,7 +74,7 @@ Apache Kafka is a popular open-source distributed event streaming platform. Stre
 ## Create an Apache Kafka Cluster
 
 ```bash
-curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clusters/ \
+curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka/ \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -151,4 +151,10 @@ curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clust
     "created_at": "2025-07-17T09:49:48.972570Z",
     "updated_at": "2025-07-17T09:49:48.972586Z"
 }
+```
+Poll the cluster until its status reports **Running**:
+
+```bash
+curl -X GET "https://<streamtime-api-endpoint>/organizations/<your-org-id>/kafka/dutch-mammal/" \
+  -H "Authorization: Bearer YOUR_API_TOKEN"
 ```
