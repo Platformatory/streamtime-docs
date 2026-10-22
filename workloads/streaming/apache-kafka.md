@@ -1,11 +1,9 @@
 ---
-title: "Apache Kafka"
-permalink: "/1.1/workloads/apache-kafka/"
-nav_exclude: true
-search_exclude: true
-version_snapshot: "1.1"
+title: Apache Kafka
+parent: Streaming
+ancestor: Workloads
+nav_order: 1
 ---
-
 
 --- 
 

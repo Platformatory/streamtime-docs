@@ -1,6 +1,6 @@
 ---
 title: "Confluent (CFK)"
-permalink: "/1.1/workloads/confluent/"
+permalink: "/1.1/workloads/streaming/confluent/"
 nav_exclude: true
 search_exclude: true
 version_snapshot: "1.1"

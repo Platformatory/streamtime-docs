@@ -1,6 +1,6 @@
 ---
 title: "Redpanda (Preview)"
-permalink: "/1.1/workloads/redpanda/"
+permalink: "/1.1/workloads/streaming/redpanda/"
 nav_exclude: true
 search_exclude: true
 version_snapshot: "1.1"

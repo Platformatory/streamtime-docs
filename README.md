@@ -34,7 +34,7 @@ bundle install && bundle exec jekyll build   # output in _site/
 | `about/` | Architecture (Mermaid), deployment topologies, core concepts |
 | `getting-started/` | Installation, Configuration, User Management, Package Management |
 | `fleet-management/` | Fleet bootstrap per path (BYOK, AWS, Azure, GCP, Oracle, BYOK-with-cloud) |
-| `workloads/` | One page per workload (Apache Kafka, Confluent, WarpStream, Redpanda, AutoMQ) |
+| `workloads/` | Grouped by class: `streaming/` (Apache Kafka, Confluent, WarpStream, Redpanda, AutoMQ), `stream-processing/` (Flink, Kafka Streams), `analytics/` (ClickHouse) |
 | `operations/` | Scheduled Operations, Alerts & Diagnostics, Troubleshooting |
 | `*.md`, `*/*.md` | Content. Task pages use the tabbed interface (below). |
 | `architecture/` | Mermaid-based architecture page |

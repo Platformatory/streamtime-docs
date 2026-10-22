@@ -1,6 +1,6 @@
 ---
 title: "AutoMQ (Experimental)"
-permalink: "/1.1/workloads/automq/"
+permalink: "/1.1/workloads/streaming/automq/"
 nav_exclude: true
 search_exclude: true
 version_snapshot: "1.1"

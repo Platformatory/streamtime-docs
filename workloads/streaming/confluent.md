@@ -1,6 +1,7 @@
 ---
 title: "Confluent (CFK)"
-parent: Workloads
+parent: Streaming
+ancestor: Workloads
 nav_order: 2
 ---
 

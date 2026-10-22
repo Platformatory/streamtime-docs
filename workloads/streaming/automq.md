@@ -1,6 +1,7 @@
 ---
 title: "AutoMQ (Experimental)"
-parent: Workloads
+parent: Streaming
+ancestor: Workloads
 nav_order: 5
 ---
 

@@ -1,11 +1,9 @@
 ---
 title: "WarpStream"
-permalink: "/1.1/workloads/warpstream/"
-nav_exclude: true
-search_exclude: true
-version_snapshot: "1.1"
+parent: Streaming
+ancestor: Workloads
+nav_order: 3
 ---
-
 
 # WarpStream
 

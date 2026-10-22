@@ -1,6 +1,7 @@
 ---
 title: "Redpanda (Preview)"
-parent: Workloads
+parent: Streaming
+ancestor: Workloads
 nav_order: 4
 ---
 
