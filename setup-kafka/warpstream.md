@@ -114,7 +114,9 @@ Select the Kubernetes fleet that will host the WarpStream agents.
 * **WarpStream Account** — the API key for your WarpStream account (see Prerequisites), and the WarpStream control-plane region to register this cluster in. These are separate from the cloud provider/region you chose in Cluster Basics, which is where your Kubernetes fleet runs.
 * **Object Storage** — bucket name, region, access key, and secret key for the S3 bucket backing this cluster, plus whether Streamtime should create the bucket if it doesn't already exist.
 * **Enable Schema Registry** — provisions a Schema Registry alongside the Kafka cluster. See below.
-* **Alert Channels** — notification channels (Slack/email, configured in Settings) that receive alerts for this cluster.
+
+{: .note }
+Alerts for this cluster go to the alert channels of the fleet that hosts it. See [Alert Channels]({{ site.baseurl }}/bootstrapping-fleet/#alert-channels).
 
 **Once all steps are complete** — review the configuration and click **Create Cluster**.
 
@@ -179,14 +181,14 @@ WarpStream clusters get a dedicated dashboard covering:
 - **Latency and lag** — consumer group lag, request latency, control-plane round-trip time.
 - **Storage** — object storage latency and error rate.
 
-Default alerts are pre-configured for every WarpStream cluster and route to the alert channels you selected in Advanced Configuration:
+Default alerts are pre-configured for every WarpStream cluster and route to the alert channels of the fleet that hosts it:
 
 - **Agent Down** — fires when all agents are unavailable for several minutes.
 - **Consumer Group Lag Too High** — fires when a consumer group falls significantly behind.
 - **Object Storage Errors** — fires when writes to your bucket start failing.
 - **Elevated Request Latency** — fires when Kafka requests are consistently slow to respond.
 
-See [Alert Channels]({{ site.baseurl }}/operations/monitoring.html) to configure where these go.
+See [Alert Channels]({{ site.baseurl }}/bootstrapping-fleet/#alert-channels).
 
 ---
 
