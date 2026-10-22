@@ -19,6 +19,7 @@ Creating a Kubernetes fleet in Streamtime is the foundational step for deploying
    - Select the tenancy model: `shared`, `isolated`, or `dedicated`.
    - Define your base domain, set the maximum tenancy (number of Kafka clusters per fleet), and specify the maximum Kafka units (throughput capacity).
    - Choose the appropriate node size based on your workload (e.g., 1 Kafka unit = 20 MBps, recommended node: 4 vCPU / 16 GB RAM).
+   - Optionally, choose the fleet's alert channels. See [Alert Channels](#alert-channels).
 
 3. **Placement Configuration**
    - Cloud Provider: Select the cloud provider for your Kubernetes clusters (e.g., AWS, GCP).
@@ -39,3 +40,11 @@ Creating a Kubernetes fleet in Streamtime is the foundational step for deploying
    - Once deployed, the fleet status will show as "Healthy" and is ready for Kafka cluster deployments.
 
    ![Kubernetes Fleet List]({{ site.baseurl }}/assets/images/aws/fleet-list.png)
+
+## Alert Channels
+
+Alert channels decide where Streamtime sends alerts. They are set on the fleet, and cover the fleet itself and every Kafka cluster and other workload it hosts. Kafka clusters and other workloads have no alert channels of their own.
+
+- **Create channels first.** Add Slack, PagerDuty or webhook channels under **Settings → Alert Channels**.
+- **Choose them for the fleet.** When you create the fleet, select one or more channels in the **Alert Channels** field. The field is optional.
+- **What gets sent.** The fleet's own alerts, and the default alerts of each workload on the fleet (for example, WarpStream's Agent Down or Consumer Group Lag Too High).

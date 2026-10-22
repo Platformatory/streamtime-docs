@@ -99,9 +99,9 @@ Configure the sizing and placement of your CFK cluster.
 * **Kafka Units (KU)**  
   * Baseline throughput capacity  
   * Each KU ≈ 20 MB/s aggregate  
-* **Alert Channels**  
-  * Health and incident notifications  
-  * Optional; choose Slack/Email channels configured in Settings
+
+{: .note }
+Alerts for this cluster go to the alert channels of the fleet that hosts it. See [Alert Channels]({{ site.baseurl }}/bootstrapping-fleet/#alert-channels).
 
 <br>
 
