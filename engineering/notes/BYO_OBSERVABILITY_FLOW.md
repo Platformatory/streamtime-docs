@@ -3,7 +3,7 @@
 How a customer's Datadog / Grafana Cloud / New Relic account travels from a form in Settings
 to metrics and logs arriving in that vendor.
 
-**Branch**: `feat/BYO-Observability` · **Design doc**: [`.cursor/plans/byo-observability.md`](https://github.com/streamtime-ai/fleet-manager/blob/main/.cursor/plans/byo-observability.md)
+**Branch**: `feat/BYO-Observability` · **Design doc**: [`.cursor/plans/byo-observability.md`](../.cursor/plans/byo-observability.md)
 
 ---
 
@@ -49,8 +49,8 @@ Two deliberate consequences of that shape:
 The credential fields are **not** hardcoded. Picking a product triggers:
 
 ```
-GET /organizations/{org}/sku/observability/providers/            -> [{identifier, name}, ...]
-GET /organizations/{org}/sku/observability/providers/{vendor}/credentials/  -> JSON Schema
+GET /organizations/{org}/observability-providers/configuration-profiles/            -> [{identifier, name}, ...]
+GET /organizations/{org}/observability-providers/configuration-profiles/{vendor}/credentials/  -> JSON Schema
 ```
 
 and the second response is handed straight to RJSF. Adding a fourth vendor on the backend makes

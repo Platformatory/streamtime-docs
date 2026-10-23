@@ -27,7 +27,7 @@ Content-Type: application/json
 
 ### GET Schema
 ```bash
-curl -X GET "{BASE_URL}/organizations/{ORG_IDENTIFIER}/schema/kafka-replicator/" \
+curl -X GET "{BASE_URL}/organizations/{ORG_IDENTIFIER}/kafka-replicator/configuration-profiles/" \
   -H "Authorization: Bearer {ACCESS_TOKEN}" \
   -H "Content-Type: application/json"
 ```

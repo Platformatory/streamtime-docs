@@ -7,7 +7,7 @@ All CRUD endpoints are working correctly! ✅
 ## Test Results
 
 ### ✅ Test 1: GET Schema Endpoint
-**Endpoint:** `GET /organizations/{org}/schema/kafka-replicator/`
+**Endpoint:** `GET /organizations/{org}/kafka-replicator/configuration-profiles/`
 
 **Status:** ✅ SUCCESS
 - Returns complete JSON Schema for Kafka Replicator creation
@@ -17,7 +17,7 @@ All CRUD endpoints are working correctly! ✅
 **cURL:**
 ```bash
 export TOKEN=$(./scripts/get-root-token.sh 2>&1 | grep "^Bearer " | head -1 | sed 's/^Bearer //')
-curl -k -X GET "https://api.streamtime.local:8443/organizations/root/schema/kafka-replicator/" \
+curl -k -X GET "https://api.streamtime.local:8443/organizations/root/kafka-replicator/configuration-profiles/" \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json"
 ```
@@ -176,7 +176,7 @@ Once a fleet exists, the CREATE endpoint should work and you can test the full C
 
 ## All Endpoints Verified
 
-- ✅ GET `/organizations/{org}/schema/kafka-replicator/` - Schema endpoint
+- ✅ GET `/organizations/{org}/kafka-replicator/configuration-profiles/` - Schema endpoint
 - ✅ GET `/organizations/{org}/kafka-replicators/` - List replicators
 - ✅ POST `/organizations/{org}/kafka-replicators/` - Create replicator
 - ✅ GET `/organizations/{org}/kafka-replicators/{id}/` - Get single replicator

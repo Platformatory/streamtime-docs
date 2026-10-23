@@ -26,7 +26,7 @@ echo ""
 # 1. Get JSON Schema
 get_schema() {
   echo -e "${GREEN}Getting JSON Schema...${NC}"
-  curl -X GET "${BASE_URL}/organizations/${ORG_IDENTIFIER}/schema/kafka-replicator/" \
+  curl -X GET "${BASE_URL}/organizations/${ORG_IDENTIFIER}/kafka-replicator/configuration-profiles/" \
     -H "Authorization: Bearer ${ACCESS_TOKEN}" \
     -H "Content-Type: application/json" | jq '.'
 }
