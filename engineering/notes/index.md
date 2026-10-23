@@ -8,8 +8,9 @@ Engineering notes, moved from `fleet-manager/docs/`.
 
 | Document | |
 |---|---|
+| [Repository documentation index](./repository-docs.md) | README |
 | [Issue #1217 — Strimzi CRDs not upgraded on operator version change](./1217-strimzi-crd-upgrade-plan.md) | 1217-strimzi-crd-upgrade-plan |
-| [Agents](./AGENTS.md) | AGENTS |
+| [AI coding guide](https://github.com/streamtime-ai/fleet-manager/blob/main/CLAUDE.md) | AGENTS |
 | [Agent Command Tracking](./AGENT_COMMAND_TRACKING.md) | AGENT_COMMAND_TRACKING |
 | [Agent Management Page - Complete Implementation](./AGENT_MANAGEMENT_PAGE.md) | AGENT_MANAGEMENT_PAGE |
 | [Agent Status and UI Implementation Guide](./AGENT_STATUS_AND_UI_IMPLEMENTATION.md) | AGENT_STATUS_AND_UI_IMPLEMENTATION |
@@ -28,7 +29,7 @@ Engineering notes, moved from `fleet-manager/docs/`.
 | [Package Catalog Quick Start](./PACKAGE_CATALOG_QUICKSTART.md) | PACKAGE_CATALOG_QUICKSTART |
 | [Plan: Agent Health Check and Discovery Features](./PLAN_AGENT_HEALTH_AND_DISCOVERY.md) | PLAN_AGENT_HEALTH_AND_DISCOVERY |
 | [Plan: Certificate Renewal During Maintenance Window](./PLAN_CERT_RENEWAL_MAINTENANCE_WINDOWS.md) | PLAN_CERT_RENEWAL_MAINTENANCE_WINDOWS |
-| [Fleet Manager Documentation](./README.md) | README |
+| [Repository documentation index](./repository-docs.md) | README |
 | [Registries_And_Helm](./REGISTRIES_AND_HELM.md) | REGISTRIES_AND_HELM |
 | [Kafka Replicator API Test Results](./REPLICATOR_API_TEST_RESULTS.md) | REPLICATOR_API_TEST_RESULTS |
 | [Streamtime Agent Documentation Index](./STREAMTIME_AGENT_INDEX.md) | STREAMTIME_AGENT_INDEX |

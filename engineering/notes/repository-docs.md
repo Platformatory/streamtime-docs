@@ -1,6 +1,15 @@
+---
+title: Repository documentation index
+permalink: /engineering/notes/repository-docs/
+nav_exclude: true
+search_exclude: true
+---
+
 # Fleet Manager Documentation
 
-This directory contains comprehensive documentation for the Fleet Manager platform.
+This is the index of the engineering notes moved here from
+`fleet-manager/docs/` ([#1707](https://github.com/streamtime-ai/fleet-manager/issues/1707)).
+The customer documentation is the rest of this site.
 
 ## Core Documentation
 
