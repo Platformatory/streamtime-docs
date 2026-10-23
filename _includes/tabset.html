@@ -1,0 +1,50 @@
+{%- comment -%}
+  Generic accessible tab set, CSS-only (radio buttons), works without
+  JavaScript. Called by tabs.html and code-tabs.html; use those rather
+  than calling this directly.
+
+  Markup: all radios first, then all labels (they float left into the
+  visible tab bar), then all panels. The checked radio reveals its
+  panel via the float-queue rules in assets/css/tabs.css (radio N pairs
+  with panel N by :nth-of-type position). Radio N is followed in the
+  DOM by label N, so Tab order follows the bar left-to-right, and the
+  focused radio outlines its own label.
+
+  Params:
+    id        unique id prefix on the page, kebab-case (required)
+    labels    space-separated list of tab labels, rendered in this order
+    p1 .. p4  panel content (markdown), aligned with `labels`.
+              A missing or empty panel renders `fallback` instead.
+    fallback  HTML shown for a missing panel
+{%- endcomment -%}
+{%- assign labels = include.labels | split: " " -%}
+<div class="st-tabs{% if include.nested %} st-tabs--nested{% endif %}" data-tabs>
+  <div class="st-tabs__bar" role="tablist" aria-label="{{ include.aria | default: "Tabs" }}">
+    {%- for label in labels -%}
+    {%- capture pid -%}{{ include.id }}-tab-{{ forloop.index }}{%- endcapture -%}
+    <input class="st-tabs__radio" type="radio" id="{{ pid }}" name="{{ include.id }}"
+           aria-controls="{{ pid }}-panel" {% if forloop.first %}checked{% endif %}>
+    {%- endfor -%}
+    {%- for label in labels -%}
+    {%- capture pid -%}{{ include.id }}-tab-{{ forloop.index }}{%- endcapture -%}
+    <label class="st-tabs__tab" role="tab" for="{{ pid }}"
+           id="{{ pid }}-label" aria-controls="{{ pid }}-panel">{{ label }}</label>
+    {%- endfor -%}
+    {%- for label in labels -%}
+    {%- capture pid -%}{{ include.id }}-tab-{{ forloop.index }}{%- endcapture -%}
+    {%- if forloop.first -%}{%- assign content = include.p1 -%}
+    {%- elsif forloop.index == 2 -%}{%- assign content = include.p2 -%}
+    {%- elsif forloop.index == 3 -%}{%- assign content = include.p3 -%}
+    {%- else -%}{%- assign content = include.p4 -%}{%- endif -%}
+    {%- capture trimmed -%}{{ content }}{%- endcapture -%}
+    <div class="st-tabs__panel" role="tabpanel" id="{{ pid }}-panel"
+         aria-labelledby="{{ pid }}-label">
+      {%- if trimmed != "" -%}
+      {{ content | markdownify }}
+      {%- else -%}
+      {{ include.fallback | default: '<p class="st-tabs__none">Not available yet.</p>' }}
+      {%- endif -%}
+    </div>
+    {%- endfor -%}
+  </div>
+</div>

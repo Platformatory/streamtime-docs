@@ -1,8 +1,10 @@
 ---
 title: Operations
 nav_order: 6
+has_children: true
 layout: home
 
+permalink: /operations/
 ---
 
 # Operations

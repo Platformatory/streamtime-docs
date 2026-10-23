@@ -1,0 +1,12 @@
+{%- comment -%}
+  The API sub-tabs inside the API tab: HTTP, Python, TypeScript, Go.
+  Called from inside a tabs.html `api` capture.
+
+    {% capture api %}{% include code-tabs.html id="create-kafka-api"
+        curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+  Params:
+    id   unique id prefix on the page (distinct from the outer tabs' id)
+    curl / python / typescript / go   panel content (captured markdown)
+{%- endcomment -%}
+{% include tabset.html id=include.id labels="HTTP Python TypeScript Go" p1=include.curl p2=include.python p3=include.typescript p4=include.go nested=true fallback='<p class="st-tabs__none">Not available for this language yet.</p>' %}

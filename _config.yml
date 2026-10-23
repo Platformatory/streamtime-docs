@@ -7,6 +7,25 @@ logo: /assets/streamtime.svg
 logo_alt: Streamtime Logo
 nav_enable: true
 heading_anchors: true
+# Jekyll ignores underscore-prefixed directories; the version-snapshot
+# script keeps released snapshot trees listed here so their pages build
+# (listing _versions makes its whole contents recurse). Snapshots live
+# under _versions/<version>/ and serve under /<version>/ — see
+# _data/versions.yml and _includes/versions.html.
+include:
+  - _versions/
+  - _versions/1.1/
+  - _versions/1.1/about/
+  - _versions/1.1/configuration/
+  - _versions/1.1/examples/
+  - _versions/1.1/fleet-management/
+  - _versions/1.1/getting-started/
+  - _versions/1.1/operations/
+  - _versions/1.1/operations/alerts-diagnostics/
+  - _versions/1.1/workloads/
+  - _versions/1.1/workloads/analytics/
+  - _versions/1.1/workloads/stream-processing/
+  - _versions/1.1/workloads/streaming/
 plugins:
   - jekyll-default-layout
 callouts:

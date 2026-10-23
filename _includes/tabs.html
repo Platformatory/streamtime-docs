@@ -1,0 +1,12 @@
+{%- comment -%}
+  The four-interface tab set every task page uses: UI, API, CLI, MCP.
+  A missing param renders a "not available" panel instead of hiding
+  the tab. Nest code-tabs.html (or capture its output) into `api`.
+
+    {% include tabs.html id="create-kafka" ui=ui api=api cli=cli mcp=mcp %}
+
+  Params:
+    id   unique id prefix on the page, kebab-case, named after the task
+    ui / api / cli / mcp   panel content (captured markdown)
+{%- endcomment -%}
+{% include tabset.html id=include.id labels="UI API CLI MCP" p1=include.ui p2=include.api p3=include.cli p4=include.mcp fallback='<p class="st-tabs__none">Not available in this interface yet.</p>' %}

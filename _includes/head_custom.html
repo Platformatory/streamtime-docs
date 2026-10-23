@@ -1,0 +1,12 @@
+<!-- Interface tabs: CSS-only switching (assets/css/tabs.css); the
+     script only adds remembering the choice and arrow keys. Keep
+     these two lines in sync with _includes/tabs.html usage. -->
+<link rel="stylesheet" href="{{ '/assets/css/tabs.css' | relative_url }}">
+<script src="{{ '/assets/js/tabs.js' | relative_url }}" defer></script>
+<!-- Version switcher (assets/css/versions.css, assets/js/versions.js).
+     The dropdown works without JS; the script adds click-outside. -->
+<link rel="stylesheet" href="{{ '/assets/css/versions.css' | relative_url }}">
+<script src="{{ '/assets/js/versions.js' | relative_url }}" defer></script>
+<!-- Mermaid diagrams (architecture pages). The script no-ops unless the
+     page has a ```mermaid block, and costs nothing otherwise. -->
+<script src="{{ '/assets/js/mermaid.js' | relative_url }}" defer></script>
