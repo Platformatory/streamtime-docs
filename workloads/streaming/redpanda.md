@@ -30,22 +30,21 @@ Redpanda is a modern, high-performance streaming platform that is Kafka API-comp
 
 ---
 
-## How to Deploy Redpanda on Streamtime
+## Manage a Redpanda cluster
 
-1. **Select Cluster Platform**
-   - In the Streamtime UI, create a new Kafka cluster.
-   - Choose **Redpanda** as the cluster platform.
+From the API, CLI or MCP, a Redpanda cluster also needs its license and
+tiered storage in `advanced_config`. `aws_account` is the identifier of the
+AWS cloud account registered in your organization's settings:
 
-2. **Configure Cluster Basics**
-   - Set the cluster name, tenancy mode, and number of Kafka units.
-   - Select the Kubernetes fleet for deployment.
+```json
+"advanced_config": {
+  "license": "<redpanda-license>",
+  "tiered_storage_bucket_name": "<bucket>",
+  "tiered_storage_provider": {
+    "aws_account": "<cloud-account>",
+    "aws_region": "us-east-1"
+  }
+}
+```
 
-3. **Advanced Configuration**
-   - Configure authentication, storage, Redpanda version, and other advanced settings as needed.
-
-4. **Review and Deploy**
-   - Review your configuration and click **Deploy** to provision the Redpanda cluster.
-
----
-
-Once deployed, you can monitor and manage your Redpanda cluster directly from the Streamtime dashboard.
+{% include kafka-cluster-tasks.md workload="redpanda" name="Redpanda" id="redpanda" cluster="telemetry" shots="redpanda" %}

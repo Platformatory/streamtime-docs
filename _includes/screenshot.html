@@ -1,0 +1,16 @@
+{%- comment -%}
+  Embeds a screenshot only once the image exists, so a page can name its
+  screenshots before they are taken.
+
+    {% include screenshot.html dir="cfk" file="cluster-type.png" alt="Cluster Type step" %}
+
+  Params:
+    dir   folder under assets/images/ (empty: nothing is shown)
+    file  image file name
+    alt   what the user sees on the screen
+{%- endcomment -%}
+{%- if include.dir and include.dir != "" -%}
+{%- capture shot_path -%}/assets/images/{{ include.dir }}/{{ include.file }}{%- endcapture -%}
+{%- assign shot = site.static_files | where: "path", shot_path | first -%}
+{%- if shot -%}![{{ include.alt }}]({{ site.baseurl }}{{ shot_path }}){%- endif -%}
+{%- endif -%}

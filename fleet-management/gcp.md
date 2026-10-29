@@ -4,52 +4,54 @@ parent: Fleet Management
 nav_order: 4
 ---
 
-# Bootstrapping on GCP (Preview)
+# Fleets on Google Cloud (Preview)
 
-Google Cloud Platform (GCP) is supported as a bootstrap provider for creating Kubernetes fleets in Streamtime. This enables you to deploy and manage Kafka clusters on Google Kubernetes Engine (GKE) with integrated automation.
+Streamtime creates and runs a Kubernetes cluster (Google Kubernetes Engine,
+GKE) in your Google Cloud project, then installs what the fleet's workloads
+need. You register the account once, then create fleets on it.
 
----
-
-## When to Use GCP
-
-- **Google Cloud Preference**: When your workloads or data reside primarily in GCP.
-- **GKE Features**: If you want to leverage GKE’s managed Kubernetes capabilities.
-- **Multi-Cloud Strategy**: For organizations adopting a multi-cloud or hybrid cloud approach.
-- **Regional Compliance**: When you need to deploy clusters in specific GCP regions for compliance or latency.
-
----
+{: .note }
+Google Cloud fleets are in preview.
 
 ## Key Features
 
-- **Managed Kubernetes (GKE)**: Automated provisioning and management of GKE clusters.
-- **Flexible Tenancy**: Support for shared, isolated, or dedicated tenancy models.
-- **Integrated Security**: Leverage GCP IAM and security features.
-- **Scalable Throughput**: Define Kafka units and scale clusters as needed.
-- **Placement Options**: Deploy in any supported GCP region.
+- **Managed Kubernetes**: Streamtime creates, monitors and deletes the GKE cluster for you.
+- **Your network or a new one**: use an existing VPC network, or let Streamtime create one.
+- **Your encryption key**: optionally encrypt node storage with a Cloud KMS key.
+- **Tenancy**: Shared, Isolated or Dedicated. See [Tenancy]({{ site.baseurl }}/about/tenancy/#tenancy).
+- **Monitoring**: metrics, logs and alerts for the fleet and everything on it.
+
+## Prerequisites
+
+- **A service account** with a JSON key, that can create GKE clusters, VPC
+  networks, Cloud Storage buckets and service accounts in the project.
+- **A Base Domain** for the fleet's endpoints, added under **Settings**.
+
+**Cloud account credentials**
+
+- **Service account key**: paste the whole JSON key file.
+
+## Fleet settings
+
+**Placement Configuration**
+
+- **Project**: the cloud account you registered.
+- **Zone**: `us-central1-a` or `us-west1-b`.
+
+**Advanced Configuration**
+
+- **VPC network**: an existing network's name, or leave it empty to create
+  a new one.
+- **Availability Zones**: 1 to 4 (default 1, a single zone).
+- **Encryption key** (optional): a Cloud KMS key
+  (`projects/<project>/locations/<location>/keyRings/<ring>/cryptoKeys/<key>`)
+  to encrypt node storage; without it, Google-managed encryption is used.
+- **Logs Storage Bucket Name**: a Cloud Storage bucket name, unique across
+  Google Cloud; optional, Streamtime generates one when it's empty.
 
 ---
 
-## How to Deploy on GCP
-Follow these steps to bootstrap a Kubernetes fleet on GCP using Streamtime:
-
-1. **Start Fleet Creation in Streamtime**
-   - In the Streamtime UI, click "Create Kubernetes Fleet".
-   - Select **GCP** as your bootstrap provider.
-
-2. **Configure Tenancy & Sizing**
-   - Choose tenancy mode (`shared`, `isolated`, or `dedicated`).
-   - Set base domain, max tenancy, and max Kafka units.
-
-3. **Placement Configuration**
-   - Select the GCP region for your fleet.
-
-4. **Advanced Configuration**
-   - Upload your service account JSON key.
-   - Specify network and node machine type.
-
-5. **Deploy and Validate**
-   - Click **Deploy**. Streamtime will provision and configure the GKE fleet.
-   - Once deployed, the fleet status will show as "Healthy" and is ready for Kafka cluster deployments.
-
----
-
+{% capture credentials %}{"service_account_key": "<service-account-key-json-as-a-string>"}{% endcapture %}
+{% capture placement %}{"account": "<cloud-account>", "region": "us-central1-a"}{% endcapture %}
+{% capture advanced %}{"gcp_az_count": 1}{% endcapture %}
+{% include fleet-tasks.md provider="gcp" name="GCP" id="gcp" fleet="clicks-central" credentials=credentials placement=placement advanced=advanced shots="gcp" %}

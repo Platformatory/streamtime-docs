@@ -4,130 +4,58 @@ parent: Fleet Management
 nav_order: 2
 ---
 
---- 
+# Fleets on AWS
 
-# Bootstrapping a Kubernetes Fleet on AWS
-
-Follow these four steps to create and configure a Kubernetes fleet on AWS using Streamtime.
-
----
+Streamtime creates and runs a Kubernetes cluster (Amazon EKS) in your AWS
+account, then installs what the fleet's workloads need. You register the
+account once, then create fleets on it.
 
 ## Key Features
 
-- **Automated Cluster Management**: Streamtime provisions and manages Kubernetes clusters on AWS.
-- **Flexible Tenancy Models**: Choose between shared, isolated, or dedicated tenancy for your Kafka clusters.
-- **Scalable Throughput**: Define your Kafka units based on workload requirements (1 Kafka unit = 20 MBps).
-- **Region and Placement Options**: Deploy in your preferred AWS region with optional placement metadata for compliance or latency optimization.
-- **Advanced Configuration**: Customize VPC, instance types, and other AWS-specific settings to fit your infrastructure needs.
+- **Managed Kubernetes**: Streamtime creates, monitors and deletes the EKS cluster for you.
+- **Your network or a new one**: use an existing VPC, or let Streamtime create one across two to four availability zones.
+- **Tenancy**: Shared, Isolated or Dedicated. See [Tenancy]({{ site.baseurl }}/about/tenancy/#tenancy).
+- **Sized from your workloads**: node types and counts follow the capacity you choose for each workload.
+- **Monitoring**: metrics, logs and alerts for the fleet and everything on it.
 
-## 1. Select AWS as Bootstrap Provider
+## Prerequisites
 
-- In the Streamtime UI, click "Create Kubernetes Fleet".
-- Choose **AWS** as your bootstrap provider.
+- **AWS credentials** (an access key ID and secret access key, plus a
+  session token for temporary credentials) for an IAM user or role that can:
+  - create EKS clusters (`eks:CreateCluster`) and IAM roles (`iam:CreateRole`);
+  - create a VPC (`ec2:CreateVpc`), or read your existing one (`ec2:DescribeVpcs`);
+  - create S3 buckets (`s3:CreateBucket`) for the fleet's logs;
+  - simulate its own policy (`iam:SimulatePrincipalPolicy`), so Streamtime
+    can check these permissions before it creates anything.
 
-![AWS Bootstrap Provider]({{ site.baseurl }}/assets/images/aws/fleet-bootstrap-provider.png)
+  Streamtime refuses to create the fleet, and names what's missing, when
+  a permission is absent.
+- **A Base Domain** for the fleet's endpoints, added under **Settings**.
 
----
+## Fleet settings
 
-## 2. Configure Tenancy & Sizing
+**Placement Configuration**
 
-- Select the tenancy model: `shared`, `isolated`, or `dedicated`.
-- Set your base domain, maximum tenancy (number of Kafka clusters per fleet), and maximum Kafka units (throughput capacity).
-- Choose the appropriate node size for your workload (e.g., 1 Kafka unit = 20 MBps, recommended node: 4 vCPU / 16 GB RAM).
+- **Account**: the cloud account you registered.
+- **Region**: `us-east-1` or `us-west-2`.
 
-![AWS Tenancy & Sizing]({{ site.baseurl }}/assets/images/aws/fleet-basic-config.png)
+**Advanced Configuration**
 
----
-
-## 3. Placement Configuration
-
-- Select the AWS region where you want to deploy your Kubernetes fleet.
-- Optionally, specify placement metadata for compliance or latency optimization.
-
-![AWS Placement]({{ site.baseurl }}/assets/images/aws/fleet-placement-config.png)
-
----
-
-## 4. Advanced Configuration
-
-- Select an existing VPC ID or create a new VPC.
-- Choose the instance type for your nodes.
-- Configure any additional AWS-specific settings as needed.
-
-![AWS Advanced Config]({{ site.baseurl }}/assets/images/aws/fleet-advanced.png)
-
----
-
-## Deploy and Validate
-
-- Click **Deploy**. Streamtime will provision and configure the Kubernetes fleet on AWS.
-- Once deployed, the fleet status will show as "Healthy" and is ready for Kafka cluster deployments.
-
-![Kubernetes Fleet List]({{ site.baseurl }}/assets/images/aws/fleet-list.png)
+- **VPC ID**: an existing VPC, or leave it empty to create a new one.
+- **VPC CIDR**: the address range of a new VPC (`10.0.0.0/16`,
+  `10.3.0.0/16`, the default, or `172.16.0.0/16`).
+- **Availability Zones**: 2 to 4 (default 3).
+- **Public Cluster**: whether the Kubernetes API is reachable from the
+  internet (on by default).
+- **VPC Tags**: extra tags for the VPC and subnets Streamtime creates.
+- **Logs Storage Bucket Name**: optional; Streamtime generates a unique
+  name when it's empty.
+- **Instance Type**: optional; by default node types follow the fleet's
+  sizing.
 
 ---
 
-# API Reference
-
-## Create a Kubernetes Fleet on AWS
-
-```bash
-curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/infrastructure/ \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "identifier": "narrow-impala",
-    "infra_type": "aws",
-    "domain": "<your-domain>.com",
-    "max_tenants": 3,
-    "max_kafka_units": 12,
-    "tenancy_mode": "Shared",
-    "advanced_config": {
-        "vpc_id": "vpc-05ab2abs23359a6e",
-        "instance_type": "t3.large",
-        "cluster_public": false
-    },
-    "placement_config": {
-        "account": "plf-fleet-manager",
-        "region": "us-east-1"
-    },
-    "organization": "<your-org-id>"
-   }' 
-```
-
-**Response:**
-```json
-{
-    "id": "78d2d356-3898-4c3c-ac26-e5c9b0b595bf",
-    "organization": "acme",
-    "domain": "<your-domain>.com",
-    "identifier": "narrow-impala",
-    "provisioner_name": null,
-    "destroyer_name": null,
-    "infra_type": "aws",
-    "tenancy_mode": "Shared",
-    "max_tenants": 3,
-    "max_kafka_units": 12,
-    "kubeconfig": null,
-    "kubeconfig_str": null,
-    "metadata": {},
-    "prometheus_endpoint": null,
-    "opencost_endpoint": null,
-    "loki_endpoint": null,
-    "loadbalancer_dns": null,
-    "placement_config": {
-        "account": "plf-fleet-manager",
-        "region": "us-east-1"
-    },
-    "advanced_config": {
-        "vpc_id": "vpc-05ab2abs23359a6e",
-        "instance_type": "t3.large",
-        "cluster_public": false
-    },
-    "advanced_properties": {},
-    "status": "Pending",
-    "created_at": "2025-07-17T04:31:32.844883Z",
-    "updated_at": "2025-07-17T04:31:32.844911Z",
-    "network": null
-}
-```
+{% capture credentials %}{"aws_access_key": "<access-key-id>", "aws_access_secret": "<secret-access-key>"}{% endcapture %}
+{% capture placement %}{"account": "<cloud-account>", "region": "us-east-1"}{% endcapture %}
+{% capture advanced %}{"aws_vpc_cidr": "10.3.0.0/16", "aws_az_count": 3}{% endcapture %}
+{% include fleet-tasks.md provider="aws" name="AWS" id="aws" fleet="payments-east" credentials=credentials placement=placement advanced=advanced shots="aws" %}

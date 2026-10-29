@@ -15,7 +15,7 @@ Creating a Kubernetes fleet in Streamtime is the foundational step for deploying
 
 1. **Select Bootstrap Provider**  
    - Start by clicking "Create Kubernetes Fleet" in the Streamtime UI.
-   - Choose your bootstrap provider: AWS, GCP, OCI, Azure, or BYOK.
+   - Choose your bootstrap provider: AWS, GCP, OCI, Azure, DigitalOcean, Civo, BYOK (your own Kubernetes cluster) or BYOVM (your own virtual machines).
 
 2. **Configure Tenancy & Sizing**  
    - Select the tenancy model: `shared`, `isolated`, or `dedicated`.
@@ -30,12 +30,15 @@ Creating a Kubernetes fleet in Streamtime is the foundational step for deploying
    {: .note }
    > For BYOK fleets, you can optionally specify provider and region details for placement metadata to optimize for latency, compliance, or cost.
 
-4. **Advanced Configuration**  
-   - **AWS**: Select an existing VPC ID or create a new VPC, choose the instance type for nodes.
-   - **GCP**: Specify the network and node machine type.
-   - **OCI**: Provide the VCN ID or create a new one, set the node shape, optionally specify a KMS Key ID, and set `cluster_public` (default: false).
-   - **Azure**: Enter the resource group, vnet name, subnet name, Kubernetes version, network plugin, agent VM size, and node count.
-   - **BYOK**: simply upload your Kubernetes `kubeconfig` file in this step.
+4. **Advanced Configuration**
+   - **AWS**: use an existing VPC or create one, and choose its address range and availability zones. See [AWS](aws.html#fleet-settings).
+   - **GCP**: use an existing VPC network or create one, and optionally a Cloud KMS key. See [GCP](gcp.html#fleet-settings).
+   - **OCI**: use an existing VCN or create one, choose the node shape and logs bucket, and optionally a KMS key. See [Oracle](oracle.html#fleet-settings).
+   - **Azure**: use an existing VNet or create one, and choose the node size and availability zones. See [Azure](azure.html#fleet-settings).
+   - **DigitalOcean**: use an existing VPC or create one, and optionally a high-availability control plane. See [DigitalOcean](digitalocean.html#fleet-settings).
+   - **Civo**: use an existing network or create one, and optionally pin the Kubernetes version. See [Civo](civo.html#fleet-settings).
+   - **BYOK**: set namespaces, labels and scheduling rules, then install the Agent on your cluster. See [Connect the cluster](byok.html#connect-the-cluster).
+   - **BYOVM**: upload the SSH key and list the machines for the topology you chose. See [Bring your own VMs](byovm.html#fleet-settings).
 
 5. **Deploy and Validate**  
    - Click deploy. Streamtime will provision and configure the Kubernetes fleet.

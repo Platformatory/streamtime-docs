@@ -4,47 +4,61 @@ parent: Fleet Management
 nav_order: 4
 ---
 
-# Bootstrapping on Azure (Experimental)
+# Fleets on Azure (Experimental)
 
-Azure is supported as a bootstrap provider for creating Kubernetes fleets in Streamtime, enabling you to deploy and manage Kafka clusters on Azure Kubernetes Service (AKS) with integrated automation.
+Streamtime creates and runs a Kubernetes cluster (Azure Kubernetes Service,
+AKS) in your Azure subscription, then installs what the fleet's workloads
+need. You register the account once, then create fleets on it.
 
----
-
-## When to Use Azure
-
-- **Microsoft Cloud Preference**: When your workloads or data reside primarily in Azure.
-- **AKS Features**: If you want to leverage Azure’s managed Kubernetes capabilities.
-- **Enterprise Integration**: For organizations using Azure Active Directory and other Microsoft services.
-- **Regional Compliance**: When you need to deploy clusters in specific Azure regions for compliance or latency.
-
----
+{: .warning }
+Azure fleets are experimental.
 
 ## Key Features
 
-- **Managed Kubernetes (AKS)**: Automated provisioning and management of AKS clusters.
-- **Flexible Tenancy**: Support for shared, isolated, or dedicated tenancy models.
-- **Integrated Security**: Leverage Azure AD and security features.
-- **Scalable Throughput**: Define Kafka units and scale clusters as needed.
-- **Placement Options**: Deploy in any supported Azure region.
+- **Managed Kubernetes**: Streamtime creates, monitors and deletes the AKS cluster for you.
+- **Your network or a new one**: use an existing VNet, or let Streamtime create one.
+- **Your encryption key**: optionally encrypt node disks with your own disk encryption set.
+- **Tenancy**: Shared, Isolated or Dedicated. See [Tenancy]({{ site.baseurl }}/about/tenancy/#tenancy).
+- **Monitoring**: metrics, logs and alerts for the fleet and everything on it.
+
+## Prerequisites
+
+- **A service principal** (an app registration with a client secret) that
+  can create AKS clusters, virtual networks, storage accounts and managed
+  identities in the subscription and resource group the fleet uses.
+- **A resource group** for the fleet.
+- **A Base Domain** for the fleet's endpoints, added under **Settings**.
+
+**Cloud account credentials**
+
+- **Subscription ID** and **Tenant ID**: where the fleet is created.
+- **Client ID** and **Client Secret**: the service principal's.
+- **Defined Tags** (optional): tags, as namespace, key and value, that
+  Streamtime adds to the resources it creates.
+
+## Fleet settings
+
+**Placement Configuration**
+
+- **Account**: the cloud account you registered.
+- **Region**: `centralindia`, `southindia`, `centralus` or `eastus`.
+- **Resource Group Name**: the resource group for the fleet.
+
+**Advanced Configuration**
+
+- **VNet ID**: an existing VNet, or leave it empty to create a new one.
+- **Node Size**: `Standard_D4as_v6`, `Standard_D8as_v6` or
+  `Standard_D16as_v6`. The UI shows each size's price.
+- **Availability Zones**: 1 to 3 (default 1, a single zone).
+- **Public Cluster**: whether the Kubernetes API is reachable from the
+  internet (on by default).
+- **Disk Encryption Set ID**: optional; encrypts node disks with your key.
+- **Logs Storage Bucket Name**: the storage account for logs, unique across
+  Azure; optional, Streamtime generates one when it's empty.
 
 ---
 
-## How to Deploy on Azure
-Follow these steps to bootstrap a Kubernetes fleet on Azure using Streamtime:
-
-1. **Start Fleet Creation in Streamtime**
-   - In the Streamtime UI, click "Create Kubernetes Fleet".
-   - Select **Azure** as your bootstrap provider.
-
-2. **Configure Tenancy & Sizing**
-   - Choose tenancy mode (shared, isolated, or dedicated).
-   - Set base domain, max tenancy, and max Kafka units.
-
-3. **Placement Configuration**
-   - Select the Azure region for your fleet.
-
-4. **Advanced Configuration**
-   - Enter resource group, vnet name, subnet name, Kubernetes version, network plugin, agent VM size, and node count.
-
-
----
+{% capture credentials %}{"subscription_id": "<subscription-id>", "tenant_id": "<tenant-id>", "client_id": "<client-id>", "client_secret": "<client-secret>"}{% endcapture %}
+{% capture placement %}{"account": "<cloud-account>", "region": "eastus", "resource_group": "<resource-group>"}{% endcapture %}
+{% capture advanced %}{"azure_node_size": "Standard_D4as_v6", "azure_az_count": 1}{% endcapture %}
+{% include fleet-tasks.md provider="azure" name="Azure" id="azure" fleet="orders-east" credentials=credentials placement=placement advanced=advanced shots="azure" %}

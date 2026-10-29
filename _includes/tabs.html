@@ -1,12 +1,19 @@
 {%- comment -%}
-  The four-interface tab set every task page uses: UI, API, CLI, MCP.
+  The tab set every task page uses: UI, API, CLI, MCP, and Terraform when the
+  task is managed by the Streamtime Terraform provider.
   A missing param renders a "not available" panel instead of hiding
   the tab. Nest code-tabs.html (or capture its output) into `api`.
 
-    {% include tabs.html id="create-kafka" ui=ui api=api cli=cli mcp=mcp %}
+    {% include tabs.html id="create-kafka" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
   Params:
     id   unique id prefix on the page, kebab-case, named after the task
     ui / api / cli / mcp   panel content (captured markdown)
+    terraform   optional fifth panel. Pass it only for a task a provider resource
+                covers; leave it out otherwise and no Terraform tab is shown.
 {%- endcomment -%}
+{% if include.terraform and include.terraform != "" %}
+{% include tabset.html id=include.id labels="UI API CLI MCP Terraform" p1=include.ui p2=include.api p3=include.cli p4=include.mcp p5=include.terraform fallback='<p class="st-tabs__none">Not available in this interface yet.</p>' %}
+{% else %}
 {% include tabset.html id=include.id labels="UI API CLI MCP" p1=include.ui p2=include.api p3=include.cli p4=include.mcp fallback='<p class="st-tabs__none">Not available in this interface yet.</p>' %}
+{% endif %}

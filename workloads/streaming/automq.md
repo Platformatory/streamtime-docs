@@ -30,22 +30,24 @@ AutoMQ is a Kafka-compatible, cloud-native messaging platform designed for high 
 
 ---
 
-## How to Deploy AutoMQ on Streamtime
+## Manage an AutoMQ cluster
 
-1. **Select Cluster Platform**
-   - In the Streamtime UI, create a new Kafka cluster.
-   - Choose **AutoMQ** as the cluster platform.
+From the API, CLI or MCP, an AutoMQ cluster also needs these settings in
+`advanced_config`. `oauth` is the identifier of an OAuth provider in your
+organization's settings, and `aws_account` the identifier of an AWS cloud
+account:
 
-2. **Configure Cluster Basics**
-   - Set the cluster name, tenancy mode, and number of Kafka units.
-   - Select the Kubernetes fleet for deployment.
+```json
+"advanced_config": {
+  "number_of_zones": "1",
+  "cluster_access": "Internal",
+  "oauth": "<oauth-provider>",
+  "storage_bucket_name": "<bucket>",
+  "storage_provider": {
+    "aws_account": "<cloud-account>",
+    "aws_region": "us-east-1"
+  }
+}
+```
 
-3. **Advanced Configuration**
-   - Configure authentication, storage, and other advanced settings as needed.
-
-4. **Review and Deploy**
-   - Review your configuration and click **Deploy** to provision the AutoMQ cluster.
-
----
-
-Once deployed, you can monitor and manage your AutoMQ cluster directly from the Streamtime dashboard.
+{% include kafka-cluster-tasks.md workload="automq" name="AutoMQ" id="automq" cluster="events" shots="automq" %}

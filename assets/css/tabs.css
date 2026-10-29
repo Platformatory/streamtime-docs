@@ -79,15 +79,16 @@ permalink: /assets/css/tabs.css
 /* Reveal the panel whose position matches the checked radio's
    position. Inputs and divs have independent :nth-of-type counters,
    so radio N pairs with panel N — within one bar. (Four tabs
-   everywhere: UI/API/CLI/MCP and HTTP/Python/TypeScript/Go.)
+   everywhere: UI/API/CLI/MCP and HTTP/Python/TypeScript/Go, plus a
+   fifth Terraform tab on pages for resources the provider manages.)
    A nested set's radios are NOT siblings of the outer panels, so the
    pairing can't leak between levels. */
-{% for i in (1..4) %}
+{% for i in (1..5) %}
 .st-tabs > .st-tabs__bar > .st-tabs__radio:nth-of-type({{ i }}):checked ~ .st-tabs__panel:nth-of-type({{ i }}) { display: block; }
 {% endfor %}
 
 /* Nested sets inside a panel: pair by position inside the inner bar. */
-{% for i in (1..4) %}
+{% for i in (1..5) %}
 .st-tabs__panel .st-tabs > .st-tabs__bar > .st-tabs__radio:nth-of-type({{ i }}):checked ~ .st-tabs__panel:nth-of-type({{ i }}) { display: block; }
 {% endfor %}
 

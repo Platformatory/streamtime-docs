@@ -13,7 +13,7 @@
   Params:
     id        unique id prefix on the page, kebab-case (required)
     labels    space-separated list of tab labels, rendered in this order
-    p1 .. p4  panel content (markdown), aligned with `labels`.
+    p1 .. p5  panel content (markdown), aligned with `labels`.
               A missing or empty panel renders `fallback` instead.
     fallback  HTML shown for a missing panel
 {%- endcomment -%}
@@ -35,7 +35,8 @@
     {%- if forloop.first -%}{%- assign content = include.p1 -%}
     {%- elsif forloop.index == 2 -%}{%- assign content = include.p2 -%}
     {%- elsif forloop.index == 3 -%}{%- assign content = include.p3 -%}
-    {%- else -%}{%- assign content = include.p4 -%}{%- endif -%}
+    {%- elsif forloop.index == 4 -%}{%- assign content = include.p4 -%}
+    {%- else -%}{%- assign content = include.p5 -%}{%- endif -%}
     {%- capture trimmed -%}{{ content }}{%- endcapture -%}
     <div class="st-tabs__panel" role="tabpanel" id="{{ pid }}-panel"
          aria-labelledby="{{ pid }}-label">

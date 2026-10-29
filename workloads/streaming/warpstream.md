@@ -87,13 +87,12 @@ Drop the `WarpStreamBucketLifecycle` statement if you're pointing the cluster at
 
 ---
 
-## Creating a WarpStream Cluster
+## Cluster settings
 
-**Step 1: Select Cluster Type**
+What each setting on the **Create cluster** screens means. The steps
+themselves are under [Create a cluster](#create-a-cluster).
 
-Navigate to **Clusters → Create Cluster →** select **WarpStream → Begin Configuration**.
-
-**Step 2: Cluster Basics**
+**Basic Configuration**
 
 * **Identifier** — a unique, lowercase name for the cluster. Used throughout the UI and API to refer to it.
 * **Tags** — key/value labels for organizing clusters by environment, owner, or cost center.
@@ -102,11 +101,11 @@ Navigate to **Clusters → Create Cluster →** select **WarpStream → Begin Co
 * **Kafka Units (KU)** — sizes the data plane. WarpStream always runs at least 3 agents for availability; each additional Kafka Unit above that adds one more agent. This is a different relationship than the "1 KU ≈ 20 MB/s" rule of thumb used for disk-based providers — WarpStream throughput scales with agent count rather than a fixed per-unit bandwidth figure.
 * **Retention** — how long data is kept before deletion. Choose **Finite** and a number of days, or **Infinite** to keep data indefinitely. This applies to any Kafka cluster type, WarpStream included, and is unrelated to object storage tiering — WarpStream has no separate hot/cold tiers to configure.
 
-**Step 3: Fleet Placement** (Administrator users only)
+**Fleet Selection** (administrators only)
 
 Select the Kubernetes fleet that will host the WarpStream agents.
 
-**Step 4: Advanced Configuration** (Administrator users only)
+**Advanced Configuration** (administrators only)
 
 * **Number of Zones** — `1` or `2`. Controls how many availability zones the deployment spans.
 * **Cluster Access** — `Internal` or `External`. WarpStream exposes a single Kafka listener, so this is a straight either/or rather than a combined internal-and-external option: **Internal** keeps the cluster reachable only from inside the Kubernetes fleet; **External** exposes it outside the cluster and requires DNS pointed at the cluster's endpoints (see Connecting to Your Cluster below).
@@ -118,8 +117,6 @@ Select the Kubernetes fleet that will host the WarpStream agents.
 
 {: .note }
 Alerts for this cluster go to the alert channels of the fleet that hosts it. See [Alert Channels](/fleet-management/#alert-channels).
-
-**Once all steps are complete** — review the configuration and click **Create Cluster**.
 
 ---
 
@@ -201,86 +198,27 @@ Cost is usage-based: you're billed for storage consumed, data transferred, and c
 
 ---
 
-## API Reference
+## Manage a WarpStream cluster
 
-### Create a WarpStream Cluster
-
-```bash
-curl -X POST https://<streamtime-api-endpoint>/organizations/<your-org-id>/clusters/ \
-  -H "Authorization: Bearer YOUR_API_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "identifier": "clever-otter",
-    "cluster_type": "warpstream",
-    "kafka_units": 3,
-    "tenancy_mode": "Shared",
-    "retention_mode": "Finite",
-    "retention_days": 7,
-    "advanced_config": {
-        "number_of_zones": "1",
-        "cluster_access": "External",
-        "private_access": false,
-        "cluster_tier": "pro",
-        "warpstream_api_key": "********",
-        "warpstream_region": "us-east-1",
-        "s3_bucket_name": "clever-otter-warpstream",
-        "s3_region": "us-east-1",
-        "s3_access_key": "AKIA...",
-        "s3_secret_access_key": "********",
-        "storage_create_bucket": true,
-        "schema_registry_enabled": true
-    },
-    "tags": [
-        {
-            "key": "environment",
-            "value": "non-prod"
-        }
-    ],
-    "organization": "<your-org-id>",
-    "cloud_provider": "aws",
-    "region": "us-east-1",
-    "infrastructure": "sympathetic-emu"
-}'
-```
-
-**Response:**
+From the API, CLI or MCP, a WarpStream cluster also needs your WarpStream
+account and object storage in `advanced_config` (see
+[Cluster settings](#cluster-settings)). Add this to the create request:
 
 ```json
-{
-    "id": "7b6a1e2d-4c3f-4a5b-9e8d-1f2a3b4c5d6e",
-    "organization": "<your-org-id>",
-    "infrastructure": "sympathetic-emu",
-    "identifier": "clever-otter",
-    "cluster_type": "warpstream",
-    "tenancy_mode": "Shared",
-    "kafka_units": 3,
-    "retention_days": 7,
-    "cloud_provider": "aws",
-    "region": "us-east-1",
-    "tags": [
-        {
-            "key": "environment",
-            "value": "non-prod"
-        }
-    ],
-    "advanced_config": {
-        "number_of_zones": "1",
-        "cluster_access": "External",
-        "private_access": false,
-        "cluster_tier": "pro",
-        "warpstream_region": "us-east-1",
-        "s3_bucket_name": "clever-otter-warpstream",
-        "s3_region": "us-east-1",
-        "storage_create_bucket": true,
-        "schema_registry_enabled": true
-    },
-    "console_url": null,
-    "client_properties": null,
-    "status": "Pending",
-    "created_at": "2025-07-17T09:54:37.723465Z",
-    "updated_at": "2025-07-17T09:54:37.723481Z"
+"advanced_config": {
+  "warpstream_api_key": "<warpstream-api-key>",
+  "warpstream_region": "us-east-1",
+  "s3_bucket_name": "<bucket>",
+  "s3_region": "<bucket-region>",
+  "s3_access_key": "<access-key-id>",
+  "s3_secret_access_key": "<secret-access-key>"
 }
 ```
+
+The other settings have defaults: one zone, internal access, `dev` tier,
+bucket created if missing, no Schema Registry.
+
+{% include kafka-cluster-tasks.md workload="warpstream" name="WarpStream" id="warpstream" cluster="clickstream" shots="warpstream" %}
 
 ---
 
