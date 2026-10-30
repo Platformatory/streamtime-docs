@@ -1,6 +1,7 @@
 {%- comment -%}
   The lifecycle tasks every Kafka cluster page shares, each in UI / API / CLI /
-  MCP tabs with HTTP / Python / TypeScript / Go API sub-tabs.
+  MCP tabs with HTTP / Python / TypeScript / Go API sub-tabs, plus a Terraform
+  tab on the tasks the provider covers (create, topics, delete).
 
     {% include kafka-cluster-tasks.md workload="strimzi" name="Apache Kafka" id="strimzi" cluster="orders" %}
 
@@ -246,8 +247,26 @@ The assistant saves the cluster but can't start provisioning yet. Start it
 from the API (step 2 in the API tab) or from the cluster's page in the UI.
 {% endcapture %}
 
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka" "{{ c | replace: "-", "_" }}" {
+  identifier      = "{{ c }}"
+  workload        = "{{ w }}"
+  fleet           = "<fleet>"
+  kafka_units     = 3
+  advanced_config = jsonencode({})
+}
+```
+
+`terraform apply` saves the cluster, starts provisioning it and waits until it
+is ready, the same two steps as the API. Leave out `fleet` to let Streamtime
+choose one with room for the cluster. To manage an existing cluster, import it
+by identifier: `terraform import streamtime_kafka.{{ c | replace: "-", "_" }} {{ c }}`. See
+[streamtime_kafka]({{ site.baseurl }}/terraform/kafka/).
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-create{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endif %}
 
 ---
@@ -602,8 +621,31 @@ MCP reads topic settings; it doesn't change them. Ask, for example:
 `get_topic_configuration`).
 {% endcapture %}
 
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_topic" "payments" {
+  kafka              = streamtime_kafka.{{ c | replace: "-", "_" }}.identifier
+  name               = "payments"
+  partitions         = 6
+  replication_factor = 3
+
+  config = {
+    "retention.ms" = "604800000"
+  }
+}
+```
+
+Raising `partitions` or changing `config` is applied in place. Partitions can't
+be lowered: the plan stops with an error rather than recreating the topic.
+Changing `replication_factor` recreates the topic, which deletes its messages.
+Only the settings in `config` are managed; removing one returns it to the
+cluster's default. Import an existing topic with
+`terraform import streamtime_kafka_topic.payments {{ c }}/payments`. See
+[streamtime_kafka_topic]({{ site.baseurl }}/terraform/kafka_topic/).
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-topics{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 ---
 
@@ -744,5 +786,12 @@ Add `--yes` to skip the confirmation prompt.
 Not available in MCP.
 {% endcapture %}
 
+{% capture terraform %}
+Remove the `streamtime_kafka` block and run `terraform apply`, or run
+`terraform destroy -target=streamtime_kafka.{{ c | replace: "-", "_" }}`. Terraform waits
+until Streamtime has removed the cluster. Topics that refer to the cluster
+(`kafka = streamtime_kafka.{{ c | replace: "-", "_" }}.identifier`) are destroyed first.
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-delete{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
