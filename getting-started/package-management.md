@@ -44,3 +44,22 @@ needs.
 When you create or upgrade a workload, the **Version** selectors are
 populated from the catalog — you pick from what Streamtime can actually
 install, never a free-text version.
+
+### Choosing component versions when you create something
+
+The last step of each create form has a collapsed section — **Bootstrap
+Components** when you create a fleet, **Components** when you create a
+workload. Closed, it reads **Using recommended versions**, and you can
+deploy without opening it: every component gets its catalog default.
+
+Open it to change a component. Each component has its own card:
+
+| Field | What it does |
+|---|---|
+| **Version** | The versions in the selected registry, newest first. The default is marked *(recommended)*. |
+| **Registry** | Shown only when the chart is mirrored in more than one registry. Changing it clears the version and selects the recommended (or newest) version that registry has, so a version is never paired with a registry that does not hold it. |
+| **Custom settings** | Shown for components whose settings you can override. Opens the component's default settings as YAML for you to edit. |
+
+Once you change anything, the closed section reads **N version
+overrides** instead. If a registry has no versions of a component, the
+row says so: pick another registry, or sync packages in **Settings**.

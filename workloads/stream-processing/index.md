@@ -53,10 +53,22 @@ longer run on Apache Flink clusters.
 4. Select **Deploy a version** on a registered version. The deployment
    consumes and produces on your Kafka clusters; its status appears in the
    project view.
+5. Open the job to see which step its deployment is on (the cluster is ready,
+   the release is fetched and verified, the job is running). If it failed,
+   the reason is shown at the top with what to do next. Open **Logs** and
+   choose **Release** to read the fetch and verify step. Operators also see
+   the JobManager and TaskManager logs of the shared cluster.
 {% endcapture %}
 
 {% capture api %}
 ```bash
+# Where is a deployment, and why did the last one fail?
+curl "$STREAMTIME_URL/organizations/$ORG/flink/nightly-rollup/jobs/orders-enrich/readiness/" \
+  -H "Authorization: Bearer $TOKEN"
+# The newest lines of the release's fetch and verify step (at most 500)
+curl "$STREAMTIME_URL/organizations/$ORG/flink/nightly-rollup/jobs/orders-enrich/logs/?component=release&lines=200" \
+  -H "Authorization: Bearer $TOKEN"
+
 # Connect the store (the credential is stored securely and never returned)
 curl -X PUT "$STREAMTIME_URL/organizations/$ORG/flink-projects/orders-enrich/store/" \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
@@ -80,6 +92,8 @@ streamtime flink-project release register orders-enrich --version 1.4.0 \
 streamtime flink-project head set orders-enrich --version 1.4.0 --cluster nightly-rollup --wait
 streamtime flink-project head show orders-enrich
 streamtime flink list
+streamtime flink job status nightly-rollup orders-enrich   # which step it is on, and why the last one failed
+streamtime flink job logs nightly-rollup orders-enrich     # the fetch and verify step of the release
 ```
 {% endcapture %}
 
