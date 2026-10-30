@@ -43,6 +43,10 @@ the mode, and **Flink Units** (application) or **Max Flink Units**
 
 - For application mode: the **application JAR** location (or a project
   version), entry class or Python entry file, and arguments.
+- For session mode: the **Job Language**, Java (the default) or Python. Python
+  installs the image that runs PyFlink jobs and needs no project to exist
+  first. A Python release is refused on a Java workspace, and the language
+  cannot change once the workspace has jobs.
 - **Parallelism** and **upgrade mode**; savepoint strategy.
 - **Optimization Goal** and **State Backend Tier**.
 - **Web UI Enabled**, Flink configuration (`flink_conf`), and JobManager
@@ -60,7 +64,8 @@ the mode, and **Flink Units** (application) or **Max Flink Units**
    **Provider** and the mode, and set **Flink Units** (application) or
    **Max Flink Units** (session).
 3. **Fleet Selection**: choose the fleet.
-4. **Advanced Configuration**: for application mode, the JAR or project
+4. **Advanced Configuration**: for session mode, choose the **Job Language**
+   (Java or Python); for application mode, the JAR or project
    version to run; then parallelism, upgrade mode, **Optimization Goal**,
    **State Backend Tier** and **Web UI Enabled**.
 5. Create it. It shows **Pending**, then **Provisioning**, then
@@ -180,8 +185,12 @@ resp, err = call("POST", "/flink/analytics/reconcile/",
 streamtime flink create \
   --identifier analytics \
   --mode session \
+  --runtime python \
   --fleet <fleet>
 ```
+
+`--runtime` is `java` (the default) or `python`, and applies to session mode
+only. The API field is `advanced_configuration.runtime`.
 
 The CLI saves the deployment but can't start provisioning it yet. Start it
 from the UI, or with the API's reconcile request.
