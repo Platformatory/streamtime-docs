@@ -77,7 +77,8 @@ export STREAMTIME_STORE_TOKEN=...   # read from the environment, never printed
 streamtime flink-project store set orders-enrich --store oras --url https://ghcr.io
 streamtime flink-project release register orders-enrich --version 1.4.0 \
   --store oras --location ghcr.io/acme/orders-enrich:1.4.0 --digest sha256:<64 hex characters>
-streamtime flink-project deploy orders-enrich --version 1.4.0 --cluster nightly-rollup --wait
+streamtime flink-project head set orders-enrich --version 1.4.0 --cluster nightly-rollup --wait
+streamtime flink-project head show orders-enrich
 streamtime flink list
 ```
 {% endcapture %}
