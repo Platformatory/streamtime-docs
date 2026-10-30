@@ -46,14 +46,19 @@ longer run on Apache Flink clusters.
 2. On the project page, under **Artifact store**, choose the store type,
    enter its https address and the sign-in clusters use to read builds
    (read access is enough), then select **Connect store**.
-3. Open the **CI/CD** tab, pick your CI system and copy the pipeline into
+3. To try your job on your own machine first, open the **CI/CD** tab and
+   under **Local development** select **Show local environment files**. They
+   run the same version of Flink as your clusters and never contain the CI
+   Key (add it to your own `.env`).
+4. On the **CI/CD** tab, pick your CI system and copy the pipeline into
    your repository. Add the project's CI Key and the store credential as CI
    secrets as the steps say. Each push builds, pushes to your store and
    registers a version.
-4. Select **Deploy a version** on a registered version. The deployment
-   consumes and produces on your Kafka clusters; its status appears in the
-   project view.
-5. Open the job to see which step its deployment is on (the cluster is ready,
+5. Select **Deploy a version** on a registered version. This moves the
+   project's one deployment (its **HEAD**) to that version, forward or back;
+   choosing an older version is a rollback. The deployment consumes and
+   produces on your Kafka clusters; its status appears in the project view.
+6. Open the job to see which step its deployment is on (the cluster is ready,
    the release is fetched and verified, the job is running). If it failed,
    the reason is shown at the top with what to do next. Open **Logs** and
    choose **Release** to read the fetch and verify step. Operators also see
@@ -67,6 +72,10 @@ curl "$STREAMTIME_URL/organizations/$ORG/flink/nightly-rollup/jobs/orders-enrich
   -H "Authorization: Bearer $TOKEN"
 # The newest lines of the release's fetch and verify step (at most 500)
 curl "$STREAMTIME_URL/organizations/$ORG/flink/nightly-rollup/jobs/orders-enrich/logs/?component=release&lines=200" \
+  -H "Authorization: Bearer $TOKEN"
+
+# The files of the local development environment (the CI Key is never in them)
+curl "$STREAMTIME_URL/organizations/$ORG/flink-projects/orders-enrich/dev-env/" \
   -H "Authorization: Bearer $TOKEN"
 
 # Connect the store (the credential is stored securely and never returned)
@@ -85,6 +94,7 @@ For a Python project, add `"declared": {"layout": "wheelhouse", "entry_file": "m
 {% capture cli %}
 ```bash
 streamtime flink-project create --identifier orders-enrich --name "Orders enrichment"
+streamtime flink-project init orders-enrich   # docker-compose, .env.example and a starter job in this directory
 export STREAMTIME_STORE_TOKEN=...   # read from the environment, never printed
 streamtime flink-project store set orders-enrich --store oras --url https://ghcr.io
 streamtime flink-project release register orders-enrich --version 1.4.0 \
