@@ -204,7 +204,31 @@ Not available in MCP yet. Create the fleet from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="byok-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_fleet" "edge_lab" {
+  identifier     = "edge-lab"
+  fleet_provider = "byok"
+  domain         = "<base-domain>"
+  tenancy_mode   = "Shared"
+
+  workloads = jsonencode({
+    streaming = {
+      enabled   = true
+      providers = ["strimzi"]
+    }
+  })
+}
+```
+
+`terraform apply` saves the fleet and records it as ready for its cluster, the
+same two steps as the API. Then [connect the cluster](#connect-the-cluster).
+To manage an existing fleet, import it by identifier:
+`terraform import streamtime_fleet.edge_lab edge-lab`. See
+[streamtime_fleet]({{ site.baseurl }}/terraform/fleet/).
+{% endcapture %}
+
+{% include tabs.html id="byok-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 ---
 
