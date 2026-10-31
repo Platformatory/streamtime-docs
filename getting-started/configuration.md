@@ -14,7 +14,7 @@ will operate in. These settings are shared across the organization:
 - **[Identity Providers](/configuration/identity-providers/)** — the
   OIDC provider your users sign in with and workloads authenticate
   against.
-- **[Fleet Providers](/configuration/fleet-providers/)** — the cloud
+- **[Cloud Accounts](/configuration/fleet-providers/)** — the cloud
   accounts (AWS, Oracle, GCP, …) Streamtime may provision fleets in.
 
 Everything else an operator can change after deployment lives in

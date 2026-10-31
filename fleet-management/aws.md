@@ -58,4 +58,29 @@ account once, then create fleets on it.
 {% capture credentials %}{"aws_access_key": "<access-key-id>", "aws_access_secret": "<secret-access-key>"}{% endcapture %}
 {% capture placement %}{"account": "<cloud-account>", "region": "us-east-1"}{% endcapture %}
 {% capture advanced %}{"aws_vpc_cidr": "10.3.0.0/16", "aws_az_count": 3}{% endcapture %}
-{% include fleet-tasks.md provider="aws" name="AWS" id="aws" fleet="payments-east" credentials=credentials placement=placement advanced=advanced shots="aws" %}
+{% capture network_body %}{"identifier": "prod-vpc", "provider": "<cloud-account>", "name": "prod-vpc", "region": "us-east-1", "cidr": "10.20.0.0/16"}{% endcapture %}
+{% capture network_terraform %}
+```hcl
+# Streamtime creates the VPC in the cloud account and fills in network_id.
+resource "streamtime_network" "prod_vpc" {
+  identifier    = "prod-vpc"
+  name          = "prod-vpc"
+  cloud_account = streamtime_cloud_account.aws.identifier
+  region        = "us-east-1"
+  cidr          = "10.20.0.0/16"
+}
+
+# Or record a VPC you already have: set network_id and nothing is created.
+resource "streamtime_network" "existing" {
+  identifier    = "shared-vpc"
+  name          = "shared-vpc"
+  cloud_account = streamtime_cloud_account.aws.identifier
+  network_id    = "vpc-0123456789abcdef0"
+}
+```
+
+To manage a network that already exists in Streamtime, import it by
+identifier: `terraform import streamtime_network.prod_vpc prod-vpc`. See
+[streamtime_network]({{ site.baseurl }}/terraform/network/).
+{% endcapture %}
+{% include fleet-tasks.md provider="aws" name="AWS" id="aws" fleet="payments-east" credentials=credentials placement=placement advanced=advanced network_body=network_body network_terraform=network_terraform shots="aws" %}

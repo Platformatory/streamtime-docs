@@ -82,4 +82,23 @@ You register the account once, then create fleets on it.
 {% capture credentials %}{"tenancy_ocid": "ocid1.tenancy.oc1..<id>", "user_ocid": "ocid1.user.oc1..<id>", "fingerprint": "<key-fingerprint>", "private_key": "<private-key-pem>"}{% endcapture %}
 {% capture placement %}{"account": "<cloud-account>", "region": "ap-hyderabad-1", "compartment_id": "ocid1.compartment.oc1..<id>"}{% endcapture %}
 {% capture advanced %}{"oci_node_shape": "VM.Standard.E4.Flex", "oci_logs_storage_bucket_name": "<logs-bucket>"}{% endcapture %}
-{% include fleet-tasks.md provider="oci" name="OCI" id="oci" fleet="ledger-south" credentials=credentials placement=placement advanced=advanced shots="oci" %}
+{% capture network_body %}{"identifier": "ledger-vcn", "provider": "<cloud-account>", "name": "ledger-vcn", "region": "ap-hyderabad-1", "cidr": "10.3.0.0/22", "compartment_id": "ocid1.compartment.oc1..<id>"}{% endcapture %}
+{% capture network_terraform %}
+```hcl
+# Record a VCN you already have: set network_id and nothing is created.
+resource "streamtime_network" "existing" {
+  identifier    = "ledger-vcn"
+  name          = "ledger-vcn"
+  cloud_account = streamtime_cloud_account.oci.identifier
+  network_id    = "ocid1.vcn.oc1..<id>"
+}
+```
+
+Terraform can't create a new VCN yet: creating one needs a compartment, and
+`streamtime_network` has no setting for it. Create the VCN from the UI, API
+or CLI, or in OCI, then record it here. To manage a network that already
+exists in Streamtime, import it by identifier:
+`terraform import streamtime_network.existing ledger-vcn`. See
+[streamtime_network]({{ site.baseurl }}/terraform/network/).
+{% endcapture %}
+{% include fleet-tasks.md provider="oci" name="OCI" id="oci" fleet="ledger-south" credentials=credentials placement=placement advanced=advanced network_body=network_body network_terraform=network_terraform shots="oci" %}

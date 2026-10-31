@@ -22,6 +22,13 @@
                  TypeScript tabs of "Register the cloud account" say the
                  client can't do it yet (the generated clients don't know
                  the provider) and point to HTTP or Go instead
+    network_body optional JSON object: the body of "Create a network" (identifier,
+                 provider, name, region, cidr, and compartment_id on OCI).
+                 When set, the page gets a "Networks" section after the cloud
+                 account. Only AWS and OCI can create a network.
+    network_terraform
+                 captured markdown for the network's Terraform tab (required
+                 with network_body; OCI differs, see oracle.md)
     shots        optional folder under assets/images/ holding the UI
                  screenshots. Each one shows once its file exists:
                  account-basic-info.png, account-credentials.png,
@@ -37,6 +44,8 @@
 {%- assign p = include.id -%}
 {%- assign f = include.fleet -%}
 {%- assign s = include.shots -%}
+{%- assign rn = f | replace: "-", "_" -%}
+{%- assign kn = k | replace: "-", "_" -%}
 
 ## Before you start
 
@@ -69,8 +78,9 @@ in your {{ n }} account. Register it once; every fleet on that account uses it.
 
    {% include screenshot.html dir=s file="account-credentials.png" alt="Bootstrap Provider Details step with the credential fields" %}
 
-The account appears in the list. Streamtime checks the credentials when
-you create a fleet on it.
+The account appears in the list. Some clouds, such as AWS, are checked as
+you save: Streamtime refuses credentials the cloud rejects and says why.
+Streamtime checks the permissions again when you create a fleet.
 {% endcapture %}
 
 {% capture curl %}
@@ -85,7 +95,9 @@ curl -X POST "$API/bootstrap-providers/" \
   }'
 ```
 
-Returns `201` with the account. The secret values aren't returned.
+Returns `201` with the account. For some clouds, such as AWS, Streamtime
+checks the credentials with the cloud first and returns `400` with the
+cloud's reason when they are rejected.
 {% endcapture %}
 {% if include.sdk_account_gap %}
 {% capture python %}
@@ -153,7 +165,8 @@ streamtime provider create \
   --config '{{ include.credentials }}'
 ```
 
-List your accounts with `streamtime provider list`.
+List your accounts with `streamtime provider list -O json`.
+{% comment %}Gap: #1883 (the table output of list fails){% endcomment %}
 {% endcapture %}
 
 {% capture mcp %}
@@ -161,15 +174,201 @@ Not available in MCP yet. Register the account from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
+{% capture terraform %}
+```hcl
+resource "streamtime_cloud_account" "{{ kn }}" {
+  identifier     = "<cloud-account>"
+  cloud_provider = "{{ k }}"
+
+  configuration = jsonencode({{ include.credentials }})
+}
+```
+
+Fill the credentials from sensitive variables or your secrets store, not
+from values written in the file. Terraform doesn't read credentials back, so
+a change made outside Terraform isn't detected. To manage an account that
+already exists, import it by identifier:
+`terraform import streamtime_cloud_account.{{ kn }} <cloud-account>`, then
+set `configuration` and apply. See
+[streamtime_cloud_account]({{ site.baseurl }}/terraform/cloud-account/).
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-account{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 To change the credentials later, select **Edit Credentials** on the
-account in the UI, or send `PATCH $API/bootstrap-providers/<cloud-account>/`
-with a new `configuration`. Changing them from the CLI isn't available yet.
+account in the UI, send `PATCH $API/bootstrap-providers/<cloud-account>/`
+with a new `configuration`, or change `configuration` in Terraform and apply.
+Changing them from the CLI isn't available yet.
+{% comment %}Gap: #1882{% endcomment %}
 {% endif %}
 
 ---
+
+{% if include.network_body %}
+## Networks
+
+A network is the {% if k == "oci" %}VCN{% else %}VPC{% endif %} a fleet runs in. You don't need one to create a
+fleet: without it, the fleet creates its own (see [Fleet settings](#fleet-settings)).
+Create a network when you want to manage it separately from any fleet. Leave
+out **Existing Network ID** and Streamtime creates the network in your cloud
+account; give the ID of one you already have and Streamtime only records it.
+
+### Create a network
+
+{% capture ui %}
+1. In the sidebar, select **Network**, then **Create network**.
+2. In **Create Network**, choose the **Bootstrap Provider** (your cloud
+   account), enter an **Identifier** (lowercase letters, digits and dashes,
+   up to 24 characters), a **Name**, the **Region** and, optionally, the
+   **CIDR**.{% if k == "oci" %} Enter the **Compartment ID (OCI)** to create the network in.{% endif %}
+3. To use a network you already have, enter its ID in **Existing Network ID**
+   instead of leaving it empty.
+4. Select **Create**.
+
+The network appears in the list. A new one is empty until Streamtime has
+created it in the cloud; refresh the list to see its ID.
+{% endcapture %}
+
+{% capture curl %}
+```bash
+curl -X POST "$API/networks/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{{ include.network_body }}'
+```
+
+Returns `201` with the network. `identifier`, `provider` (the cloud account)
+and `name` are required. Without `network_id`, Streamtime starts creating the
+network in the cloud and fills `network_id` in when it's done: poll
+`GET $API/networks/<network>/` until `network_id` has a value. With
+`network_id`, nothing is created.
+{% endcapture %}
+{% capture python %}
+The typed `Network` model marks server-set fields as required, so send the
+body with the SDK's HTTP client:
+
+```python
+resp = client.get_httpx_client().post(
+    f"/organizations/{ORG}/networks/",
+    json={{ include.network_body }},
+)
+resp.raise_for_status()
+print(resp.json()["identifier"])  # poll until "network_id" is set
+```
+{% endcapture %}
+{% capture typescript %}
+The generated `Network` type doesn't list every field the request takes, so
+send the body through the client directly:
+
+```typescript
+const { data } = await client.post({
+  url: "/organizations/{org_identifier}/networks/",
+  path: { org_identifier: org },
+  body: {{ include.network_body }},
+});
+console.log((data as { identifier: string }).identifier); // poll until network_id is set
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("POST", "/networks/", json.RawMessage(`{{ include.network_body }}`))
+// resp.StatusCode is 201; poll call("GET", "/networks/<network>/", nil)
+// until "network_id" has a value.
+```
+{% endcapture %}
+{%- capture tid -%}{{ p }}-network-create-api{%- endcapture -%}
+{% capture api %}{% include code-tabs.html id=tid curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+```bash
+streamtime network create --config '{{ include.network_body }}'
+```
+
+List networks with `streamtime network list -O json`, and show one with
+`streamtime network get <network>`.
+{% comment %}Gap: #1883 (the table output of list fails){% endcomment %}
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP yet. Create the network from the UI, API or CLI.
+{% comment %}Gap: #1878{% endcomment %}
+{% endcapture %}
+
+{% capture terraform %}{{ include.network_terraform }}{% endcapture %}
+
+{%- capture tid -%}{{ p }}-network-create{%- endcapture -%}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
+### Delete a network
+
+{: .warning }
+Deleting a network removes it from Streamtime only. The {% if k == "oci" %}VCN{% else %}VPC{% endif %} stays in your cloud
+account, and so do the resources in it. Remove them in the cloud console
+or CLI if you no longer need them.
+{% comment %}Gap: #1860{% endcomment %}
+
+{% capture ui %}
+1. In the sidebar, select **Network**.
+2. Select the delete icon on the network's row and confirm.
+{% endcapture %}
+
+{% capture curl %}
+```bash
+curl -X DELETE "$API/networks/<network>/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN"
+```
+
+Returns `204`.
+{% endcapture %}
+{% capture python %}
+```python
+from streamtime_sdk.api.networks import organizations_networks_destroy
+
+resp = organizations_networks_destroy.sync_detailed(ORG, "<network>", client=client)
+print(resp.status_code)  # 204
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+import { organizationsNetworksDestroy } from "./client";
+
+await organizationsNetworksDestroy({
+  path: { org_identifier: org, identifier: "<network>" },
+});
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("DELETE", "/networks/<network>/", nil)
+// resp.StatusCode is 204.
+```
+{% endcapture %}
+{%- capture tid -%}{{ p }}-network-delete-api{%- endcapture -%}
+{% capture api %}{% include code-tabs.html id=tid curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+```bash
+streamtime network delete <network> --yes
+```
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP yet. Delete the network from the UI, API or CLI.
+{% comment %}Gap: #1878{% endcomment %}
+{% endcapture %}
+
+{% capture terraform %}
+Remove the `streamtime_network` block and run `terraform apply`, or run
+`terraform destroy -target=streamtime_network.<name>`. As above, this removes
+the record from Streamtime and leaves the cloud network in place.
+{% endcapture %}
+
+{%- capture tid -%}{{ p }}-network-delete{%- endcapture -%}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
+---
+{% endif %}
 
 {% if include.create_section %}{{ include.create_section }}{% else %}
 ## Create a fleet
@@ -386,8 +585,44 @@ Not available in MCP yet. Create the fleet from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
+{% capture terraform %}
+```hcl
+resource "streamtime_fleet" "{{ rn }}" {
+  identifier     = "{{ f }}"
+  fleet_provider = "{{ k }}"
+  domain         = "<base-domain>"
+  tenancy_mode   = "Shared"
+
+  placement_config = jsonencode({{ include.placement }})
+  advanced_config  = jsonencode({{ include.advanced }})
+
+  # The placement refers to the account by name, so tell Terraform to
+  # create the account first.
+  depends_on = [streamtime_cloud_account.{{ kn }}]
+
+  timeouts = {
+    create = "90m"
+    delete = "60m"
+  }
+}
+```
+
+`terraform apply` saves the fleet, starts provisioning it, and waits until
+it is ready, so allow for the {{ n }} cluster taking 20 minutes or more (the
+`timeouts` block). Read the `placement_config` and `advanced_config` fields
+{{ n }} accepts, and their allowed values, from the
+`streamtime_fleet_configuration_profile` data source. They match the
+API's [fleet settings](#fleet-settings).
+
+Changes to `placement_config` or `advanced_config` on a running fleet are
+saved but not applied yet (see [Update the fleet or the Agent](#update-the-fleet-or-the-agent)).
+To manage a fleet that already exists, import it by identifier:
+`terraform import streamtime_fleet.{{ rn }} {{ f }}`. See
+[streamtime_fleet]({{ site.baseurl }}/terraform/fleet/).
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-create{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endif %}
 
 ---
@@ -709,8 +944,19 @@ Not available in MCP yet. Delete the fleet from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
+{% capture terraform %}
+```bash
+terraform destroy -target=streamtime_fleet.{{ rn }}
+```
+
+Or remove the `streamtime_fleet` block and run `terraform apply`. Terraform
+starts the delete and waits until the fleet is gone (the `delete` timeout).
+Streamtime refuses the delete while the fleet still hosts workloads, so
+remove those first.
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-delete{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 {% if include.remove_account_section %}{{ include.remove_account_section }}{% else %}
 ---
@@ -774,6 +1020,19 @@ Not available in MCP yet. Remove the account from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
+{% capture terraform %}
+```bash
+# Preview what will be removed, then remove it.
+terraform plan -destroy -target=streamtime_cloud_account.{{ kn }}
+terraform destroy -target=streamtime_cloud_account.{{ kn }}
+```
+
+Terraform deletes the fleets that depend on the account first when they are
+in the same configuration, so check that the plan lists them. It only follows
+dependencies it can see: fleets managed in another configuration or outside
+Terraform aren't checked, so delete them first, as above.
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-remove-account{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endif %}
