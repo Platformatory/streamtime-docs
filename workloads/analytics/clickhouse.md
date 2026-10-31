@@ -184,7 +184,27 @@ Not available in MCP yet. Create the cluster from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="ch-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_clickhouse" "events" {
+  identifier     = "events"
+  fleet          = "<fleet>"
+  retention_days = 30
+
+  advanced_configuration = jsonencode({
+    shards   = 1
+    replicas = 2
+  })
+}
+```
+
+`terraform apply` saves the cluster, starts provisioning it and waits until it
+is ready, the same two steps as the API. To manage an existing cluster, import
+it by identifier: `terraform import streamtime_clickhouse.events events`. See
+[streamtime_clickhouse]({{ site.baseurl }}/terraform/clickhouse/).
+{% endcapture %}
+
+{% include tabs.html id="ch-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endcapture %}
 
 {% capture update_note %}
@@ -200,4 +220,17 @@ the events ClickHouse cluster healthy?"*
 It uses `list_clickhouses` and `get_clickhouse`.
 {% endcapture %}
 
-{% include workload-tasks.md name="ClickHouse" id="ch" res="events" path="clickhouses" py_mod="click_house" py_fn="organizations_clickhouses" ts_fn="organizationsClickhouses" menu="ClickHouse" cli="clickhouse" cli_reconcile="yes" has_status="yes" update_body=update_body update_note=update_note mcp_status=mcp_status create_section=create_section shots="clickhouse" %}
+{% capture tf_update %}
+Change the attributes in the `streamtime_clickhouse` block, for example
+`retention_days` or the shards and replicas in `advanced_configuration`, and
+run `terraform apply`. The plan shows an in-place update; Terraform saves the
+change, applies it and waits until the cluster runs it. Changing `identifier`
+or `fleet` replaces the cluster, and its data.
+{% endcapture %}
+{% capture tf_delete %}
+Remove the `streamtime_clickhouse` block and run `terraform apply`, or run
+`terraform destroy -target=streamtime_clickhouse.events`. Terraform waits until
+Streamtime has removed the cluster.
+{% endcapture %}
+
+{% include workload-tasks.md name="ClickHouse" id="ch" res="events" path="clickhouses" py_mod="click_house" py_fn="organizations_clickhouses" ts_fn="organizationsClickhouses" menu="ClickHouse" cli="clickhouse" cli_reconcile="yes" has_status="yes" update_body=update_body update_note=update_note mcp_status=mcp_status create_section=create_section shots="clickhouse" tf_update=tf_update tf_delete=tf_delete %}

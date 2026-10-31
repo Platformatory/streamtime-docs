@@ -202,7 +202,51 @@ Not available in MCP yet. Create the deployment from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="flink-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_flink" "analytics" {
+  identifier      = "analytics"
+  mode            = "session"
+  fleet           = "<fleet>"
+  max_flink_units = 8
+
+  advanced_configuration = jsonencode({})
+}
+```
+
+`terraform apply` saves the deployment, starts provisioning it and waits until
+it is ready, the same two steps as the API. Leave out `fleet` to let Streamtime
+choose one. For application mode, set `mode = "application"` and `flink_units`,
+and either the JAR in `advanced_configuration` or a project version:
+
+```hcl
+resource "streamtime_flink_project" "etl" {
+  identifier = "etl"
+  name       = "ETL jobs"
+  runtime    = "java"
+}
+
+resource "streamtime_flink" "etl" {
+  identifier  = "etl"
+  mode        = "application"
+  fleet       = "<fleet>"
+  flink_units = 2
+
+  project_version = {
+    project = streamtime_flink_project.etl.identifier
+    version = "<version>"
+  }
+}
+```
+
+The project's CI upload key is in the sensitive `ci_api_key` attribute, only
+when Terraform creates the project. To manage an existing deployment or
+project, import it by identifier: `terraform import streamtime_flink.analytics analytics`.
+See [streamtime_flink]({{ site.baseurl }}/terraform/flink/) and
+[streamtime_flink_project]({{ site.baseurl }}/terraform/flink-project/).
+{% endcapture %}
+
+{% include tabs.html id="flink-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endcapture %}
 
 {% capture extra_section %}
@@ -361,4 +405,18 @@ the job from it.
 {% endcapture %}
 {% capture update_body %}{"max_flink_units": 12}{% endcapture %}
 
-{% include workload-tasks.md name="Flink" id="flink" res="analytics" path="flink" py_mod="flink" py_fn="organizations_flink" ts_fn="organizationsFlink" menu="Flink" cli="flink" cli_gap="1818" has_status="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="flink" %}
+{% capture tf_update %}
+Change the attributes in the `streamtime_flink` block, for example
+`max_flink_units`, `project_version` or the settings in
+`advanced_configuration`, and run `terraform apply`. The plan shows an
+in-place update; Terraform saves the change, applies it and waits until the
+deployment runs it. Changing `identifier`, `mode`, `flink_provider` or `fleet`
+replaces the deployment.
+{% endcapture %}
+{% capture tf_delete %}
+Remove the `streamtime_flink` block and run `terraform apply`, or run
+`terraform destroy -target=streamtime_flink.analytics`. Terraform waits until
+Streamtime has removed the deployment.
+{% endcapture %}
+
+{% include workload-tasks.md name="Flink" id="flink" res="analytics" path="flink" py_mod="flink" py_fn="organizations_flink" ts_fn="organizationsFlink" menu="Flink" cli="flink" cli_gap="1818" has_status="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="flink" tf_update=tf_update tf_delete=tf_delete %}

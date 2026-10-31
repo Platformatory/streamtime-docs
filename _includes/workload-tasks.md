@@ -38,6 +38,10 @@
                  required, extra_section goes after the status task
     shots        optional folder under assets/images/ with UI screenshots:
                  list.png, detail.png, monitoring.png, delete.png
+    tf_update, tf_delete
+                 optional captured markdown for the update and delete tasks'
+                 Terraform tab; pass them only when a provider resource covers
+                 the resource
 {%- endcomment -%}
 {%- assign n = include.name -%}
 {%- assign p = include.id -%}
@@ -257,7 +261,7 @@ Not available in MCP yet. Change the configuration from the UI or API.
 {% endcapture %}
 
 {%- capture tid -%}{{ p }}-update{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=include.tf_update %}
 
 ---
 
@@ -380,4 +384,4 @@ Not available in MCP yet. Delete it from the UI, API or CLI.
 {% endcapture %}
 
 {%- capture tid -%}{{ p }}-delete{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=include.tf_delete %}
