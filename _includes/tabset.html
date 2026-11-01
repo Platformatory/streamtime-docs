@@ -3,12 +3,12 @@
   JavaScript. Called by tabs.html and code-tabs.html; use those rather
   than calling this directly.
 
-  Markup: all radios first, then all labels (they float left into the
-  visible tab bar), then all panels. The checked radio reveals its
-  panel via the float-queue rules in assets/css/tabs.css (radio N pairs
-  with panel N by :nth-of-type position). Radio N is followed in the
-  DOM by label N, so Tab order follows the bar left-to-right, and the
-  focused radio outlines its own label.
+  Markup: each radio immediately followed by its label (the labels
+  float left into the visible tab bar), then all panels. The checked
+  radio reveals its panel via the rules in assets/css/tabs.css (radio N
+  pairs with panel N by :nth-of-type position). Because label N directly
+  follows radio N, `radio:checked + label` highlights the selected tab
+  and the focused radio outlines its own label.
 
   Params:
     id        unique id prefix on the page, kebab-case (required)
@@ -24,9 +24,6 @@
     {%- capture pid -%}{{ include.id }}-tab-{{ forloop.index }}{%- endcapture -%}
     <input class="st-tabs__radio" type="radio" id="{{ pid }}" name="{{ include.id }}"
            aria-controls="{{ pid }}-panel" {% if forloop.first %}checked{% endif %}>
-    {%- endfor -%}
-    {%- for label in labels -%}
-    {%- capture pid -%}{{ include.id }}-tab-{{ forloop.index }}{%- endcapture -%}
     <label class="st-tabs__tab" role="tab" for="{{ pid }}"
            id="{{ pid }}-label" aria-controls="{{ pid }}-panel">{{ label }}</label>
     {%- endfor -%}

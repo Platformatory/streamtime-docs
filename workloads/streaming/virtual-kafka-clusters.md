@@ -154,7 +154,35 @@ CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="vkc-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_virtual_kafka" "team_a" {
+  identifier  = "team-a"
+  kafka_id    = "<kafka-cluster>"
+  kafka_units = 1
+  advanced_config = jsonencode({
+    oauth = {
+      client_id         = "team-a"
+      client_secret     = var.oauth_client_secret
+      issuer            = "<issuer>"
+      jwks_endpoint     = "<jwks-endpoint>"
+      authorization_uri = "<authorization-endpoint>"
+      token_uri         = "<token-endpoint>"
+      audience          = "team-a"
+    }
+  })
+}
+```
+
+`terraform apply` saves the virtual cluster, deploys it and waits until it is
+ready. The endpoints are in `resources`, which is sensitive: read them with
+`jsondecode(streamtime_virtual_kafka.team_a.resources).endpoints`. Unlike a
+Kafka cluster, a change to `kafka_units` or the settings is deployed in place.
+Import by identifier: `terraform import streamtime_virtual_kafka.team_a team-a`.
+See [streamtime_virtual_kafka]({{ site.baseurl }}/terraform/virtual_kafka/).
+{% endcapture %}
+
+{% include tabs.html id="vkc-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endcapture %}
 
 {% capture extra_section %}

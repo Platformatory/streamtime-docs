@@ -179,7 +179,25 @@ CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="connect-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_connect" "cdc" {
+  identifier       = "cdc"
+  kafka_id         = "<kafka-cluster>"
+  connect_provider = "skc"
+  advanced_config  = jsonencode({})
+}
+```
+
+`terraform apply` saves the Connect cluster, starts provisioning it and waits
+until it is ready, the same two steps as the API. A later change to its
+settings is saved with a warning: the running Connect cluster keeps its current
+settings until you recreate it (`terraform apply -replace=...`). Import an
+existing one by identifier: `terraform import streamtime_kafka_connect.cdc cdc`.
+See [streamtime_kafka_connect]({{ site.baseurl }}/terraform/kafka_connect/).
+{% endcapture %}
+
+{% include tabs.html id="connect-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endcapture %}
 
 {% capture extra_section %}

@@ -197,7 +197,32 @@ Not available in MCP yet. Create the replicator from the UI, API or CLI.
 {% comment %}Gap: #1811{% endcomment %}
 {% endcapture %}
 
-{% include tabs.html id="replicator-create" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_replicator" "mirror" {
+  identifier               = "east-to-west"
+  replicator_provider      = "MirrorMaker2"
+  source_kafka_id          = "<source-kafka-cluster>"
+  destination_kafka_id     = "<destination-kafka-cluster>"
+  source_secret_path       = "builtin:///replicators/east-to-west/source-secret"
+  destination_secret_path  = "builtin:///replicators/east-to-west/destination-secret"
+  replication_mode         = "active-passive"
+  lag_alert_threshold      = 1000
+  lag_alert_threshold_unit = "messages"
+}
+```
+
+`terraform apply` saves the replicator, starts it and waits until it is ready.
+Both secret paths are required, and the secrets must already exist.
+For a cluster outside Streamtime, leave out its `*_kafka_id` and set
+`source_connection_details` or `destination_connection_details`. A later change
+is saved with a warning: the running replicator keeps its current settings until
+you recreate it (`terraform apply -replace=...`). Import by identifier:
+`terraform import streamtime_kafka_replicator.mirror east-to-west`. See
+[streamtime_kafka_replicator]({{ site.baseurl }}/terraform/kafka_replicator/).
+{% endcapture %}
+
+{% include tabs.html id="replicator-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endcapture %}
 
 {% capture update_note %}

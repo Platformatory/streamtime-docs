@@ -4,8 +4,9 @@ permalink: /assets/css/tabs.css
 /* Interface tabs (_includes/tabs.html, _includes/code-tabs.html).
    CSS-only switching, no JavaScript required.
 
-   Markup per tab set: radios, then labels (the visible tab bar), then
-   one panel per radio, all siblings. The checked radio reveals the
+   Markup per tab set: radio/label pairs (the labels form the visible
+   tab bar), then one panel per radio, all siblings. Each label must
+   directly follow its radio: the selected-tab style uses `+`. The checked radio reveals the
    panel that matches its tab position: the generated rules below
    (one per position) pair `radio:nth-of-type(N):checked` with
    `panel:nth-of-type(N)` by position within the set. No :has(), no
