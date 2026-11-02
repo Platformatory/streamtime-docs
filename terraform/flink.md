@@ -49,7 +49,7 @@ output "flink_ui" {
 ### Required
 
 - `identifier` (String) Unique name of the instance: up to 24 lowercase letters, digits and dashes. Changing it creates a new instance.
-- `mode` (String) application (a single-job cluster that runs one application) or session (a job workspace that runs several jobs). Changing it creates a new instance.
+- `mode` (String) session (a job workspace that runs several jobs; the only mode for open-source Apache Flink) or application (a single-job cluster that runs one application; Confluent Manager for Apache Flink only). Changing it creates a new instance.
 
 ### Optional
 

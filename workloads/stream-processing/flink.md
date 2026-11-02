@@ -8,50 +8,58 @@ nav_order: 1
 # Apache Flink
 
 Streamtime runs Flink on a Kubernetes fleet and keeps it monitored and up
-to date. A Flink deployment runs in one of two modes:
+to date. **Apache Flink** runs in a **Job Workspace** (session mode): a shared
+cluster, sized up to **Max Flink Units**, that you submit jobs to. Each job
+claims Flink Units from it. Apache Flink does not offer a single-job cluster.
 
-- **Application** (a single-job cluster): the cluster runs one job, from
-  an application JAR or a registered Flink project version, and is sized
-  in **Flink Units**.
-- **Session**: a shared cluster, sized up to **Max Flink Units**, that
-  you submit jobs to. Each job claims Flink Units from it.
+**Confluent Manager for Flink** keeps its single-job cluster (application
+mode): the cluster runs one job, from an application JAR or a registered Flink
+project version, and is sized in **Flink Units**.
 
 ## Key Features
 
 - **Open-source Apache Flink or Confluent Flink**, chosen as the
   **Provider**.
 - **Sized in Flink Units**, with an **Optimization Goal** (Cost, Balanced
-  or Performance) and a **State Backend Tier** (Stateless, Light, Heavy or
-  Heavy-RocksDB).
-- **Savepoints and upgrade modes** (stateless, savepoint or last-state)
-  for safe job upgrades.
-- **Flink Web UI**, optionally, and metrics, logs and alerts for every
-  deployment.
+  or Performance). Streamtime derives the rest from the Flink Units: each
+  TaskManager gets min(Flink Units, 4) slots and the cluster gets enough
+  TaskManagers to cover them. A job runs as wide as the Flink Units it was
+  given. These numbers are provisional.
+- **RocksDB state** in every Job Workspace.
+- **Checkpoints and savepoints on by default.** On a kind or BYOK fleet they go
+  to the fleet's RustFS, in the `flink` bucket under
+  `<organization>/<cluster>`, and the last 3 checkpoints are kept. A job that
+  stops or restarts resumes from them. Deleting the cluster removes its
+  folder. The fleet's RustFS holds one shared credential for all clusters, so
+  any cluster on the fleet can read another's state. Cloud fleets have no
+  durable store yet and keep state on the pods' temporary disk, so **Keep
+  running state** and **Resume from the latest checkpoint** are refused there.
+- **State handling** per job: **Start fresh** (stateless), **Keep running
+  state** (savepoint) or **Resume from the latest checkpoint** (last-state).
+- **Flink Web UI** on every deployment, with metrics, logs and alerts.
 - **Flink projects**: CI registers each build from your own artifact store
   as a version, and deployments run it by version. See
   [Flink projects](index.html#flink-projects).
 
 ## Settings
 
-**Basic Configuration**: **Identifier**, **Description**, **Provider**,
-the mode, and **Flink Units** (application) or **Max Flink Units**
-(session).
+**Provider**: Apache Flink or Confluent Manager for Flink.
+
+**Basic Configuration**: **Identifier**, **Description**, and **Max Flink
+Units** (Job Workspace) or **Flink Units** (Confluent single-job cluster) with
+the **Optimization Goal**. For Apache Flink, **Jobs run in**: Java (the
+default) or Python. Python installs the image that runs PyFlink jobs and needs
+no project to exist first. A Python release is refused on a Java workspace, and
+the language cannot change once the workspace has jobs. Confluent Manager for
+Flink also asks for the **State Backend Tier**.
 
 **Fleet Selection**: the fleet to run on, or let Streamtime choose one.
 
-**Advanced Configuration**
-
-- For application mode: the **application JAR** location (or a project
-  version), entry class or Python entry file, and arguments.
-- For session mode: the **Job Language**, Java (the default) or Python. Python
-  installs the image that runs PyFlink jobs and needs no project to exist
-  first. A Python release is refused on a Java workspace, and the language
-  cannot change once the workspace has jobs.
-- **Parallelism** and **upgrade mode**; savepoint strategy.
-- **Optimization Goal** and **State Backend Tier**.
-- **Web UI Enabled**, Flink configuration (`flink_conf`), and JobManager
-  and TaskManager resources.
-- The chart **Version**, to upgrade.
+**Advanced Configuration**: the chart **Version**, to upgrade or for local
+testing. Confluent Manager for Flink also asks for the application JAR (or a
+project version), entry class and arguments, and its license. Task slots,
+TaskManager count, security, Web UI, savepoint and checkpoint settings are not
+asked for; the API still accepts them as overrides.
 
 ---
 
@@ -60,15 +68,12 @@ the mode, and **Flink Units** (application) or **Max Flink Units**
 
 {% capture ui %}
 1. In the sidebar, select **Flink**, then **Create Flink**.
-2. **Basic Configuration**: enter the **Identifier**, choose the
-   **Provider** and the mode, and set **Flink Units** (application) or
-   **Max Flink Units** (session).
-3. **Fleet Selection**: choose the fleet.
-4. **Advanced Configuration**: for session mode, choose the **Job Language**
-   (Java or Python); for application mode, the JAR or project
-   version to run; then parallelism, upgrade mode, **Optimization Goal**,
-   **State Backend Tier** and **Web UI Enabled**.
-5. Create it. It shows **Pending**, then **Provisioning**, then
+2. **Provider**: choose Apache Flink or Confluent Manager for Flink.
+3. **Basic Configuration**: enter the **Identifier**, choose **Jobs run in**
+   (Apache Flink), and set **Max Flink Units** and the **Optimization Goal**.
+4. **Fleet Selection**: choose the fleet.
+5. **Advanced Configuration**: change the chart **Version** only if you need to.
+6. Create it. It shows **Pending**, then **Provisioning**, then
    **Healthy**.
 
 {% include screenshot.html dir="flink" file="create.png" alt="Flink Basic Configuration step with provider, mode and Flink Units" %}
@@ -96,9 +101,13 @@ curl -X POST "$API/flink/analytics/reconcile/" \
   -d '{"generation": 1}'
 ```
 
-`identifier` and `mode` are required. For application mode, send
+`identifier` and `mode` are required. Apache Flink takes `"mode": "session"` and
+`max_flink_units`; `"mode": "application"` is refused for it. For Confluent
+Manager for Flink (`"provider": "cmf"`), send `"mode": "application"`,
 `flink_units` and either `advanced_configuration.application_jar` or
 `project_version` (`{"project": "<project>", "version": "<version>"}`).
+Sizing, state backend and checkpoint locations are Streamtime's defaults; the
+rest of `advanced_configuration` is optional.
 Add `"fleet": "<fleet>"` to choose the fleet.
 {% endcapture %}
 {% capture python %}
@@ -216,8 +225,10 @@ resource "streamtime_flink" "analytics" {
 
 `terraform apply` saves the deployment, starts provisioning it and waits until
 it is ready, the same two steps as the API. Leave out `fleet` to let Streamtime
-choose one. For application mode, set `mode = "application"` and `flink_units`,
-and either the JAR in `advanced_configuration` or a project version:
+choose one. Apache Flink takes `mode = "session"` and `max_flink_units`. For
+Confluent Manager for Flink, set `flink_provider = "cmf"`, `mode = "application"`
+and `flink_units`, and either the JAR in `advanced_configuration` or a project
+version:
 
 ```hcl
 resource "streamtime_flink_project" "etl" {
@@ -227,9 +238,10 @@ resource "streamtime_flink_project" "etl" {
 }
 
 resource "streamtime_flink" "etl" {
-  identifier  = "etl"
-  mode        = "application"
-  fleet       = "<fleet>"
+  identifier      = "etl"
+  flink_provider  = "cmf"
+  mode            = "application"
+  fleet           = "<fleet>"
   flink_units = 2
 
   project_version = {
@@ -397,8 +409,7 @@ Not available in MCP yet. Submit and manage jobs from the UI or API.
 {% endcapture %}
 
 {% capture update_note %}
-Change the Flink Units, the advanced settings (parallelism, upgrade mode,
-resources, Flink configuration), or upgrade to a new **Version**
+Change the Flink Units, or upgrade to a new **Version**
 (`advanced_configuration.chart_config.main.version`). With the
 `savepoint` upgrade mode, Streamtime takes a savepoint first and resumes
 the job from it.
