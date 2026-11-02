@@ -36,6 +36,59 @@ To integrate your identity provider, you must provide the following OIDC endpoin
 
 See the platform UI or CLI for detailed setup instructions.
 
+## Manage a sign-in provider with Terraform
+
+{% capture identity_ui %}
+Register Streamtime at the identity provider, then enter its issuer address,
+client ID and client secret in Streamtime's identity provider settings.
+{% endcapture %}
+{% capture identity_api %}
+Create with `POST /organizations/<org>/oauth-providers/`; read, update or
+delete with `GET`, `PUT` or `DELETE` on
+`/organizations/<org>/oauth-providers/<identifier>/`.
+{% endcapture %}
+{% capture identity_terraform %}
+```hcl
+variable "identity_client_secret" {
+  type      = string
+  sensitive = true
+}
+
+resource "streamtime_oauth_provider" "team" {
+  identifier    = "team"
+  issuer        = "https://identity.example.com"
+  client_id     = "streamtime"
+  client_secret = var.identity_client_secret
+  jwks_endpoint_uri      = "https://identity.example.com/keys"
+  token_endpoint_uri     = "https://identity.example.com/token"
+  authorize_endpoint_uri = "https://identity.example.com/authorize"
+}
+```
+
+Copy the signing-key, token and sign-in addresses from the identity
+provider's discovery document; Streamtime validates them against the
+issuer. Changing credentials updates the provider in place. Changing its
+identifier replaces it. The client secret stays in sensitive Terraform
+state because it cannot be read back.
+
+```bash
+terraform import streamtime_oauth_provider.team team
+```
+
+After import, supply the client secret in the configuration before applying.
+Deleting the resource removes the Streamtime registration, not the external
+identity service.
+{% endcapture %}
+{% capture identity_cli %}
+Use `streamtime oauth-provider --help` for provider create, read and delete
+commands. Use the API or Terraform for in-place updates.
+{% endcapture %}
+{% capture identity_mcp %}
+Use the API or Terraform to change the sign-in provider. Consult the
+connected MCP server's tool list for available reads.
+{% endcapture %}
+{% include tabs.html id="manage-identity-provider" ui=identity_ui api=identity_api cli=identity_cli mcp=identity_mcp terraform=identity_terraform %}
+
 ---
 
 # API Reference

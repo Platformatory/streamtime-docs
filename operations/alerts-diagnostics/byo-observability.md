@@ -62,6 +62,49 @@ You can add as many providers as you like, including more than one of the same p
 
 ---
 
+## Add a provider with Terraform
+
+{% capture monitoring_ui %}
+Add the provider through **Settings → Observability Providers** as described
+in Step 1, then select it in the fleet's monitoring configuration.
+{% endcapture %}
+{% capture monitoring_api %}
+Create with `POST /organizations/<org>/observability-providers/`;
+read, update or delete at
+`/organizations/<org>/observability-providers/<identifier>/`.
+{% endcapture %}
+{% capture monitoring_terraform %}
+```hcl
+variable "datadog_api_key" {
+  type      = string
+  sensitive = true
+}
+
+resource "streamtime_observability_provider" "datadog" {
+  identifier = "datadog-prod"
+  vendor     = "datadog"
+  configuration = jsonencode({
+    api_key = var.datadog_api_key
+    site    = "datadoghq.com"
+  })
+}
+```
+
+The configuration is sensitive and retained in state when the API masks its
+credentials. Import with
+`terraform import streamtime_observability_provider.datadog datadog-prod`,
+then supply the credentials before applying. Changing the vendor replaces
+the provider. Detach it from all fleets before destroying it.
+{% endcapture %}
+{% capture monitoring_cli %}
+Use `streamtime observability-provider --help` for monitoring provider commands.
+{% endcapture %}
+{% capture monitoring_mcp %}
+Consult the connected MCP server for monitoring reads; manage providers
+through the API, CLI or Terraform.
+{% endcapture %}
+{% include tabs.html id="add-monitoring-provider" ui=monitoring_ui api=monitoring_api cli=monitoring_cli mcp=monitoring_mcp terraform=monitoring_terraform %}
+
 ## Step 2 — Attach providers to a fleet
 
 Providers do nothing until a fleet is attached to them.

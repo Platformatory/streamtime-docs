@@ -63,3 +63,73 @@ Open it to change a component. Each component has its own card:
 Once you change anything, the closed section reads **N version
 overrides** instead. If a registry has no versions of a component, the
 row says so: pick another registry, or sync packages in **Settings**.
+
+## Manage the catalog with Terraform
+
+Catalog writes require the catalog permission, normally in the root
+organization. The catalog is shared across the installation: use one
+Terraform state to manage it, rather than declaring it in every organization.
+
+{% capture catalog_ui %}
+Open **Settings** to manage the package catalog and sync packages. Workload
+creation and upgrade forms offer the supported versions from this catalog.
+{% endcapture %}
+{% capture catalog_api %}
+Catalog collections are `/organizations/<org>/helm-repositories/`,
+`tracked-repositories/`, `packages/` and `package-rules/`. Create with POST;
+update chart repositories with PUT and the other objects with PATCH.
+{% endcapture %}
+{% capture catalog_terraform %}
+```hcl
+resource "streamtime_helm_repository" "charts" {
+  name     = "team-charts"
+  base_url = "https://charts.example.com"
+}
+
+resource "streamtime_tracked_repository" "kafka" {
+  repository      = "kafka"
+  repo_type       = "helm"
+  helm_repository = streamtime_helm_repository.charts.name
+}
+
+resource "streamtime_package_rule" "kafka" {
+  name               = "kafka-3x"
+  repository         = streamtime_tracked_repository.kafka.repository
+  version_constraint = ">=3.6.0 <4.0.0"
+  target_status      = "supported"
+  default_version    = "3.8.0"
+}
+
+resource "streamtime_package" "kafka" {
+  registry_url   = streamtime_helm_repository.charts.base_url
+  repository     = streamtime_tracked_repository.kafka.repository
+  tag            = "3.8.0"
+  artifact_type  = "helm_chart"
+  support_status = "supported"
+}
+```
+
+Tracking a repository and declaring a rule do not sync its versions. Run
+package sync separately. A package resource manages one catalog record;
+destroying it does not delete the chart or image from its registry.
+
+```bash
+terraform import streamtime_helm_repository.charts team-charts
+terraform import streamtime_tracked_repository.kafka kafka
+terraform import streamtime_package_rule.kafka kafka-3x
+terraform import streamtime_package.kafka '<package-identifier>'
+```
+
+Tracked repositories are addressed by repository name. If the same name
+exists in different registries, the provider refuses to read, change or
+delete an object that does not match the registry recorded in its state.
+{% endcapture %}
+{% capture catalog_cli %}
+The CLI has no catalog management command group. Use the API or Terraform
+for these catalog objects.
+{% endcapture %}
+{% capture catalog_mcp %}
+Consult the connected MCP server's tools for package lookups; use the API
+or Terraform to manage catalog records and rules.
+{% endcapture %}
+{% include tabs.html id="manage-catalog" ui=catalog_ui api=catalog_api cli=catalog_cli mcp=catalog_mcp terraform=catalog_terraform %}
