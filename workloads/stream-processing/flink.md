@@ -231,10 +231,22 @@ and `flink_units`, and either the JAR in `advanced_configuration` or a project
 version:
 
 ```hcl
+resource "streamtime_flink" "shared" {
+  identifier       = "shared"
+  flink_provider   = "open-source"
+  mode             = "session"
+  fleet            = "<fleet>"
+  max_flink_units  = 8
+}
+
+# A project runs in a Job Workspace and reserves Flink Units on it.
+# The build tool follows the runtime (Java: Maven, Scala: sbt, Python: pip).
 resource "streamtime_flink_project" "etl" {
-  identifier = "etl"
-  name       = "ETL jobs"
-  runtime    = "java"
+  identifier        = "etl"
+  name              = "ETL jobs"
+  runtime           = "java"
+  cluster           = streamtime_flink.shared.identifier
+  flink_unit_budget = 2
 }
 
 resource "streamtime_flink" "etl" {
@@ -251,8 +263,8 @@ resource "streamtime_flink" "etl" {
 }
 ```
 
-The project's CI upload key is in the sensitive `ci_api_key` attribute, only
-when Terraform creates the project. To manage an existing deployment or
+Terraform does not manage the project's CI upload key: create it when you set up
+CI, on the project page or with `streamtime flink-project rotate-key`. To manage an existing deployment or
 project, import it by identifier: `terraform import streamtime_flink.analytics analytics`.
 See [streamtime_flink]({{ site.baseurl }}/terraform/flink/) and
 [streamtime_flink_project]({{ site.baseurl }}/terraform/flink-project/).

@@ -47,11 +47,14 @@ longer run on Apache Flink clusters.
    enter its https address and the sign-in clusters use to read builds
    (read access is enough), then select **Connect store**.
 3. To try your job on your own machine first, open the **CI/CD** tab and
-   under **Local development** select **Show local environment files**. They
-   run the same version of Flink as your clusters and never contain the CI
-   Key (add it to your own `.env`).
-4. On the **CI/CD** tab, pick your CI system and copy the pipeline into
-   your repository. Add the project's CI Key and the store credential as CI
+   under **Local development** select **Download all (zip)**. Unpack it: the
+   folder holds a Docker setup that runs the same version of Flink as your
+   clusters, and a `README.md` that takes you from the local run to a
+   published and deployed release. The files never contain the CI Key. Select
+   **Show local environment files** to read or copy a single file instead.
+4. On the project page, select **Create CI key** (the key is shown once, so
+   store it right away), pick your CI system and copy the pipeline into
+   your repository. Add the CI Key and the store credential as CI
    secrets as the steps say. Each push builds, pushes to your store and
    registers a version.
 5. Select **Deploy a version** on a registered version. This moves the
