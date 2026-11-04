@@ -41,7 +41,7 @@ and region you choose only narrow the list.
 - **Shards** (default 1) and **Replicas per shard** (default 1).
 - **Resources**: CPU and memory requests and limits per ClickHouse host.
 - Users, profiles and server settings, passed to ClickHouse as they are.
-- The chart **Version**, to upgrade (see below).
+- The **Version**, to upgrade (see below).
 
 ---
 

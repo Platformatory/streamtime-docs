@@ -33,7 +33,7 @@ Confluent).
 
 **Advanced Configuration**: the connector plugins to install, each a name,
 an HTTPS URL to a ZIP archive and, optionally, its SHA-512 checksum; and
-the chart **Version**, to upgrade.
+the **Version**, to upgrade.
 
 ---
 

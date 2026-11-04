@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" width="1000" height="440" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="t">Streamtime architecture</title>
+  <desc id="d">Your console and API clients reach the control plane through one gateway, which checks sign-in with your identity provider. The API service records everything in the database and starts operations; the operations engine sends the work to the agent in your fleet over a private connection, and the agent installs and runs your workloads.</desc>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#00467C"/>
+    </marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#036ded"/>
+    </marker>
+    <marker id="ahm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6b6b78"/>
+    </marker>
+  </defs>
+  <style>
+    .zone-t { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .zone-s { font-size: 12px; fill: #6b6b78; }
+    .box { fill: #fff; stroke: #c9d3dd; stroke-width: 1.2; }
+    .key { fill: #00467C; }
+    .h { font-size: 15px; font-weight: 600; fill: #1b1f24; }
+    .hk { font-size: 15px; font-weight: 600; fill: #fff; }
+    .s { font-size: 12px; fill: #5c6370; }
+    .sk { font-size: 12px; fill: #d6e2ee; }
+    .lbl { font-size: 11.5px; fill: #3d4450; }
+    .note { font-size: 12.5px; fill: #3d4450; }
+    .flow { stroke: #00467C; stroke-width: 1.6; fill: none; }
+    .work { stroke: #036ded; stroke-width: 2; fill: none; }
+    .back { stroke: #6b6b78; stroke-width: 1.4; fill: none; stroke-dasharray: 5 4; }
+  </style>
+
+  <!-- Zone: your side -->
+  <rect x="16" y="16" width="232" height="408" rx="12" fill="#fafafb" stroke="#e6e1e8"/>
+  <text x="36" y="44" class="zone-t" fill="#6b6b78">YOUR SIDE</text>
+  <text x="36" y="62" class="zone-s">people and tools</text>
+
+  <rect x="36" y="90" width="192" height="58" rx="8" class="box"/>
+  <text x="52" y="114" class="h">Console</text>
+  <text x="52" y="134" class="s">in your browser</text>
+
+  <rect x="36" y="168" width="192" height="58" rx="8" class="box"/>
+  <text x="52" y="192" class="h">SDKs · CLI · MCP</text>
+  <text x="52" y="212" class="s">any HTTP client, Terraform</text>
+
+  <rect x="36" y="338" width="192" height="58" rx="8" class="box"/>
+  <text x="52" y="362" class="h">Identity provider</text>
+  <text x="52" y="382" class="s">OIDC, per organization</text>
+
+  <!-- Zone: control plane -->
+  <rect x="284" y="16" width="400" height="408" rx="12" fill="#f2f6fa" stroke="#00467C" stroke-opacity=".35"/>
+  <text x="304" y="44" class="zone-t" fill="#00467C">CONTROL PLANE</text>
+  <text x="304" y="62" class="zone-s">one installation: single image or Helm</text>
+
+  <rect x="304" y="90" width="112" height="136" rx="8" class="key"/>
+  <text x="320" y="116" class="hk">Gateway</text>
+  <text x="320" y="138" class="sk">single entry</text>
+  <text x="320" y="154" class="sk">point</text>
+  <text x="320" y="178" class="sk">sign-in check,</text>
+  <text x="320" y="194" class="sk">rate limits,</text>
+  <text x="320" y="210" class="sk">org routing</text>
+
+  <rect x="452" y="90" width="212" height="58" rx="8" class="box" stroke="#00467C"/>
+  <text x="468" y="114" class="h">API service</text>
+  <text x="468" y="134" class="s">REST API · MCP · audit log</text>
+
+  <!-- database cylinder -->
+  <path d="M452,182 a44,9 0 0 0 88,0 v34 a44,9 0 0 1 -88,0 z" fill="#fff" stroke="#c9d3dd" stroke-width="1.2"/>
+  <ellipse cx="496" cy="182" rx="44" ry="9" fill="#fff" stroke="#c9d3dd" stroke-width="1.2"/>
+  <text x="496" y="210" class="s" text-anchor="middle" fill="#1b1f24">Database</text>
+
+  <rect x="452" y="252" width="212" height="58" rx="8" class="box" stroke="#00467C"/>
+  <text x="468" y="276" class="h">Operations engine</text>
+  <text x="468" y="296" class="s">create · update · delete, retried</text>
+
+  <!-- Zone: your fleet -->
+  <rect x="744" y="16" width="240" height="408" rx="12" fill="#fdf5f5" stroke="#E74342" stroke-opacity=".45"/>
+  <text x="764" y="44" class="zone-t" fill="#c0302f">YOUR FLEET</text>
+  <text x="764" y="62" class="zone-s">Kubernetes cluster or cloud account</text>
+
+  <text x="764" y="104" class="note">The agent never calls the</text>
+  <text x="764" y="122" class="note">Streamtime API. Work arrives</text>
+  <text x="764" y="140" class="note">over a private connection,</text>
+  <text x="764" y="158" class="note">so the fleet can sit behind</text>
+  <text x="764" y="176" class="note">your firewall.</text>
+
+  <rect x="764" y="252" width="200" height="58" rx="8" fill="#E74342"/>
+  <text x="780" y="276" class="hk">Agent</text>
+  <text x="780" y="296" class="sk" fill="#fde3e3">one per fleet</text>
+
+  <rect x="764" y="338" width="200" height="58" rx="8" class="box"/>
+  <text x="780" y="362" class="h">Workloads</text>
+  <text x="780" y="382" class="s">Kafka · Connect · Flink · …</text>
+
+  <!-- Flows -->
+  <line x1="228" y1="119" x2="302" y2="119" class="flow" marker-end="url(#ah)"/>
+  <line x1="228" y1="197" x2="302" y2="197" class="flow" marker-end="url(#ah)"/>
+  <text x="265" y="111" class="lbl" text-anchor="middle">HTTPS</text>
+  <text x="265" y="189" class="lbl" text-anchor="middle">HTTPS</text>
+
+  <path d="M228,367 H360 V228" class="back" marker-end="url(#ahm)"/>
+  <text x="372" y="352" class="lbl">verifies sign-in</text>
+
+  <line x1="416" y1="119" x2="450" y2="119" class="flow" marker-end="url(#ah)"/>
+
+  <line x1="496" y1="148" x2="496" y2="171" class="flow" marker-end="url(#ah)"/>
+
+  <line x1="620" y1="148" x2="620" y2="250" class="flow" marker-end="url(#ah)"/>
+  <text x="556" y="196" class="lbl">starts,</text>
+  <text x="556" y="212" class="lbl">never waits</text>
+
+  <line x1="664" y1="272" x2="762" y2="272" class="work" marker-end="url(#ahb)"/>
+  <text x="713" y="263" class="lbl" text-anchor="middle" fill="#036ded">work</text>
+  <line x1="762" y1="292" x2="666" y2="292" class="back" marker-end="url(#ahm)"/>
+  <text x="713" y="308" class="lbl" text-anchor="middle">results</text>
+
+  <line x1="864" y1="310" x2="864" y2="336" class="flow" marker-end="url(#ah)"/>
+</svg>

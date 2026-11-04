@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title id="t">Connectivity and certificates</title>
+  <desc id="d">People and tools reach the control plane's gateway over HTTPS, protected by the gateway certificate. The fleet's agent and its monitoring services talk to the control plane over a private connection: Tailscale, another tunnel, or your own network. Your applications reach Kafka through the workload's own gateway in the fleet, never through that connection, protected by the fleet certificate for your domain.</desc>
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#00467C"/></marker>
+    <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#036ded"/></marker>
+    <marker id="ahr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0302f"/></marker>
+    <g id="lock">
+      <rect x="0" y="5" width="10" height="8" rx="1.5" fill="currentColor"/>
+      <path d="M2.5,5 V3.5 a2.5,2.5 0 0 1 5,0 V5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    </g>
+  </defs>
+  <style>
+    .zone-t { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .zone-s { font-size: 12px; fill: #6b6b78; }
+    .box { fill: #fff; stroke: #c9d3dd; stroke-width: 1.2; }
+    .h { font-size: 15px; font-weight: 600; fill: #1b1f24; }
+    .hk { font-size: 15px; font-weight: 600; fill: #fff; }
+    .s { font-size: 12px; fill: #5c6370; }
+    .sk { font-size: 12px; fill: #e3ebf3; }
+    .lbl { font-size: 11.5px; fill: #3d4450; }
+    .note { font-size: 12px; fill: #3d4450; }
+    .pill { font-size: 11.5px; font-weight: 600; }
+    .flow { stroke: #00467C; stroke-width: 1.6; fill: none; }
+    .tun { stroke: #036ded; stroke-width: 2; fill: none; }
+    .data { stroke: #c0302f; stroke-width: 2; fill: none; }
+  </style>
+
+  <!-- You -->
+  <rect x="16" y="16" width="200" height="468" rx="12" fill="#fafafb" stroke="#e6e1e8"/>
+  <text x="32" y="44" class="zone-t" fill="#6b6b78">YOU</text>
+  <text x="32" y="62" class="zone-s">your people and apps</text>
+  <rect x="32" y="96" width="168" height="60" rx="8" class="box"/>
+  <text x="46" y="121" class="h">People &amp; tools</text>
+  <text x="46" y="141" class="s">console · API · CLI · MCP</text>
+  <rect x="32" y="376" width="168" height="60" rx="8" class="box"/>
+  <text x="46" y="401" class="h">Your applications</text>
+  <text x="46" y="421" class="s">Kafka clients</text>
+
+  <!-- Control plane -->
+  <rect x="252" y="16" width="240" height="340" rx="12" fill="#f2f6fa" stroke="#00467C" stroke-opacity=".35"/>
+  <text x="272" y="44" class="zone-t" fill="#00467C">CONTROL PLANE</text>
+  <text x="272" y="62" class="zone-s">your Streamtime installation</text>
+  <rect x="272" y="96" width="200" height="60" rx="8" fill="#00467C"/>
+  <text x="288" y="121" class="hk">Gateway</text>
+  <text x="288" y="141" class="sk">the one way in</text>
+  <rect x="272" y="164" width="200" height="24" rx="12" fill="#e3ebf3"/>
+  <use href="#lock" x="284" y="168" color="#00467C"/>
+  <text x="302" y="181" class="pill" fill="#00467C">gateway certificate</text>
+  <rect x="272" y="230" width="200" height="60" rx="8" class="box" stroke="#00467C"/>
+  <text x="288" y="255" class="h">API · operations</text>
+  <text x="288" y="275" class="s">records and runs your changes</text>
+
+  <!-- Private connection -->
+  <rect x="508" y="16" width="96" height="340" rx="12" fill="#eef5ff" stroke="#036ded" stroke-opacity=".35" stroke-dasharray="5 4"/>
+  <text x="556" y="40" class="zone-t" fill="#036ded" text-anchor="middle" font-size="11" letter-spacing=".03em">PRIVATE</text>
+  <text x="556" y="55" class="zone-t" fill="#036ded" text-anchor="middle" font-size="11" letter-spacing=".03em">CONNECTION</text>
+  <text x="556" y="304" class="lbl" text-anchor="middle">Tailscale,</text>
+  <text x="556" y="320" class="lbl" text-anchor="middle">another tunnel,</text>
+  <text x="556" y="336" class="lbl" text-anchor="middle">or your network</text>
+
+  <!-- Fleet -->
+  <rect x="620" y="16" width="364" height="468" rx="12" fill="#fdf5f5" stroke="#E74342" stroke-opacity=".45"/>
+  <text x="640" y="44" class="zone-t" fill="#c0302f">YOUR FLEET</text>
+  <text x="640" y="62" class="zone-s">Kubernetes cluster or cloud account</text>
+  <rect x="640" y="96" width="150" height="60" rx="8" fill="#E74342"/>
+  <text x="654" y="121" class="hk">Agent</text>
+  <text x="654" y="141" class="sk" fill="#fde3e3">does the work</text>
+  <text x="808" y="110" class="note">Trusts the Streamtime CA</text>
+  <text x="808" y="126" class="note">and verifies every</text>
+  <text x="808" y="142" class="note">connection it makes.</text>
+  <text x="808" y="172" class="note">Settings changes reach it</text>
+  <text x="808" y="188" class="note">with <tspan font-weight="600">Update Agent</tspan>.</text>
+
+  <rect x="640" y="230" width="150" height="60" rx="8" class="box"/>
+  <text x="654" y="255" class="h">Monitoring</text>
+  <text x="654" y="275" class="s">metrics · logs · UIs</text>
+  <text x="808" y="252" class="note">Reached by Streamtime</text>
+  <text x="808" y="268" class="note">over the private</text>
+  <text x="808" y="284" class="note">connection only.</text>
+
+  <rect x="640" y="376" width="150" height="60" rx="8" class="box" stroke="#c0302f"/>
+  <text x="654" y="401" class="h">Workload gateway</text>
+  <text x="654" y="421" class="s">one per cluster</text>
+  <rect x="640" y="444" width="150" height="24" rx="12" fill="#fde3e3"/>
+  <use href="#lock" x="652" y="448" color="#c0302f"/>
+  <text x="670" y="461" class="pill" fill="#c0302f">fleet certificate</text>
+  <rect x="812" y="376" width="156" height="60" rx="8" class="box"/>
+  <text x="826" y="401" class="h">Kafka cluster</text>
+  <text x="826" y="421" class="s">brokers · REST · registry</text>
+
+  <!-- flows -->
+  <line x1="200" y1="126" x2="270" y2="126" class="flow" marker-end="url(#ah)"/>
+  <text x="235" y="118" class="lbl" text-anchor="middle">HTTPS</text>
+  <line x1="372" y1="190" x2="372" y2="228" class="flow" marker-end="url(#ah)"/>
+
+  <line x1="474" y1="126" x2="638" y2="126" class="tun" marker-start="url(#ahb)" marker-end="url(#ahb)"/>
+  <text x="556" y="118" class="lbl" text-anchor="middle" fill="#036ded">work, results</text>
+  <line x1="472" y1="260" x2="638" y2="260" class="tun" marker-end="url(#ahb)"/>
+  <text x="556" y="252" class="lbl" text-anchor="middle" fill="#036ded">dashboards</text>
+
+  <line x1="200" y1="406" x2="638" y2="406" class="data" marker-end="url(#ahr)"/>
+  <text x="420" y="398" class="lbl" text-anchor="middle" fill="#c0302f">Kafka traffic: never through the private connection</text>
+  <text x="420" y="424" class="lbl" text-anchor="middle">internal or external, as each cluster is set up</text>
+  <line x1="790" y1="406" x2="810" y2="406" class="data" marker-end="url(#ahr)"/>
+</svg>

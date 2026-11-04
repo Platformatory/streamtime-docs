@@ -55,7 +55,7 @@ Flink also asks for the **State Backend Tier**.
 
 **Fleet Selection**: the fleet to run on, or let Streamtime choose one.
 
-**Advanced Configuration**: the chart **Version**, to upgrade or for local
+**Advanced Configuration**: the **Version**, to upgrade or for local
 testing. Confluent Manager for Flink also asks for the application JAR (or a
 project version), entry class and arguments, and its license. Task slots,
 TaskManager count, security, Web UI, savepoint and checkpoint settings are not
@@ -72,7 +72,7 @@ asked for; the API still accepts them as overrides.
 3. **Basic Configuration**: enter the **Identifier**, choose **Jobs run in**
    (Apache Flink), and set **Max Flink Units** and the **Optimization Goal**.
 4. **Fleet Selection**: choose the fleet.
-5. **Advanced Configuration**: change the chart **Version** only if you need to.
+5. **Advanced Configuration**: change the **Version** only if you need to.
 6. Create it. It shows **Pending**, then **Provisioning**, then
    **Healthy**.
 

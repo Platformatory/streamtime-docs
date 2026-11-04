@@ -18,7 +18,7 @@ Three ways to run the Streamtime control plane, by environment:
 ## Single image (Docker)
 
 The single image contains everything — the API, console, gateway,
-orchestrator and an embedded database and workflow engine. No external
+operations engine and an embedded database. No external
 dependencies.
 
 Interactively (the default is fine for a trial):
@@ -49,7 +49,7 @@ Where it listens:
 |---|---|
 | **8443** | The console **and** the API (HTTPS) — browse https://localhost:8443 |
 | 3000 | Console UI directly (plain HTTP; use 8443 instead) |
-| 7999 | Backend API without the gateway (diagnostics) |
+| 7999 | The API directly, bypassing the gateway (diagnostics) |
 
 ## Kubernetes (Helm)
 
@@ -64,8 +64,8 @@ service; point a DNS record for your base domain at it and open the
 console. Add `--set fleetmanager.superUserEmails=you@example.com` for a
 super user that spans organizations.
 
-For a highly available install (HA Postgres via CloudNativePG,
-cert-manager issuer) use the `streamtime-ha` chart: one
+For a highly available install (a highly available PostgreSQL
+database and a cert-manager issuer) use the `streamtime-ha` chart: one
 `helm upgrade --install` creates everything, with the domain, admin
 email, license and registry credentials in a values file.
 
