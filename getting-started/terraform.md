@@ -1,7 +1,8 @@
 ---
 title: Terraform
-nav_order: 5
-parent: Getting Started
+nav_order: 1
+parent: Interfaces
+grand_parent: Getting Started
 permalink: /getting-started/terraform/
 ---
 

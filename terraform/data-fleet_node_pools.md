@@ -1,6 +1,7 @@
 ---
 title: streamtime_fleet_node_pools (data source)
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 28
 permalink: /terraform/data-sources/fleet-node-pools/
 ---

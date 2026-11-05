@@ -1,6 +1,6 @@
 ---
 title: Package Management
-nav_order: 4
+nav_order: 6
 parent: Getting Started
 permalink: /getting-started/package-management/
 ---
@@ -64,22 +64,101 @@ Once you change anything, the closed section reads **N version
 overrides** instead. If a registry has no versions of a component, the
 row says so: pick another registry, or sync packages in **Settings**.
 
-## Manage the catalog with Terraform
+## Track your own Helm chart
 
-Catalog writes require the catalog permission, normally in the root
-organization. The catalog is shared across the installation: use one
-Terraform state to manage it, rather than declaring it in every organization.
+Add a Helm repository, then track a chart from it, so the chart and its
+versions appear in the catalog. Catalog changes need the catalog
+permission, normally in the root organization; the catalog is shared by
+the whole installation.
 
-{% capture catalog_ui %}
-Open **Settings** to manage the package catalog and sync packages. Workload
-creation and upgrade forms offer the supported versions from this catalog.
+{% include api-setup.md id="catalog" %}
+
+{% capture ui %}
+Adding a repository isn't available in the console yet. The **Packages**
+page lists the catalog and its version rules, and **Settings** syncs
+packages. Use the API or Terraform to add a repository.
 {% endcapture %}
-{% capture catalog_api %}
-Catalog collections are `/organizations/<org>/helm-repositories/`,
-`tracked-repositories/`, `packages/` and `package-rules/`. Create with POST;
-update chart repositories with PUT and the other objects with PATCH.
+
+{% capture curl %}
+```bash
+# 1. The Helm repository.
+curl -X POST "$API/helm-repositories/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
+  -d '{"name": "team-charts", "base_url": "https://charts.example.com"}'
+
+# 2. Track a chart from it (helm_repository_id from step 1's response).
+curl -X POST "$API/tracked-repositories/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
+  -d '{"repo_type": "helm", "repository": "kafka", "helm_repository_id": "<id>"}'
+```
+
+For a chart or image in an OCI registry, send `"repo_type": "oci"` with
+`registry_url` and `repository` instead. Version rules are at
+`$API/package-rules/`, catalog records at `$API/packages/`. Tracking a
+repository doesn't sync its versions: sync packages afterwards.
 {% endcapture %}
-{% capture catalog_terraform %}
+{% capture python %}
+```python
+from streamtime_sdk.api.repositories import (
+    organizations_helm_repositories_create,
+    organizations_tracked_repositories_create,
+)
+from streamtime_sdk.models import HelmRepository, TrackedRepository
+
+repo = organizations_helm_repositories_create.sync(
+    ORG, client=client,
+    body=HelmRepository.from_dict({"name": "team-charts", "base_url": "https://charts.example.com"}),
+)
+organizations_tracked_repositories_create.sync(
+    ORG, client=client,
+    body=TrackedRepository.from_dict(
+        {"repo_type": "helm", "repository": "kafka", "helm_repository_id": str(repo.id)}
+    ),
+)
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+import {
+  organizationsHelmRepositoriesCreate,
+  organizationsTrackedRepositoriesCreate,
+} from "./client";
+
+const path = { org_identifier: org };
+const { data: repo } = await organizationsHelmRepositoriesCreate({
+  path,
+  body: { name: "team-charts", base_url: "https://charts.example.com" },
+});
+await organizationsTrackedRepositoriesCreate({
+  path,
+  body: { repo_type: "helm", repository: "kafka", helm_repository_id: repo!.id },
+});
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("POST", "/helm-repositories/", map[string]any{
+    "name":     "team-charts",
+    "base_url": "https://charts.example.com",
+})
+if err != nil {
+    return err
+}
+defer resp.Body.Close()
+// Then POST /tracked-repositories/ with repo_type, repository and helm_repository_id.
+```
+{% endcapture %}
+{% capture api %}{% include code-tabs.html id="catalog-track-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+Not available in the CLI yet. Use the API or Terraform.
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP.
+{% endcapture %}
+
+{% capture terraform %}
 ```hcl
 resource "streamtime_helm_repository" "charts" {
   name     = "team-charts"
@@ -124,12 +203,5 @@ Tracked repositories are addressed by repository name. If the same name
 exists in different registries, the provider refuses to read, change or
 delete an object that does not match the registry recorded in its state.
 {% endcapture %}
-{% capture catalog_cli %}
-The CLI has no catalog management command group. Use the API or Terraform
-for these catalog objects.
-{% endcapture %}
-{% capture catalog_mcp %}
-Consult the connected MCP server's tools for package lookups; use the API
-or Terraform to manage catalog records and rules.
-{% endcapture %}
-{% include tabs.html id="manage-catalog" ui=catalog_ui api=catalog_api cli=catalog_cli mcp=catalog_mcp terraform=catalog_terraform %}
+
+{% include tabs.html id="catalog-track" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}

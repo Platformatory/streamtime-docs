@@ -31,14 +31,14 @@ Creating a Kubernetes fleet in Streamtime is the foundational step for deploying
    > For BYOK fleets, you can optionally specify provider and region details for placement metadata to optimize for latency, compliance, or cost.
 
 4. **Advanced Configuration**
-   - **AWS**: use an existing VPC or create one, and choose its address range and availability zones. See [AWS](aws.html#fleet-settings).
-   - **GCP**: use an existing VPC network or create one, and optionally a Cloud KMS key. See [GCP](gcp.html#fleet-settings).
-   - **OCI**: use an existing VCN or create one, choose the node shape and logs bucket, and optionally a KMS key. See [Oracle](oracle.html#fleet-settings).
-   - **Azure**: use an existing VNet or create one, and choose the node size and availability zones. See [Azure](azure.html#fleet-settings).
-   - **DigitalOcean**: use an existing VPC or create one, and optionally a high-availability control plane. See [DigitalOcean](digitalocean.html#fleet-settings).
-   - **Civo**: use an existing network or create one, and optionally pin the Kubernetes version. See [Civo](civo.html#fleet-settings).
-   - **BYOK**: set namespaces, labels and scheduling rules, then install the Agent on your cluster. See [Connect the cluster](byok.html#connect-the-cluster).
-   - **BYOVM**: upload the SSH key and list the machines for the topology you chose. See [Bring your own VMs](byovm.html#fleet-settings).
+   - **AWS**: use an existing VPC or create one, and choose its address range and availability zones. See [AWS]({{ site.baseurl }}/fleet-management/aws/#fleet-settings).
+   - **GCP**: use an existing VPC network or create one, and optionally a Cloud KMS key. See [GCP]({{ site.baseurl }}/fleet-management/gcp/#fleet-settings).
+   - **OCI**: use an existing VCN or create one, choose the node shape and logs bucket, and optionally a KMS key. See [Oracle]({{ site.baseurl }}/fleet-management/oracle/#fleet-settings).
+   - **Azure**: use an existing VNet or create one, and choose the node size and availability zones. See [Azure]({{ site.baseurl }}/fleet-management/azure/#fleet-settings).
+   - **DigitalOcean**: use an existing VPC or create one, and optionally a high-availability control plane. See [DigitalOcean]({{ site.baseurl }}/fleet-management/digitalocean/#fleet-settings).
+   - **Civo**: use an existing network or create one, and optionally pin the Kubernetes version. See [Civo]({{ site.baseurl }}/fleet-management/civo/#fleet-settings).
+   - **BYOK**: set namespaces, labels and scheduling rules, then install the Agent on your cluster. See [Connect the cluster]({{ site.baseurl }}/fleet-management/byok/#connect-the-cluster).
+   - **BYOVM**: upload the SSH key and list the machines for the topology you chose. See [Bring your own VMs]({{ site.baseurl }}/fleet-management/byovm/#fleet-settings).
 
 5. **Deploy and Validate**  
    - Click deploy. Streamtime will provision and configure the Kubernetes fleet.

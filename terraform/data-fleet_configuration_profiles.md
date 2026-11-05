@@ -1,6 +1,7 @@
 ---
 title: streamtime_fleet_configuration_profiles (data source)
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 27
 permalink: /terraform/data-sources/fleet-configuration-profiles/
 ---

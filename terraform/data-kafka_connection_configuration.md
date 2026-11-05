@@ -1,6 +1,7 @@
 ---
 title: streamtime_kafka_connection_configuration (data source)
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 29
 permalink: /terraform/data-sources/kafka-connection-configuration/
 ---

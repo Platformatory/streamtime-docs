@@ -179,7 +179,7 @@ ready. The endpoints are in `resources`, which is sensitive: read them with
 `jsondecode(streamtime_virtual_kafka.team_a.resources).endpoints`. Unlike a
 Kafka cluster, a change to `kafka_units` or the settings is deployed in place.
 Import by identifier: `terraform import streamtime_virtual_kafka.team_a team-a`.
-See [streamtime_virtual_kafka]({{ site.baseurl }}/terraform/virtual_kafka/).
+See [streamtime_virtual_kafka]({{ site.baseurl }}/terraform/virtual-kafka/).
 {% endcapture %}
 
 {% include tabs.html id="vkc-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}

@@ -9,31 +9,40 @@ permalink: /operations/
 
 # Operations
 
-Streamtime provides a comprehensive set of operations tools to manage and monitor your Kafka clusters and Kubernetes fleets. This section covers the key operational tasks, including cluster management, monitoring, scaling, and troubleshooting.
+Day-2 work on what Streamtime runs for you: your fleets and every
+workload on them (Kafka, Flink and ClickHouse).
 
-## Cluster Management
+## Workload management
 
-- **View Cluster Status**: Check the health and performance metrics of your Kafka clusters.
-- **Create Clusters**: Deploy new Kafka clusters with specific configurations, including tenancy mode and Kafka units.
-- **Upgrade Clusters**: Upgrade existing clusters to newer Kafka versions or configurations.
-- **Delete Clusters**: Remove clusters that are no longer needed.
+- **Check status**: health, version and endpoints of each cluster, job or
+  database, from the console, the API, the CLI or MCP.
+- **Create**: deploy a workload on a fleet that serves its kind, sized in
+  its own units ([Capacity units]({{ site.baseurl }}/about/scaling/)).
+- **Upgrade**: move a workload to a newer **Version**, now or in a
+  [scheduled operation]({{ site.baseurl }}/operations/scheduled-operations/).
+- **Delete**: remove a workload and everything Streamtime installed for it.
 
 ![Cluster Management]({{ site.baseurl }}/assets/images/cfk/cluster-detail.png)
 
 ## Monitoring
 
-- **Real-time Metrics**: Access live metrics for throughput, latency, and resource utilization.
-- **Alerts and Notifications**: Set up alerts for critical events, such as resource exhaustion or cluster failures.
-- **Logs**: View and analyze logs for debugging and performance tuning.
-- **Dashboards**: Use built-in dashboards to visualize cluster performance and health metrics.
+- **Metrics and dashboards** for fleets, Kafka clusters, Flink and
+  ClickHouse.
+- **Alerts** from built-in and custom rules, sent to your alert channels;
+  see [Alerts & Diagnostics]({{ site.baseurl }}/operations/alerts-diagnostics/).
+- **Logs** from every pod in the fleet.
+- A copy of metrics and logs in your own monitoring product, with
+  [Bring Your Own Observability]({{ site.baseurl }}/operations/alerts-diagnostics/byo-observability/).
 
 ![Cluster Monitoring]({{ site.baseurl }}/assets/images/console-overview.png)
 
 ## Scaling
 
-- **Manual Scaling**: Adjust the number of Kafka units or nodes in your clusters as needed.
-- **Auto-scaling**: Configure policies to automatically scale your clusters based on workload demands.
-
+- **Flink:** change a Job Workspace's **Max Flink Units** or a job's
+  **Flink Units**.
+- **Kafka:** a new number of **Kafka Units** is saved, but not yet applied
+  to a running cluster; see the Kafka pages.
+- **Fleets:** add capacity to a fleet, or nodes to your own cluster.
 
 ## Troubleshooting
 

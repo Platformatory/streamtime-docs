@@ -10,7 +10,7 @@ A VM fleet runs on Linux virtual machines you already have, in any cloud
 or data center. Streamtime connects to them over SSH, sets up the shared
 services every fleet needs (gateway, metrics, dashboards, logs and
 alerts), and then runs one Confluent Platform cluster on the remaining
-machines. See [Confluent Platform on VMs]({{ site.baseurl }}/workloads/streaming/confluent-platform-vms.html)
+machines. See [Confluent Platform on VMs]({{ site.baseurl }}/workloads/streaming/confluent-platform-vms/)
 for the cluster itself.
 
 ## When to use BYOVM
@@ -20,7 +20,7 @@ for the cluster itself.
   your choice.
 
 For a Kubernetes cluster you already run, use
-[Bring your own Kubernetes](byok.html) instead.
+[Bring your own Kubernetes]({{ site.baseurl }}/fleet-management/byok/) instead.
 
 ## Key Features
 

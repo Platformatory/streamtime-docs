@@ -1,6 +1,7 @@
 ---
 title: streamtime_tracked_repository
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 23
 permalink: /terraform/tracked-repository/
 ---

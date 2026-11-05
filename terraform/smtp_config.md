@@ -1,6 +1,7 @@
 ---
 title: streamtime_smtp_config
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 22
 permalink: /terraform/smtp-config/
 ---

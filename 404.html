@@ -1,0 +1,25 @@
+---
+title: Page not found
+permalink: /404.html
+nav_exclude: true
+search_exclude: true
+---
+
+<script>
+  // Pages used to be served as /<dir>/<name>.html; they now serve at
+  // /<dir>/<name>/. Send old links and bookmarks to the new address.
+  (function () {
+    var path = window.location.pathname;
+    if (/\.html$/.test(path) && !/\/404\.html$/.test(path)) {
+      var next = path.replace(/\/index\.html$/, "/").replace(/\.html$/, "/");
+      window.location.replace(next + window.location.search + window.location.hash);
+    }
+  })();
+</script>
+
+<h1>Page not found</h1>
+
+<p>
+  This page doesn't exist, or it has moved. Use the search box above, or
+  go to the <a href="{{ site.baseurl }}/">documentation home</a>.
+</p>

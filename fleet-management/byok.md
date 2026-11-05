@@ -29,7 +29,7 @@ workloads need on your cluster; you keep control of the infrastructure.
 
 - **A Kubernetes cluster** with a LoadBalancer provider and a default
   storage class, sized for the workloads you plan to run. For EKS and OKE,
-  see [BYOK with AWS](byok-aws.html) and [BYOK with OCI](byok-oci.html).
+  see [BYOK with AWS]({{ site.baseurl }}/fleet-management/byok-aws/) and [BYOK with OCI]({{ site.baseurl }}/fleet-management/byok-oci/).
 - **Access to install the Agent**: either a kubeconfig Streamtime can use
   to install it for you (**automatic**), or `kubectl` and `helm` access to
   run the install commands yourself (**manual**).
@@ -254,7 +254,7 @@ Connection** for a manual install) complete in turn; the page shows
 
 {: .note }
 Streamtime is strict about the kubeconfig format. See
-[BYOK with AWS](byok-aws.html) or [BYOK with OCI](byok-oci.html) for how to
+[BYOK with AWS]({{ site.baseurl }}/fleet-management/byok-aws/) or [BYOK with OCI]({{ site.baseurl }}/fleet-management/byok-oci/) for how to
 build one.
 {% endcapture %}
 

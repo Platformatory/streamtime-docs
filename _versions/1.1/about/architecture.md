@@ -16,7 +16,7 @@ what you can bring of your own.
 
 ## The big picture
 
-![Your console and API clients reach the control plane through one gateway; the operations engine sends work to the agent in your fleet over a private connection, and the agent runs your workloads.]({{ '/assets/images/architecture/overview.svg' | relative_url }})
+![Your console and API clients reach the control plane through one gateway; the Durable Executor sends work to the agent in your fleet over a private connection, and the agent runs your workloads.]({{ '/assets/images/architecture/overview.svg' | relative_url }})
 
 The gateway is the only way in: the console, the REST API, the SDKs,
 the CLI and the MCP server all arrive through the same door, and the
@@ -37,7 +37,7 @@ How the pieces divide the work:
   version and command is recorded here first, with a full audit trail.
   A request that starts an operation returns `202` immediately with an
   **Operation ID**, and the client polls status.
-- **Operations engine** — runs each Create, Update and Delete operation
+- **Streamtime Durable Executor** — runs each Create, Update and Delete operation
   to completion, retrying safely through failures and restarts. It
   provisions cloud infrastructure, records every resource ID as it goes,
   and hands in-cluster work to the fleet's agent.
@@ -151,7 +151,7 @@ during first-time setup and can be changed later in **Settings**.
 | [Observability](#observability) | Streamtime's own dashboards, metrics and logs | A copy to Datadog, Grafana Cloud or New Relic |
 | [Alert destinations](#alert-destinations) | Alerts in the console | Slack, PagerDuty or a webhook |
 | [Email](#email) | — | Your SMTP server |
-| [Operations engine](#operations-engine) | Built in | **Streamtime Managed**, or an endpoint you run |
+| [Durable Executor](#durable-executor) | Built in | **Streamtime Managed**, or an endpoint you run |
 
 ### Infrastructure
 
@@ -280,20 +280,20 @@ setup: **SMTP Email**): **SMTP server**, **Connection security**
 your server needs them, and the **From address**. Choose which emails go
 out, and use **Send test email** before you save.
 
-### Operations engine
+### Durable Executor
 
-The service that runs every operation to completion. Chosen once, in
-first-time setup (the **Orchestrator** step):
+The Streamtime Durable Executor runs every operation to completion,
+retrying through failures and restarts. Chosen once, in first-time setup
+(the **Orchestrator** step):
 
-- **Built-in** (recommended). Runs inside your Streamtime installation.
-  Fleets reach it over the private connection.
+- **Built-in Orchestrator** (recommended). Runs inside your
+  Streamtime installation. Fleets reach it over the private connection.
 - **Streamtime Managed** (needs a license). Streamtime runs it for you,
   and fleets connect to the managed endpoint directly, so they need no
   route to your installation.
-- **Custom Orchestrator** (advanced). An endpoint you operate, for
-  air-gapped or regulated environments, or where you already run this
-  kind of service: enter its **Orchestrator Endpoint** and, if it needs
-  one, an **API Key**.
+- **Custom Orchestrator** (advanced). A Temporal service you run,
+  self-hosted or Temporal Cloud, for air-gapped or regulated environments
+  or where you already operate one: enter its **Orchestrator Endpoint** and, if it needs one, an **API Key**.
 
 ## Where to read on
 

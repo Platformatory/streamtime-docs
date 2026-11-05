@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" width="1000" height="440" role="img" aria-labelledby="t d" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
   <title id="t">Streamtime architecture</title>
-  <desc id="d">Your console and API clients reach the control plane through one gateway, which checks sign-in with your identity provider. The API service records everything in the database and starts operations; the operations engine sends the work to the agent in your fleet over a private connection, and the agent installs and runs your workloads.</desc>
+  <desc id="d">Your console and API clients reach the control plane through one gateway, which checks sign-in with your identity provider. The API service records everything in the database and starts operations; the Durable Executor sends the work to the agent in your fleet over a private connection, and the agent installs and runs your workloads.</desc>
   <defs>
     <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#00467C"/>
@@ -68,7 +68,7 @@
   <text x="496" y="210" class="s" text-anchor="middle" fill="#1b1f24">Database</text>
 
   <rect x="452" y="252" width="212" height="58" rx="8" class="box" stroke="#00467C"/>
-  <text x="468" y="276" class="h">Operations engine</text>
+  <text x="468" y="276" class="h">Durable Executor</text>
   <text x="468" y="296" class="s">create · update · delete, retried</text>
 
   <!-- Zone: your fleet -->

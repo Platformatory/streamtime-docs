@@ -14,14 +14,14 @@ and writes it back — continuously, at the speed the data arrives.
 
 | Platform | Status | In short |
 |---|---|---|
-| [**Apache Flink**](flink.html) | Supported | Stateful stream processing: projects hold your code, deployments run it against your Kafka clusters |
+| [**Apache Flink**]({{ site.baseurl }}/workloads/stream-processing/flink/) | Supported | Stateful stream processing: projects hold your code, deployments run it against your Kafka clusters |
 | **Kafka Streams** | BYO runtime | A Java library, not a Streamtime-managed platform: your applications run it, Streamtime's clusters provide the streams |
 
 ## Apache Flink
 
 A Flink deployment runs either one job (application mode) or the jobs you
 submit to it (session mode), and runs builds registered to a **Flink
-project** by version. See [Apache Flink](flink.html) for every deployment
+project** by version. See [Apache Flink]({{ site.baseurl }}/workloads/stream-processing/flink/) for every deployment
 task: create a deployment, submit and manage jobs, check status, change or
 upgrade it, monitor it, and delete it.
 

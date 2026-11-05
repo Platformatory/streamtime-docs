@@ -1,6 +1,7 @@
 ---
 title: streamtime_package
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 19
 permalink: /terraform/package/
 ---

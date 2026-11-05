@@ -1,6 +1,7 @@
 ---
 title: streamtime_helm_repository
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 9
 permalink: /terraform/helm-repository/
 ---

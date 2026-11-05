@@ -12,7 +12,7 @@ version_snapshot: "1.1"
 This page covers the prerequisites required for using an AWS EKS cluster
 through Bring Your Own Kubernetes (BYOK) in Streamtime — sizing, the IAM
 role Streamtime needs, and the kubeconfig format Streamtime expects. See
-[Advanced Usage (BYOK)](byok.html) for the provider-agnostic walkthrough
+[Advanced Usage (BYOK)]({{ site.baseurl }}/1.1/fleet-management/byok/) for the provider-agnostic walkthrough
 of the Streamtime UI flow itself.
 
 This page assumes you already have a working EKS cluster (OIDC provider
@@ -150,7 +150,7 @@ up toward the higher end for larger KU tiers.
 Streamtime expects a static token in the kubeconfig for user
 authentication when using Automatic Installation of the agent. This
 kubeconfig is only used to install the Streamtime Agent, and the token
-in it should be short-lived. See [Advanced Usage (BYOK)](byok.html) for
+in it should be short-lived. See [Advanced Usage (BYOK)]({{ site.baseurl }}/1.1/fleet-management/byok/) for
 more on the Automatic Installation flow.
 
 Assuming the kubeconfig is set to the EKS cluster, the following commands
@@ -207,5 +207,5 @@ Three rules Streamtime enforces strictly:
 ### Step 5: upload the kubeconfig
 
 Upload/paste the kubeconfig file as a Secret in the **Agent Management**
-section of the fleet. See the [Kubeconfig section](byok.html) of the
+section of the fleet. See the [Kubeconfig section]({{ site.baseurl }}/1.1/fleet-management/byok/) of the
 BYOK documentation.

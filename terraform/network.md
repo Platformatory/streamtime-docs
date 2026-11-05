@@ -1,6 +1,7 @@
 ---
 title: streamtime_network
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 15
 permalink: /terraform/network/
 ---

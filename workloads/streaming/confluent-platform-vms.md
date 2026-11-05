@@ -123,11 +123,6 @@ operation it started; a `409` means the generation is out of date. Poll
 {% endcapture %}
 {% capture python %}
 ```python
-import uuid
-
-from streamtime_sdk.api.kafka import organizations_kafka_reconcile_create
-from streamtime_sdk.models import ReconcileRequest
-
 resp = client.get_httpx_client().post(
     f"/organizations/{ORG}/kafka/",
     json={
@@ -141,14 +136,6 @@ resp = client.get_httpx_client().post(
     },
 )
 resp.raise_for_status()
-
-organizations_kafka_reconcile_create.sync(
-    ORG,
-    "ledger",
-    client=client,
-    body=ReconcileRequest(generation=resp.json()["generation"]),
-    idempotency_key=str(uuid.uuid4()),
-)
 ```
 {% endcapture %}
 {% capture typescript %}
@@ -329,25 +316,24 @@ there are no Kafka Units to change. To grow it, add machines to the fleet.
 You can change the SASL protocol, license and custom broker or controller
 properties.
 
+Streamtime saves a change but can't yet apply it to a running cluster:
+the cluster keeps running with its current settings. To run with new
+settings now, delete the cluster and create it again with them, which
+deletes its data, or contact Streamtime support.
+
 {% capture ui %}
 Changing these settings isn't available in the UI yet. Use the API.
 {% endcapture %}
 
 {% capture curl %}
 ```bash
-# 1. Save the change. The response has the new "generation".
+# Saves the change; the running cluster is not changed.
 curl -X PATCH "$API/kafka/ledger/" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
   -d '{"advanced_config": {
         "confluent_package_version": "<current-version>",
         "custom_broker_properties": {"log.retention.hours": "72"}
       }}'
-
-# 2. Apply that generation.
-curl -X POST "$API/kafka/ledger/reconcile/" \
-  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{"generation": <generation>}'
 ```
 
 `advanced_config` is replaced as a whole, so send every setting, including
@@ -381,25 +367,16 @@ organizations_kafka_reconcile_create.sync(
 {% endcapture %}
 {% capture typescript %}
 ```typescript
-import {
-  organizationsKafkaPartialUpdate,
-  organizationsKafkaReconcileCreate,
-} from "./client";
+import { organizationsKafkaPartialUpdate } from "./client";
 
-const path = { org_identifier: org, identifier: "ledger" };
-const { data: cluster } = await organizationsKafkaPartialUpdate({
-  path,
+await organizationsKafkaPartialUpdate({
+  path: { org_identifier: org, identifier: "ledger" },
   body: {
     advanced_config: {
       confluent_package_version: "<current-version>",
       custom_broker_properties: { "log.retention.hours": "72" },
     },
   },
-});
-await organizationsKafkaReconcileCreate({
-  path,
-  headers: { "Idempotency-Key": crypto.randomUUID() },
-  body: { generation: cluster!.generation },
 });
 ```
 {% endcapture %}
@@ -415,17 +392,6 @@ if err != nil {
     return err
 }
 defer resp.Body.Close()
-
-var updated struct {
-    Generation int `json:"generation"`
-}
-if err := json.NewDecoder(resp.Body).Decode(&updated); err != nil {
-    return err
-}
-
-// Apply that generation.
-resp, err = call("POST", "/kafka/ledger/reconcile/",
-    map[string]any{"generation": updated.Generation}, newKey())
 ```
 {% endcapture %}
 {% capture api %}{% include code-tabs.html id="cpvm-scale-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
@@ -435,9 +401,7 @@ resp, err = call("POST", "/kafka/ledger/reconcile/",
 streamtime kafka update ledger --advanced-config '{"confluent_package_version": "<current-version>", "custom_broker_properties": {"log.retention.hours": "72"}}'
 ```
 
-{: .note }
-The CLI saves the change but can't apply it yet. Apply it from the API
-(step 2 in the API tab).
+The change is saved; the running cluster is not changed.
 {% endcapture %}
 
 {% capture mcp %}

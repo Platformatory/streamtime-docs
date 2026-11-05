@@ -18,6 +18,8 @@ Streamtime sizes the storage from that.
   the retention period and the number of shards.
 - **Shards and replicas**: scale out with more shards, and add replicas
   per shard for availability.
+- **Counted in ClickHouse units** on the fleet: see
+  [Capacity units]({{ site.baseurl }}/about/scaling/#clickhouse-units).
 - **Tenancy**: Shared, Isolated or Dedicated fleets.
 - **Monitoring and alerts**: metrics, logs and alert rules for every
   cluster.

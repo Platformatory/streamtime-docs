@@ -1,6 +1,7 @@
 ---
 title: streamtime_oauth_client
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 16
 permalink: /terraform/oauth-client/
 ---

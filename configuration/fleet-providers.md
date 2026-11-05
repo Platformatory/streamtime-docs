@@ -1,8 +1,8 @@
 ---
 title: "Cloud Accounts"
-nav_order: 4
-parent: Configuration
-
+nav_order: 1.5
+parent: Bring your own
+permalink: /configuration/fleet-providers/
 ---
 
 # Cloud Accounts

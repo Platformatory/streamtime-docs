@@ -16,7 +16,7 @@ Three ways to run the Streamtime control plane, by environment:
 ## Single image (Docker)
 
 The single image contains everything — the API, console, gateway,
-operations engine and an embedded database. No external
+Durable Executor and an embedded database. No external
 dependencies.
 
 Interactively (the default is fine for a trial):
@@ -248,7 +248,7 @@ listed in `SUPER_USER_EMAILS` (single image and Compose) or
 To sign in from the terminal instead:
 
 ```bash
-pip install streamtime-cli
+uv tool install ./streamtime-cli     # from the Streamtime source; see Interfaces
 streamtime login --org root --streamtime-url https://localhost:8443
 streamtime fleet list
 ```

@@ -194,7 +194,7 @@ until it is ready, the same two steps as the API. A later change to its
 settings is saved with a warning: the running Connect cluster keeps its current
 settings until you recreate it (`terraform apply -replace=...`). Import an
 existing one by identifier: `terraform import streamtime_kafka_connect.cdc cdc`.
-See [streamtime_kafka_connect]({{ site.baseurl }}/terraform/kafka_connect/).
+See [streamtime_kafka_connect]({{ site.baseurl }}/terraform/kafka-connect/).
 {% endcapture %}
 
 {% include tabs.html id="connect-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}

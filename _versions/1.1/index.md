@@ -13,7 +13,7 @@ deploys and operates Kafka and other streaming platforms on it, and you
 drive everything from the console, the REST API, the SDKs, the CLI or
 MCP.
 
-Under the hood, a single control plane (gateway, API service, operations engine)
+Under the hood, a single control plane (gateway, API service, Durable Executor)
 records what you want running and drives it into existence; one agent
 per fleet carries out the work inside your clusters, over an inbound
 connection — fleets never dial out.

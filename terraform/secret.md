@@ -1,6 +1,7 @@
 ---
 title: streamtime_secret
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 21
 permalink: /terraform/secret/
 ---

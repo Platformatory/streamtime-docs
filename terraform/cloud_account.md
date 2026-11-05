@@ -1,6 +1,7 @@
 ---
 title: streamtime_cloud_account
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 5
 permalink: /terraform/cloud-account/
 ---

@@ -1,6 +1,7 @@
 ---
 title: streamtime_package_rule
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 20
 permalink: /terraform/package-rule/
 ---

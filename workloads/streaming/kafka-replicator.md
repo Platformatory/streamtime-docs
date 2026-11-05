@@ -219,7 +219,7 @@ For a cluster outside Streamtime, leave out its `*_kafka_id` and set
 is saved with a warning: the running replicator keeps its current settings until
 you recreate it (`terraform apply -replace=...`). Import by identifier:
 `terraform import streamtime_kafka_replicator.mirror east-to-west`. See
-[streamtime_kafka_replicator]({{ site.baseurl }}/terraform/kafka_replicator/).
+[streamtime_kafka_replicator]({{ site.baseurl }}/terraform/kafka-replicator/).
 {% endcapture %}
 
 {% include tabs.html id="replicator-create" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}

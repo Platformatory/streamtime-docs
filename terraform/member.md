@@ -1,6 +1,7 @@
 ---
 title: streamtime_member
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 14
 permalink: /terraform/member/
 ---

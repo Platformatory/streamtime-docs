@@ -15,7 +15,7 @@ what you can bring of your own.
 
 ## The big picture
 
-![Your console and API clients reach the control plane through one gateway; the operations engine sends work to the agent in your fleet over a private connection, and the agent runs your workloads.]({{ '/assets/images/architecture/overview.svg' | relative_url }})
+![Your console and API clients reach the control plane through one gateway; the Durable Executor sends work to the agent in your fleet over a private connection, and the agent runs your workloads.]({{ '/assets/images/architecture/overview.svg' | relative_url }})
 
 The gateway is the only way in: the console, the REST API, the SDKs,
 the CLI and the MCP server all arrive through the same door, and the
@@ -36,7 +36,7 @@ How the pieces divide the work:
   version and command is recorded here first, with a full audit trail.
   A request that starts an operation returns `202` immediately with an
   **Operation ID**, and the client polls status.
-- **Operations engine** — runs each Create, Update and Delete operation
+- **Streamtime Durable Executor** — runs each Create, Update and Delete operation
   to completion, retrying safely through failures and restarts. It
   provisions cloud infrastructure, records every resource ID as it goes,
   and hands in-cluster work to the fleet's agent.
@@ -134,172 +134,32 @@ See [Domains & Certificates]({{ site.baseurl }}/configuration/domains-certificat
 
 ## What you can bring
 
-Every dependency has a default, so a trial needs none of these. Each
-can be swapped for what your organization already runs. Most are set
-during first-time setup and can be changed later in **Settings**.
+Every dependency has a default, so a trial needs none of these. Each can
+be swapped for what your organization already runs; each has its own page
+under [Bring your own]({{ site.baseurl }}/bring-your-own/).
 
 | | Default | Bring your own |
 |---|---|---|
-| [Infrastructure](#infrastructure) | A Kubernetes cluster Streamtime provisions in your cloud account | Your own Kubernetes cluster, or your own virtual machines |
-| [Sign-in](#sign-in) | **Streamtime identity**, built in | Any OIDC identity provider |
-| [Private connection](#private-connection) | — | Tailscale, another tunnel, or your own network |
-| [Gateway certificate](#gateway-certificate) | Generated from the Streamtime CA | Your own certificate |
-| [DNS and fleet certificates](#dns-and-fleet-certificates) | **Streamtime Managed** | Your DNS zone, or records you manage |
-| [Secrets](#secrets) | Built-in vault | HashiCorp Vault |
-| [Container images](#container-images) | Public registries, cached inside each fleet | A private mirror registry |
-| [Observability](#observability) | Streamtime's own dashboards, metrics and logs | A copy to Datadog, Grafana Cloud or New Relic |
-| [Alert destinations](#alert-destinations) | Alerts in the console | Slack, PagerDuty or a webhook |
-| [Email](#email) | — | Your SMTP server |
-| [Operations engine](#operations-engine) | Built in | **Streamtime Managed**, or an endpoint you run |
-
-### Infrastructure
-
-Where your workloads run. Each fleet picks one:
-
-- **A cloud account.** Streamtime creates and later deletes the
-  Kubernetes cluster in your AWS, Azure, GCP, Oracle, Civo or
-  DigitalOcean account, and records every resource it creates. Register
-  the account under **Settings → Bootstrap Providers** (first-time setup:
-  **Cloud Accounts**).
-- **Your own Kubernetes cluster (BYOK).** On-premises, bare metal or any
-  cloud. The cluster needs a load-balancer provider and a default storage
-  class. Streamtime installs its agent with a kubeconfig you give it, or
-  you run the install commands yourself; no cloud account is needed.
-  Streamtime installs only what the fleet's workloads need and removes it
-  again when you delete the fleet; your cluster's own networking, storage
-  and load balancer are left alone.
-- **Your own virtual machines (BYOVM).** Linux machines in any cloud or
-  data center, reached over SSH with one key, for Confluent Platform on
-  VMs.
-
-See [Fleet Management]({{ site.baseurl }}/fleet-management/),
-[Bring your own Kubernetes]({{ site.baseurl }}/fleet-management/byok/)
-and [Bring your own VMs]({{ site.baseurl }}/fleet-management/byovm/).
-
-### Sign-in
-
-Out of the box, people sign in with **Streamtime identity**. Connect your
-own identity provider (Okta, Microsoft Entra ID, Google, Auth0, Keycloak
-or any other OIDC provider) under **Settings → Identity providers**
-(first-time setup: **Sign-in**), one per organization. The gateway then
-verifies every request against your provider's keys, so access is
-granted and revoked where you already manage people.
-
-Automation signs in with API keys or, with Streamtime identity, OAuth
-clients (**Settings → OAuth Clients**).
-
-See [Identity Providers]({{ site.baseurl }}/configuration/identity-providers/).
-
-### Private connection
-
-How fleets and Streamtime reach each other: Tailscale, another tunnel,
-or your own network (public DNS and a load balancer, a VPN or peering).
-Set in **Settings → Connectivity**; see [Connectivity](#connectivity)
-above. Only Streamtime's own traffic uses it; Kafka traffic never does.
-
-### Gateway certificate
-
-The certificate on the console and API. Generated from your
-installation's Streamtime CA by default, or your own, set in
-**Settings → Connectivity**. See
-[Certificates and trust](#certificates-and-trust) above.
-
-### DNS and fleet certificates
-
-The names and certificate your Kafka endpoints use. **Streamtime
-Managed** by default; bring your own DNS zone (**Bring Your Own Zone**,
-Route 53 or Cloudflare) or manage the records and certificate yourself
-(**Customer Managed**) in **Settings → DNS & Certificates**. See
-[Certificates and trust](#certificates-and-trust) above and
-[Domains & Certificates]({{ site.baseurl }}/configuration/domains-certificates/).
-
-### Secrets
-
-Credentials Streamtime holds for you (cloud account keys, kubeconfigs,
-SSH keys, DNS and observability credentials, Kafka passwords) are kept
-in a secret store, never in plain configuration.
-
-- **Built-in vault (default).** Nothing to set up.
-- **HashiCorp Vault (AppRole sign-in).** Keep the secrets in your own
-  Vault. In first-time setup (**Secrets Vault**) enter the **Vault URL**,
-  the **Namespace** for Vault Enterprise, and the AppRole **Role ID** and
-  **Secret ID** from your Vault administrator. **Auth Mount Path** and
-  **Secrets Mount Path** (a KV version 2 engine) default to Vault's
-  usual paths. The Streamtime server must be able to reach your Vault.
-
-**Settings → Secrets Management** lists the secrets Streamtime holds, and
-lets you add your own and choose which store each one goes to.
-
-### Container images
-
-Every fleet pulls the images of the services Streamtime installs and of
-your workloads. By default they come from public registries, and each
-fleet keeps a local cache so a node pulls an image from the internet
-once.
-
-- **A private mirror registry.** For air-gapped or controlled
-  environments, Streamtime copies the images it needs into your registry
-  and fleets pull from there. Set it in **Settings → Container
-  Registry** (first-time setup: **Image Registries**): **Registry URL**,
-  a username and token if the registry needs one, and a **Destination
-  namespace** for registries such as GHCR that only accept pushes under
-  an owned path. **Test Connection** checks it, and **Sync Now** copies the
-  images.
-- **Registry credentials.** Streamtime tracks new versions of the
-  packages it installs, and needs read credentials for GitHub Container
-  Registry and Quay.io to do so (Docker Hub is optional). The same
-  credentials pull artefacts in private and air-gapped installations.
-
-### Observability
-
-Streamtime always collects metrics and logs for its own dashboards,
-alerts and diagnostics. You can also send a copy of a fleet's metrics
-and logs to **Datadog**, **Grafana Cloud** or **New Relic**: add the
-provider and its ingest credential under **Settings → Observability
-Providers**, then attach it to the fleet. Nothing moves; your provider
-gets a copy, tagged with the fleet and organization.
-
-See [Bring Your Own Observability]({{ site.baseurl }}/operations/alerts-diagnostics/byo-observability/).
-
-### Alert destinations
-
-Alerts show in the console. To reach people where they work, add a
-destination under **Settings → Alert Channels**: **Slack** (a channel and
-its incoming webhook URL), **PagerDuty**, or any **Webhook** that
-accepts a JSON post.
-
-### Email
-
-With your own mail server, Streamtime sends notification emails to the
-people who created a resource: when it becomes healthy or needs
-attention, when an alert starts or clears, and a weekly performance
-report per cluster. Set it under **Settings → SMTP Email** (first-time
-setup: **SMTP Email**): **SMTP server**, **Connection security**
-(STARTTLS, SSL/TLS or none) and **Port**, a username and password if
-your server needs them, and the **From address**. Choose which emails go
-out, and use **Send test email** before you save.
-
-### Operations engine
-
-The service that runs every operation to completion. Chosen once, in
-first-time setup (the **Orchestrator** step):
-
-- **Built-in** (recommended). Runs inside your Streamtime installation.
-  Fleets reach it over the private connection.
-- **Streamtime Managed** (needs a license). Streamtime runs it for you,
-  and fleets connect to the managed endpoint directly, so they need no
-  route to your installation.
-- **Custom Orchestrator** (advanced). An endpoint you operate, for
-  air-gapped or regulated environments, or where you already run this
-  kind of service: enter its **Orchestrator Endpoint** and, if it needs
-  one, an **API Key**.
+| [Infrastructure]({{ site.baseurl }}/bring-your-own/infrastructure/) | A Kubernetes cluster Streamtime creates in your cloud account | Your own Kubernetes cluster, or your own virtual machines |
+| [Sign-in]({{ site.baseurl }}/configuration/identity-providers/) | **Streamtime identity** (non-production only) | Any OIDC identity provider |
+| [Private connection]({{ site.baseurl }}/bring-your-own/connectivity/) | — | Tailscale, another tunnel, or your own network |
+| [Gateway certificate]({{ site.baseurl }}/bring-your-own/gateway-certificate/) | Generated from the Streamtime CA | Your own certificate |
+| [DNS and fleet certificates]({{ site.baseurl }}/configuration/domains-certificates/) | **Streamtime Managed** | Your DNS zone (AWS Route53, Cloudflare, GoDaddy), or records you manage |
+| [Secrets]({{ site.baseurl }}/bring-your-own/secrets/) | Built-in secret store | HashiCorp Vault |
+| [Container images]({{ site.baseurl }}/bring-your-own/container-registry/) | Public registries, cached inside each fleet | A private mirror registry |
+| [Packages]({{ site.baseurl }}/bring-your-own/packages/) | Streamtime's package catalog | Your own Helm repositories and packages |
+| [Observability]({{ site.baseurl }}/operations/alerts-diagnostics/byo-observability/) | Streamtime's own dashboards, metrics and logs | A copy to Datadog, Grafana Cloud or New Relic |
+| [Alert destinations]({{ site.baseurl }}/bring-your-own/alert-channels/) | Alerts in the console | Slack, PagerDuty or a webhook |
+| [Email]({{ site.baseurl }}/bring-your-own/email/) | — | Your SMTP server |
+| [AI models]({{ site.baseurl }}/bring-your-own/ai-models/) | — | OpenAI, Anthropic, Google, Groq, or a model you host |
+| [Durable Executor]({{ site.baseurl }}/bring-your-own/durable-executor/) | Built in | **Streamtime Managed**, or a Temporal service you run |
 
 ## Where to read on
 
 - [Kubernetes Fleet]({{ site.baseurl }}/about/kubernetes-fleet/),
-  [Kafka Cluster]({{ site.baseurl }}/about/kafka-cluster/),
+  [Workload types]({{ site.baseurl }}/about/kafka-cluster/),
   [Tenancy]({{ site.baseurl }}/about/tenancy/) and
-  [Scaling]({{ site.baseurl }}/about/scaling/) —
+  [Capacity units]({{ site.baseurl }}/about/scaling/) —
   fleets, workloads, tenancy and scaling as a user faces them.
 - [Configuration]({{ site.baseurl }}/getting-started/configuration/) — the accounts, domains and
   identity providers the control plane plugs into.

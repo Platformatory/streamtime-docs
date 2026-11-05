@@ -366,90 +366,67 @@ assistant uses `get_cluster_status`. MCP doesn't create credentials.
 {% if include.scale_section %}{{ include.scale_section }}{% else %}
 ## Scale or change the configuration
 
-Changing **Kafka Units** or advanced settings updates the running cluster in
-place. The status shows **Provisioning** until the change is applied.
+You can save a new number of **Kafka Units** or new advanced settings, but
+Streamtime can't yet apply a change to a running Kafka cluster. The
+cluster keeps running with its current settings until it is recreated.
+
+To run with the new settings now, delete the cluster and create it again
+with them. **Recreating a cluster deletes its data**, so move or replicate
+what you need first (for example with
+[Kafka Replicator]({{ site.baseurl }}/workloads/streaming/kafka-replicator/)),
+or contact Streamtime support.
+
+See [Capacity units]({{ site.baseurl }}/about/scaling/) for what a Kafka
+Unit is.
 
 {% capture ui %}
-Changing Kafka Units isn't available in the UI yet. Use the API or CLI.
+Changing Kafka Units isn't available in the UI yet. Use the API, the CLI
+or Terraform to save a change.
 {% endcapture %}
 
 {% capture curl %}
-As with create, saving the change and applying it are two requests:
-
 ```bash
-# 1. Save the change. The response has the new "generation".
+# Saves the change. The response has the new "generation"; the running
+# cluster is not changed.
 curl -X PATCH "$API/kafka/{{ c }}/" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
   -d '{"kafka_units": 6}'
-
-# 2. Apply that generation.
-curl -X POST "$API/kafka/{{ c }}/reconcile/" \
-  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
-  -H "Idempotency-Key: $(uuidgen)" \
-  -d '{"generation": <generation>}'
 ```
 
-Send only the fields you change. Poll the cluster until it is `Healthy` again.
+Send only the fields you change. Don't follow it with
+`POST …/reconcile/`: applying a change to a running cluster isn't
+supported yet, and the operation is recorded as failed.
 {% endcapture %}
 {% capture python %}
 ```python
-import uuid
+from streamtime_sdk.api.kafka import organizations_kafka_partial_update
+from streamtime_sdk.models import PatchedKafka
 
-from streamtime_sdk.api.kafka import (
-    organizations_kafka_partial_update,
-    organizations_kafka_reconcile_create,
-)
-from streamtime_sdk.models import PatchedKafka, ReconcileRequest
-
+# Saves the change; the running cluster is not changed.
 cluster = organizations_kafka_partial_update.sync(
     ORG, "{{ c }}", client=client, body=PatchedKafka(kafka_units=6)
-)
-organizations_kafka_reconcile_create.sync(
-    ORG,
-    "{{ c }}",
-    client=client,
-    body=ReconcileRequest(generation=cluster.generation),
-    idempotency_key=str(uuid.uuid4()),
 )
 ```
 {% endcapture %}
 {% capture typescript %}
 ```typescript
-import {
-  organizationsKafkaPartialUpdate,
-  organizationsKafkaReconcileCreate,
-} from "./client";
+import { organizationsKafkaPartialUpdate } from "./client";
 
-const path = { org_identifier: org, identifier: "{{ c }}" };
+// Saves the change; the running cluster is not changed.
 const { data: cluster } = await organizationsKafkaPartialUpdate({
-  path,
+  path: { org_identifier: org, identifier: "{{ c }}" },
   body: { kafka_units: 6 },
-});
-await organizationsKafkaReconcileCreate({
-  path,
-  headers: { "Idempotency-Key": crypto.randomUUID() },
-  body: { generation: cluster!.generation },
 });
 ```
 {% endcapture %}
 {% capture go %}
 ```go
+// Saves the change; the running cluster is not changed.
 resp, err := call("PATCH", "/kafka/{{ c }}/", map[string]any{"kafka_units": 6})
 if err != nil {
     return err
 }
 defer resp.Body.Close()
-
-var updated struct {
-    Generation int `json:"generation"`
-}
-if err := json.NewDecoder(resp.Body).Decode(&updated); err != nil {
-    return err
-}
-
-// Apply that generation.
-resp, err = call("POST", "/kafka/{{ c }}/reconcile/",
-    map[string]any{"generation": updated.Generation}, newKey())
 ```
 {% endcapture %}
 {%- capture tid -%}{{ p }}-scale-api{%- endcapture -%}
@@ -460,20 +437,34 @@ resp, err = call("POST", "/kafka/{{ c }}/reconcile/",
 streamtime kafka update {{ c }} --kafka-units 6
 ```
 
-Change advanced settings with `--advanced-config '{...}'`.
-
-{: .note }
-The CLI saves the change but can't apply it yet. Apply it from the API
-(step 2 in the API tab).
+Change advanced settings with `--advanced-config '{...}'`. The change is
+saved; the running cluster is not changed.
 {% endcapture %}
 
 {% capture mcp %}
-Not available in MCP yet. MCP can check the result: *"Is the {{ c }}
+Not available in MCP yet. MCP can check the cluster: *"Is the {{ c }}
 cluster healthy?"*
 {% endcapture %}
 
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka" "{{ c }}" {
+  # …
+  kafka_units = 6
+}
+```
+
+`terraform apply` saves the change and warns **Kafka cluster settings
+saved but not applied**. To run with the new settings now, recreate the
+cluster, which deletes its data:
+
+```bash
+terraform apply -replace=streamtime_kafka.{{ c }}
+```
+{% endcapture %}
+
 {%- capture tid -%}{{ p }}-scale{%- endcapture -%}
-{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp %}
+{% include tabs.html id=tid ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 {% endif %}
 
 ---
@@ -641,7 +632,7 @@ Changing `replication_factor` recreates the topic, which deletes its messages.
 Only the settings in `config` are managed; removing one returns it to the
 cluster's default. Import an existing topic with
 `terraform import streamtime_kafka_topic.payments {{ c }}/payments`. See
-[streamtime_kafka_topic]({{ site.baseurl }}/terraform/kafka_topic/).
+[streamtime_kafka_topic]({{ site.baseurl }}/terraform/kafka-topic/).
 {% endcapture %}
 
 {%- capture tid -%}{{ p }}-topics{%- endcapture -%}

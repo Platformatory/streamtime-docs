@@ -7,6 +7,10 @@ logo: /assets/streamtime.svg
 logo_alt: Streamtime Logo
 nav_enable: true
 heading_anchors: true
+# Pages without their own permalink serve at /<dir>/<name>/ (not
+# /<dir>/<name>.html), so links written with a trailing slash resolve on
+# the published site. Link to pages as /<dir>/<name>/, never <name>.html.
+permalink: pretty
 # Jekyll ignores underscore-prefixed directories; the version-snapshot
 # script keeps released snapshot trees listed here so their pages build
 # (listing _versions makes its whole contents recurse). Snapshots live

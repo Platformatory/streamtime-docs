@@ -1,6 +1,7 @@
 ---
 title: streamtime_virtual_kafka
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 24
 permalink: /terraform/virtual-kafka/
 ---

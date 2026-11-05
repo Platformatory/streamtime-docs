@@ -1,6 +1,7 @@
 ---
 title: streamtime_kafka_replicator
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 12
 permalink: /terraform/kafka-replicator/
 ---

@@ -10,7 +10,7 @@ product you use afterwards is identical.
 
 ## Single image (Docker)
 
-Everything in one container: console, API, gateway, operations engine
+Everything in one container: console, API, gateway, Durable Executor
 and an embedded database. For single-user trials, evaluations and
 embedded single-node pilots. No external dependencies; data lives on one
 volume.
@@ -23,7 +23,7 @@ workload:
 - **Gateway** — the single entry point.
 - **API service** — the REST API and the MCP server.
 - **Console** — the web UI.
-- **Operations engine** — runs provisioning and lifecycle operations.
+- **Durable Executor** — runs provisioning and lifecycle operations.
 - Optional HA profile (the `streamtime-ha` chart): installs the control
   plane together with its backing services, a highly available
   PostgreSQL database and a cert-manager issuer, in one install command.

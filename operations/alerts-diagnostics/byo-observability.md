@@ -1,7 +1,7 @@
 ---
 title: Bring Your Own Observability
-parent: Alerts & Diagnostics
-nav_order: 1
+parent: Bring your own
+nav_order: 9
 permalink: /operations/alerts-diagnostics/byo-observability/
 ---
 
@@ -43,37 +43,95 @@ Grafana Cloud shows all three values together on one page. In Grafana Cloud, go 
 
 ## Step 1 — Add an observability provider
 
+{% include api-setup.md id="byoo" %}
+
+{% capture ui %}
 Go to **Settings → Observability Providers** and choose **Add Observability Provider**.
 
 ![Observability Providers list]({{ site.baseurl }}/assets/images/monitoring/byoo/providers-list.png)
 
 Fill in:
 
-- **Identifier** — a short name for this provider, lowercase letters, numbers and dashes, up to 24 characters. You will pick it by this name when attaching it to a fleet, and it cannot be changed afterwards. `datadog-prod` or `grafana-staging` work well.
+- **Identifier** — a short name for this provider, lowercase letters, numbers and dashes, up to 24 characters. You pick it by this name when attaching it to a fleet, and it can't be changed afterwards. `datadog-prod` or `grafana-staging` work well.
 - **Provider** — Datadog, Grafana Cloud, or New Relic.
 - **Credentials** — the fields change to match the product you picked. See the table above for where each value comes from.
 
 ![Add an observability provider]({{ site.baseurl }}/assets/images/monitoring/byoo/add-provider.png)
-
-{: .note }
-Credentials are stored encrypted and are never displayed again. When you reopen a provider to edit it, saved secrets appear as `********` — leave them untouched to keep the current value.
-
-You can add as many providers as you like, including more than one of the same product — for example a production and a staging Datadog account.
-
----
-
-## Add a provider with Terraform
-
-{% capture monitoring_ui %}
-Add the provider through **Settings → Observability Providers** as described
-in Step 1, then select it in the fleet's monitoring configuration.
 {% endcapture %}
-{% capture monitoring_api %}
-Create with `POST /organizations/<org>/observability-providers/`;
-read, update or delete at
-`/organizations/<org>/observability-providers/<identifier>/`.
+
+{% capture curl %}
+```bash
+curl -X POST "$API/observability-providers/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
+  -d '{"identifier": "datadog-prod", "vendor": "datadog",
+       "configuration": {"api_key": "<api-key>", "site": "datadoghq.com"}}'
+```
+
+`vendor` is `datadog`, `grafana_cloud` or `newrelic`. The credential
+fields each one takes:
+`GET $API/observability-providers/configuration-profiles/<vendor>/credentials/`.
 {% endcapture %}
-{% capture monitoring_terraform %}
+{% capture python %}
+```python
+from streamtime_sdk.api.observability_providers import (
+    organizations_observability_providers_create,
+)
+from streamtime_sdk.models import ObservabilityProvider
+
+organizations_observability_providers_create.sync(
+    ORG,
+    client=client,
+    body=ObservabilityProvider.from_dict({
+        "identifier": "datadog-prod",
+        "vendor": "datadog",
+        "configuration": {"api_key": "<api-key>", "site": "datadoghq.com"},
+    }),
+)
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+import { organizationsObservabilityProvidersCreate } from "./client";
+
+await organizationsObservabilityProvidersCreate({
+  path: { org_identifier: org },
+  body: {
+    identifier: "datadog-prod",
+    vendor: "datadog",
+    configuration: { api_key: "<api-key>", site: "datadoghq.com" },
+  },
+});
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("POST", "/observability-providers/", map[string]any{
+    "identifier":    "datadog-prod",
+    "vendor":        "datadog",
+    "configuration": map[string]any{"api_key": "<api-key>", "site": "datadoghq.com"},
+})
+if err != nil {
+    return err
+}
+defer resp.Body.Close()
+```
+{% endcapture %}
+{% capture api %}{% include code-tabs.html id="byoo-add-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+```bash
+streamtime observability-provider available                 # products you can add
+streamtime observability-provider credential-schema datadog  # the fields it takes
+streamtime observability-provider create --config '{"identifier": "datadog-prod",
+  "vendor": "datadog", "configuration": {"api_key": "<api-key>", "site": "datadoghq.com"}}'
+```
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP.
+{% endcapture %}
+
+{% capture terraform %}
 ```hcl
 variable "datadog_api_key" {
   type      = string
@@ -90,20 +148,22 @@ resource "streamtime_observability_provider" "datadog" {
 }
 ```
 
-The configuration is sensitive and retained in state when the API masks its
-credentials. Import with
+The configuration is sensitive and kept in state, because the API masks
+its credentials. Import with
 `terraform import streamtime_observability_provider.datadog datadog-prod`,
-then supply the credentials before applying. Changing the vendor replaces
-the provider. Detach it from all fleets before destroying it.
+then supply the credentials before you apply. Changing the vendor replaces
+the provider. Detach it from every fleet before you destroy it. See
+[streamtime_observability_provider]({{ site.baseurl }}/terraform/observability-provider/).
 {% endcapture %}
-{% capture monitoring_cli %}
-Use `streamtime observability-provider --help` for monitoring provider commands.
-{% endcapture %}
-{% capture monitoring_mcp %}
-Consult the connected MCP server for monitoring reads; manage providers
-through the API, CLI or Terraform.
-{% endcapture %}
-{% include tabs.html id="add-monitoring-provider" ui=monitoring_ui api=monitoring_api cli=monitoring_cli mcp=monitoring_mcp terraform=monitoring_terraform %}
+
+{% include tabs.html id="byoo-add" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
+{: .note }
+Credentials are stored encrypted and are never displayed again. When you reopen a provider to edit it, saved secrets appear as `********`; leave them untouched to keep the current value.
+
+You can add as many providers as you like, including more than one of the same product — for example a production and a staging Datadog account.
+
+---
 
 ## Step 2 — Attach providers to a fleet
 

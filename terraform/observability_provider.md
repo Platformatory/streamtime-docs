@@ -1,6 +1,7 @@
 ---
 title: streamtime_observability_provider
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 18
 permalink: /terraform/observability-provider/
 ---

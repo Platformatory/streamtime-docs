@@ -1,6 +1,6 @@
 ---
 title: User Management
-nav_order: 3
+nav_order: 4
 parent: Getting Started
 permalink: /getting-started/user-management/
 ---
@@ -65,67 +65,109 @@ Users sign in through the organization's identity provider (see
 organization's administrator invites users; an invite grants access to
 that organization only.
 
-## Manage access with Terraform
+{% include api-setup.md id="members" %}
 
-Configure the provider for the organization whose access you manage. Creating
-a member invites that person; it does not provision their external identity.
-For a new person using built-in sign-in, also set `initial_password` to a
-sensitive variable. It is used only for the invitation, not password resets.
+## Invite a member
 
-{% capture access_ui %}
-An organization administrator manages users under **Users**. Configure the
-person at the organization's identity provider before they sign in.
+Inviting someone gives them access to this organization. It doesn't create
+their account at your identity provider: set them up there first.
+
+{% capture ui %}
+1. Go to **Settings → Team Members** and invite a member.
+2. Enter their **Email** and **Select Role**: **Administrator**,
+   **Billing Administrator**, **Cluster Administrator**, **Infrastructure
+   Administrator** or **Project Owner**.
+3. With Streamtime identity as the sign-in, also set a **Password**; they
+   sign in with this email and password.
+4. Save. **Update Member Role** changes a role later; removing a member
+   ends their access to the organization.
 {% endcapture %}
-{% capture access_api %}
-Use `POST /organizations/<org>/members/invite/` to invite a person, then
-`GET`, `PUT` or `DELETE /organizations/<org>/members/<email>/` to read,
-change their role or remove membership. API keys are managed under
-`/organizations/<org>/api-keys/`; OAuth clients under
-`/organizations/<org>/oauth-clients/`.
+
+{% capture curl %}
+```bash
+curl -X POST "$API/members/invite/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
+  -d '{"email": "developer@example.com", "role": "Cluster Administrator"}'
+```
+
+Read, change or remove a member at `$API/members/<email>/` with `GET`,
+`PATCH` or `DELETE`. Send `password` in the invite only with Streamtime
+identity.
 {% endcapture %}
-{% capture access_terraform %}
+{% capture python %}
+```python
+from streamtime_sdk.api.organizations import organizations_members_invite_create
+from streamtime_sdk.models import OrganizationMemberInviteRequest
+
+organizations_members_invite_create.sync(
+    ORG,
+    client=client,
+    body=OrganizationMemberInviteRequest.from_dict(
+        {"email": "developer@example.com", "role": "Cluster Administrator"}
+    ),
+)
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+import { organizationsMembersInviteCreate } from "./client";
+
+await organizationsMembersInviteCreate({
+  path: { org_identifier: org },
+  body: { email: "developer@example.com", role: "Cluster Administrator" },
+});
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("POST", "/members/invite/", map[string]any{
+    "email": "developer@example.com",
+    "role":  "Cluster Administrator",
+})
+if err != nil {
+    return err
+}
+defer resp.Body.Close()
+```
+{% endcapture %}
+{% capture api %}{% include code-tabs.html id="member-invite-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+Inviting isn't available in the CLI yet. List members with:
+
+```bash
+streamtime org members --org <org>
+```
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP.
+{% endcapture %}
+
+{% capture terraform %}
 ```hcl
 resource "streamtime_member" "developer" {
   email = "developer@example.com"
   role  = "Cluster Administrator"
 }
-
-resource "streamtime_api_key" "automation" {
-  name = "automation"
-  role = "Agent"
-}
-
-resource "streamtime_oauth_client" "producer" {
-  identifier     = "producer"
-  name           = "Order producer"
-  kafka_clusters = ["orders"]
-}
 ```
 
-The OAuth client requires built-in sign-in. Its access settings cannot be
-updated in place, so a change replaces it. API key values and OAuth client
-secrets are sensitive and kept in Terraform state after creation; importing
-one cannot recover its value. Protect the state storage.
+Creating the resource invites the person. For a new person signing in
+with Streamtime identity, also set `initial_password` from a sensitive
+variable; it is used only for the invitation. Destroying the resource
+removes their membership, not their account at your identity provider.
 
 ```bash
 terraform import streamtime_member.developer developer@example.com
-terraform import streamtime_api_key.automation '<key-id>'
-terraform import streamtime_oauth_client.producer producer
 ```
 
-Destroying a member removes membership, not the person's account at their
-identity provider. Destroying an API key or OAuth client revokes it.
+See [streamtime_member]({{ site.baseurl }}/terraform/member/).
 {% endcapture %}
-{% capture access_cli %}
-List members with `streamtime org members --org <org>`. Use
-`streamtime api-key --help` for API key commands. Member invitations and
-OAuth client management use the API or Terraform.
-{% endcapture %}
-{% capture access_mcp %}
-Use the API or Terraform to change organization access. Consult the
-connected MCP server's tool list for the reads it supports.
-{% endcapture %}
-{% include tabs.html id="manage-access" ui=access_ui api=access_api cli=access_cli mcp=access_mcp terraform=access_terraform %}
+
+{% include tabs.html id="member-invite" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
+For API keys and OAuth clients, see
+[API keys and OAuth clients]({{ site.baseurl }}/getting-started/api-keys/).
 
 ## Roles and super users
 

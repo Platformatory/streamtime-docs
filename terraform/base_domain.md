@@ -1,6 +1,7 @@
 ---
 title: streamtime_base_domain
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 3
 permalink: /terraform/base-domain/
 ---

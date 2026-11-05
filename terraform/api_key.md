@@ -1,6 +1,7 @@
 ---
 title: streamtime_api_key
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 2
 permalink: /terraform/api-key/
 ---

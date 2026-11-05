@@ -24,7 +24,8 @@ project version, and is sized in **Flink Units**.
   or Performance). Streamtime derives the rest from the Flink Units: each
   TaskManager gets min(Flink Units, 4) slots and the cluster gets enough
   TaskManagers to cover them. A job runs as wide as the Flink Units it was
-  given. These numbers are provisional.
+  given. These numbers are provisional. What a Flink Unit is, and what it
+  takes from the fleet: [Capacity units]({{ site.baseurl }}/about/scaling/#flink-units).
 - **RocksDB state** in every Job Workspace.
 - **Checkpoints and savepoints on by default.** On a kind or BYOK fleet they go
   to the fleet's RustFS, in the `flink` bucket under
@@ -39,7 +40,7 @@ project version, and is sized in **Flink Units**.
 - **Flink Web UI** on every deployment, with metrics, logs and alerts.
 - **Flink projects**: CI registers each build from your own artifact store
   as a version, and deployments run it by version. See
-  [Flink projects](index.html#flink-projects).
+  [Flink projects]({{ site.baseurl }}/workloads/stream-processing/flink-projects/).
 
 ## Settings
 

@@ -1,6 +1,7 @@
 ---
 title: streamtime_alert_channel
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 1
 permalink: /terraform/alert-channel/
 ---

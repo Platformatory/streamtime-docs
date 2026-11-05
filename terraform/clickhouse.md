@@ -1,6 +1,7 @@
 ---
 title: streamtime_clickhouse
 parent: Terraform provider
+grand_parent: Reference
 nav_order: 4
 permalink: /terraform/clickhouse/
 ---

@@ -14,13 +14,13 @@ arrives.
 
 | Platform | Status | In short |
 |---|---|---|
-| [**ClickHouse**](clickhouse.html) | Supported | Columnar analytics database deployed by Streamtime on your fleets, kept in step with your Kafka data |
+| [**ClickHouse**]({{ site.baseurl }}/workloads/analytics/clickhouse/) | Supported | Columnar analytics database deployed by Streamtime on your fleets, kept in step with your Kafka data |
 
 ## ClickHouse
 
 A ClickHouse cluster is a Streamtime-managed workload like any other:
 created from the UI, API or CLI, then monitored, scaled, upgraded and
-deleted the same way. See [ClickHouse](clickhouse.html) for every task.
+deleted the same way. See [ClickHouse]({{ site.baseurl }}/workloads/analytics/clickhouse/) for every task.
 
 Data typically arrives from Kafka through a connector or a stream
 processor; see [Workloads](/workloads/) for the platforms that feed it.
