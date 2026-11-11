@@ -281,6 +281,13 @@ A session cluster runs the jobs you submit to it. Each job claims Flink
 Units from the cluster's **Max Flink Units**. Submitting a job starts it
 straight away.
 
+A session job downloads its JAR when it starts, so the JAR location must be an
+`https://` or `s3://` address. A path inside the image (`local://`) can't be
+used and is refused with a 400. To run a JAR you ship yourself, deploy it as a
+project version. If a job can't start, for example because the JAR can't be
+fetched, it moves to **Error** within a few minutes and shows the reason from
+Flink, instead of staying in **Provisioning**.
+
 {% capture ui %}
 1. Open the session deployment from **Flink** and select **Submit Job**
    (**Submit First Job** when it has none yet).

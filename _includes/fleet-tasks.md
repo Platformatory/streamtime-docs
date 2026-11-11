@@ -863,9 +863,34 @@ resp, err = call("POST", "/fleet/{{ f }}/agent/UpdateStreamtimeAgentWorkflow/", 
 {% capture api %}{% include code-tabs.html id=tid curl=curl python=python typescript=typescript go=go %}{% endcapture %}
 
 {% capture cli %}
-Not available in the CLI yet. Update the fleet or the Agent from the UI or
-the API.
-{% comment %}Gap: #1812{% endcomment %}
+```bash
+# Turn autoscaling of the workload node pool off
+streamtime fleet update {{ f }} --no-autoscale
+
+# Change the accounts that receive monitoring data (replaces the list)
+streamtime fleet update {{ f }} --monitoring-account <monitoring-account>
+
+# Update the Agent to a new version
+streamtime fleet agent update {{ f }} --image-tag <version>
+```
+
+`fleet update` sends only the options you give. Repeat
+`--monitoring-account` or `--alert-channel` for several accounts; each
+replaces its own list and leaves the other one as it is. To empty a list,
+use `--clear-monitoring-accounts` or `--clear-alert-channels`.
+
+`fleet agent update` takes `--target operator` to update the operator
+instead of the Agent, `--chart-version <version>` for a new chart, and
+`--values <file>` for Helm values in a YAML or JSON file. Give at least one
+of `--image-tag`, `--chart-version` or `--values`. It prints the Operation
+ID; add `-O json` for the full response. Add `--wait` to wait until the
+update finishes (up to `--timeout` seconds, 900 by default): the command
+then exits with a non-zero status if the update did not complete.
+
+The update uses the registry the fleet's Agent was installed from. To move
+the Agent to another registry, give `--registry <host>` and
+`--repository <organization>`; if the fleet doesn't report where its Agent
+came from, the command asks for both instead of guessing.
 {% endcapture %}
 
 {% capture mcp %}
