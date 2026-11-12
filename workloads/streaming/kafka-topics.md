@@ -14,7 +14,7 @@ Every Kafka cluster's page has a **Manage Topics** view, with three tabs:
 |---|---|
 | **Configuration** | List topics; create, change and delete them. Partitions can only grow |
 | **Messages** | Read messages on a topic, oldest or newest first, ten at a time. Reading never affects the applications consuming the topic |
-| **Schemas** | Browse the cluster's Schema Registry: subjects, their versions and each schema. Read-only |
+| **Schemas** | Links to the subjects that belong to the topic. Shown when the cluster has a schema registry. Schemas are browsed and managed in [Schemas]({{ site.baseurl }}/workloads/streaming/kafka-schemas/) |
 
 Confluent Platform on VMs shows **Configuration** only.
 
@@ -91,62 +91,7 @@ orders cluster?"*
 
 ## Browse schemas
 
-{% capture ui %}
-1. Open the cluster and select **Manage Topics**, then the **Schemas**
-   tab.
-2. Choose a subject and a **Version** to see its schema.
-{% endcapture %}
-
-{% capture curl %}
-```bash
-curl "$API/kafka/<cluster>/schemas/subjects/" -H "Authorization: Bearer $STREAMTIME_TOKEN"
-curl "$API/kafka/<cluster>/schemas/subjects/payments-value/versions/" \
-  -H "Authorization: Bearer $STREAMTIME_TOKEN"
-curl "$API/kafka/<cluster>/schemas/subjects/payments-value/versions/latest/" \
-  -H "Authorization: Bearer $STREAMTIME_TOKEN"
-```
-{% endcapture %}
-{% capture python %}
-```python
-from streamtime_sdk.api.kafka_schemas import (
-    get_kafka_schema_subject_version,
-    list_kafka_schema_subjects,
-)
-
-subjects = list_kafka_schema_subjects.sync(ORG, "<cluster>", client=client)
-schema = get_kafka_schema_subject_version.sync(
-    ORG, "<cluster>", "payments-value", "latest", client=client
-)
-```
-{% endcapture %}
-{% capture typescript %}
-```typescript
-import { getKafkaSchemaSubjectVersion, listKafkaSchemaSubjects } from "./client";
-
-const cluster = { org_identifier: org, kafka_id: "<cluster>" };
-const { data: subjects } = await listKafkaSchemaSubjects({ path: cluster });
-const { data: schema } = await getKafkaSchemaSubjectVersion({
-  path: { ...cluster, subject: "payments-value", version: "latest" },
-});
-```
-{% endcapture %}
-{% capture go %}
-```go
-resp, err := call("GET", "/kafka/<cluster>/schemas/subjects/", nil)
-if err != nil {
-    return err
-}
-defer resp.Body.Close()
-```
-{% endcapture %}
-{% capture api %}{% include code-tabs.html id="kafka-schemas-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
-
-{% capture cli %}
-Not available in the CLI yet.
-{% endcapture %}
-
-{% capture mcp %}
-Not available in MCP.
-{% endcapture %}
-
-{% include tabs.html id="kafka-schemas" ui=ui api=api cli=cli mcp=mcp %}
+Schemas are browsed and managed in **Administration → Schemas**: see
+[Schemas]({{ site.baseurl }}/workloads/streaming/kafka-schemas/). A topic's
+**Schemas** tab, and the **Schema** column of the topic list, link to its
+subjects there.
