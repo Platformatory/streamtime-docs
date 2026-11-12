@@ -187,9 +187,8 @@ streamtime kafka-replicator create --config '{
 }'
 ```
 
-The CLI saves the replicator but can't start provisioning it yet. Start
-it from the UI, or with the API's reconcile request.
-{% comment %}Gap: #1818{% endcomment %}
+The command also starts provisioning once the settings are complete;
+otherwise run `streamtime kafka-replicator reconcile orders-dr` when they are.
 {% endcapture %}
 
 {% capture mcp %}
@@ -232,4 +231,4 @@ tab, and the lag alert fires when it passes the threshold.
 {% endcapture %}
 {% capture update_body %}{"topic_whitelist": "orders.*,payments.*", "lag_alert_threshold": 5000}{% endcapture %}
 
-{% include workload-tasks.md name="Kafka Replicator" id="replicator" res="orders-dr" path="kafka-replicator" py_mod="kafka_replicators" py_mod_reconcile="kafka_replicator" py_fn="organizations_kafka_replicator" ts_fn="organizationsKafkaReplicator" menu="Replicators" cli="kafka-replicator" cli_gap="1818" update_body=update_body update_note=update_note create_section=create_section shots="kafka-replicator" %}
+{% include workload-tasks.md name="Kafka Replicator" id="replicator" res="orders-dr" path="kafka-replicator" py_mod="kafka_replicators" py_mod_reconcile="kafka_replicator" py_fn="organizations_kafka_replicator" ts_fn="organizationsKafkaReplicator" menu="Replicators" cli="kafka-replicator" cli_reconcile="yes" update_body=update_body update_note=update_note create_section=create_section shots="kafka-replicator" %}

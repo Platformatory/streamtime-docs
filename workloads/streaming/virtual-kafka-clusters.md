@@ -143,9 +143,9 @@ streamtime virtual-kafka-cluster create --config '{
 }'
 ```
 
-The CLI saves the virtual cluster but can't start provisioning it yet.
-Start it from the UI, or with the API's reconcile request.
-{% comment %}Gap: #1818{% endcomment %}
+The command also starts provisioning, on the Kafka cluster's fleet, once
+the settings are complete; otherwise run
+`streamtime virtual-kafka-cluster reconcile team-a` when they are.
 {% endcapture %}
 
 {% capture mcp %}
@@ -260,4 +260,4 @@ authentication. Produce and fetch limits follow the new capacity.
 {% capture update_body %}{"kafka_units": 3}{% endcapture %}
 {% capture tspath %}{ org_identifier: org, fleet_id: "<fleet>", identifier: "team-a" }{% endcapture %}
 
-{% include workload-tasks.md name="Virtual Kafka Cluster" id="vkc" res="team-a" path="fleet/<fleet>/kafka/kvc" py_mod="virtual_kafka_clusters" py_fn="organizations_fleet_kafka_kvc" py_args='ORG, "<fleet>", "team-a"' ts_fn="organizationsFleetKafkaKvc" ts_path=tspath menu="Virtual Kafka" cli="virtual-kafka-cluster" cli_gap="1818" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="virtual-kafka" %}
+{% include workload-tasks.md name="Virtual Kafka Cluster" id="vkc" res="team-a" path="fleet/<fleet>/kafka/kvc" py_mod="virtual_kafka_clusters" py_fn="organizations_fleet_kafka_kvc" py_args='ORG, "<fleet>", "team-a"' ts_fn="organizationsFleetKafkaKvc" ts_path=tspath menu="Virtual Kafka" cli="virtual-kafka-cluster" cli_reconcile="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="virtual-kafka" %}

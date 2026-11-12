@@ -202,9 +202,8 @@ streamtime flink create \
 `--runtime` is `java` (the default) or `python`, and applies to session mode
 only. The API field is `advanced_configuration.runtime`.
 
-The CLI saves the deployment but can't start provisioning it yet. Start it
-from the UI, or with the API's reconcile request.
-{% comment %}Gap: #1818{% endcomment %}
+The command also starts provisioning once the settings are complete;
+otherwise run `streamtime flink reconcile analytics` when they are.
 {% endcapture %}
 
 {% capture mcp %}
@@ -450,4 +449,4 @@ Remove the `streamtime_flink` block and run `terraform apply`, or run
 Streamtime has removed the deployment.
 {% endcapture %}
 
-{% include workload-tasks.md name="Flink" id="flink" res="analytics" path="flink" py_mod="flink" py_fn="organizations_flink" ts_fn="organizationsFlink" menu="Flink" cli="flink" cli_gap="1818" has_status="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="flink" tf_update=tf_update tf_delete=tf_delete %}
+{% include workload-tasks.md name="Flink" id="flink" res="analytics" path="flink" py_mod="flink" py_fn="organizations_flink" ts_fn="organizationsFlink" menu="Flink" cli="flink" cli_reconcile="yes" has_status="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="flink" tf_update=tf_update tf_delete=tf_delete %}

@@ -168,9 +168,8 @@ streamtime kafka-connect create --config '{
 }'
 ```
 
-The CLI saves the Connect cluster but can't start provisioning it yet.
-Start it from the UI, or with the API's reconcile request.
-{% comment %}Gap: #1818{% endcomment %}
+The command also starts provisioning once the settings are complete;
+otherwise run `streamtime kafka-connect reconcile cdc` when they are.
 {% endcapture %}
 
 {% capture mcp %}
@@ -374,4 +373,4 @@ with the new plugins.
 {% endcapture %}
 {% capture update_body %}{"advanced_config": {"connector_plugin_zips": [{"name": "<plugin>", "url": "https://example.com/<plugin>-2.zip"}]}}{% endcapture %}
 
-{% include workload-tasks.md name="Kafka Connect" id="connect" res="cdc" path="kafka-connect" py_mod="kafka_connect" py_fn="organizations_kafka_connect" ts_fn="organizationsKafkaConnect" menu="Kafka Connect" cli="kafka-connect" cli_gap="1818" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="kafka-connect" %}
+{% include workload-tasks.md name="Kafka Connect" id="connect" res="cdc" path="kafka-connect" py_mod="kafka_connect" py_fn="organizations_kafka_connect" ts_fn="organizationsKafkaConnect" menu="Kafka Connect" cli="kafka-connect" cli_reconcile="yes" update_body=update_body update_note=update_note create_section=create_section extra_section=extra_section shots="kafka-connect" %}
