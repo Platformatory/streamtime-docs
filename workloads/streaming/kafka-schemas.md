@@ -199,7 +199,24 @@ Not available in the CLI yet.
 Not available in MCP.
 {% endcapture %}
 
-{% include tabs.html id="register-schema" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_schema" "payments_value" {
+  kafka       = "<cluster>"
+  subject     = "payments-value"
+  schema_type = "avro"
+  schema      = file("${path.module}/payment.avsc")
+}
+```
+
+`terraform apply` registers the schema. Changing `schema` registers the next
+version; a change in formatting alone (for Avro and JSON Schema) is not a
+change. To manage a subject that already exists, import it:
+`terraform import streamtime_kafka_schema.payments_value <cluster>/payments-value`.
+See [streamtime_kafka_schema]({{ site.baseurl }}/terraform/kafka-schema/).
+{% endcapture %}
+
+{% include tabs.html id="register-schema" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 | Answer | Meaning | What to do |
 |---|---|---|
@@ -351,7 +368,21 @@ Not available in the CLI yet.
 Not available in MCP.
 {% endcapture %}
 
-{% include tabs.html id="schema-compatibility" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_schema" "payments_value" {
+  # …
+  compatibility = "FULL"
+}
+```
+
+Remove `compatibility` to clear the subject's level and use the registry's
+default. When an apply changes both the level and the schema, the level is
+changed first, so relaxing it to `NONE` lets an otherwise incompatible schema
+register in the same apply.
+{% endcapture %}
+
+{% include tabs.html id="schema-compatibility" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 ## Delete a version or a subject
 
@@ -437,7 +468,20 @@ Not available in the CLI yet.
 Not available in MCP.
 {% endcapture %}
 
-{% include tabs.html id="delete-schema" ui=ui api=api cli=cli mcp=mcp %}
+{% capture terraform %}
+```hcl
+resource "streamtime_kafka_schema" "payments_value" {
+  # …
+  hard_delete = true
+}
+```
+
+`terraform destroy` soft-deletes the subject. With `hard_delete = true` it
+then removes it permanently, which cannot be undone. Deleting single versions
+isn't available in Terraform.
+{% endcapture %}
+
+{% include tabs.html id="delete-schema" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
 
 A permanent delete of something still live is refused with
 `409 subject_not_soft_deleted`: soft-delete it first.
