@@ -701,9 +701,11 @@ for _, p := range []string{"metrics/overview/", "logs/", "firing-alerts/"} {
 ```bash
 streamtime kafka metrics {{ c }}
 streamtime kafka logs {{ c }}
+streamtime kafka alerts {{ c }}
 ```
 
-Alerts aren't available in the CLI yet.
+`kafka alerts` exits with an error when the fleet's monitoring can't be
+reached, so "No alerts firing." always means the check succeeded.
 {% endcapture %}
 
 {% capture mcp %}
