@@ -401,8 +401,38 @@ resp, err = call("POST", "/fleet/edge-lab/agent/InstallStreamtimeAgentWorkflow/"
 {% capture api %}{% include code-tabs.html id="byok-connect-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
 
 {% capture cli %}
-Not available in the CLI yet. Connect the cluster from the UI or the API.
-{% comment %}Gap: #1813{% endcomment %}
+Let Streamtime install the Agent for you:
+
+```bash
+streamtime fleet connect edge-lab --kubeconfig ./kubeconfig --wait
+```
+
+The command stores the kubeconfig for the fleet, starts the install and
+prints the Operation ID. `--wait` waits until the cluster is set up (up to
+`--timeout` seconds, 8100 by default). If the wait ends first, the setup keeps
+running: check it with `streamtime fleet status edge-lab`. Add `--registry`, `--repository` and
+`--chart-version` to install the Agent from a registry other than the
+default. If a kubeconfig is already stored for the fleet, the command asks
+before replacing it; `--yes` replaces it without asking.
+
+To install the Agent yourself instead:
+
+```bash
+streamtime fleet connect edge-lab --manual \
+  --registry <registry> --repository <repository>
+# run the printed steps against the cluster, then:
+streamtime fleet connect edge-lab --manual --verify --wait
+```
+
+`--manual` writes the Agent's settings to files that only you can read
+(`--out-dir`, or a new temporary folder) and prints the install steps. It
+creates the Agent's API key; if the fleet already has one, it asks before
+rotating it, because a running Agent stops working until it gets the new
+settings (`--yes` rotates without asking). `--verify` checks that the Agent
+connects, then sets up the cluster.
+
+The kubeconfig and the Agent's API key are never printed, also with
+`-O json`.
 {% endcapture %}
 
 {% capture mcp %}
