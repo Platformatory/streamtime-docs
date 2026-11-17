@@ -66,13 +66,18 @@ these docs show the setup for each language.
 
 ## CLI
 
-The CLI isn't published to a package index yet. Install it from the
-`streamtime-cli` folder of the Streamtime source, with
+The CLI is published to PyPI as `streamtime-cli` with every Streamtime
+release. Install it with pip, or as a standalone tool with
 [uv](https://docs.astral.sh/uv/):
 
 ```bash
-uv tool install ./streamtime-cli
+pip install streamtime-cli==<version>
+# or
+uv tool install streamtime-cli==<version>
 ```
+
+Use the CLI version that matches your installation. It needs Python 3.10
+or later. Check it with `streamtime --help`.
 
 Then sign in, as yourself or with an API key:
 

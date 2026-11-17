@@ -94,7 +94,8 @@ streamtime api-key rotate <key-id>
 streamtime api-key delete <key-id>
 ```
 
-Always pass `--role`; the CLI's default role isn't one of the roles above.
+`--role` is required and takes one of the roles above. Pick the least
+the key needs.
 {% endcapture %}
 
 {% capture mcp %}

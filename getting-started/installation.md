@@ -248,7 +248,7 @@ listed in `SUPER_USER_EMAILS` (single image and Compose) or
 To sign in from the terminal instead:
 
 ```bash
-uv tool install ./streamtime-cli     # from the Streamtime source; see Interfaces
+uv tool install streamtime-cli==<version>   # or pip install; see Interfaces
 streamtime login --org root --streamtime-url https://localhost:8443
 streamtime fleet list
 ```
