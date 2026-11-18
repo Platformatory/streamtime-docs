@@ -287,12 +287,17 @@ project version. If a job can't start, for example because the JAR can't be
 fetched, it moves to **Error** within a few minutes and shows the reason from
 Flink, instead of staying in **Provisioning**.
 
+A job runs as wide as the Flink Units you give it, so it has no parallelism
+setting of its own, and it keeps its saved state where its Job Workspace does.
+A request that sets `parallelism`, `savepoint_strategy`, `flink_conf` or chart
+`values` on a job is refused.
+
 {% capture ui %}
 1. Open the session deployment from **Flink** and select **Submit Job**
    (**Submit First Job** when it has none yet).
 2. Enter the **Job Identifier** and its **Flink Units**, then the JAR or
-   project version, parallelism and upgrade mode, and select **Submit
-   Flink Job**.
+   project version and the state handling, and select **Submit Flink
+   Job**.
 3. Open a job to see its status, change it or delete it.
 {% endcapture %}
 
@@ -307,7 +312,6 @@ curl -X POST "$API/flink/analytics/jobs/" \
     "flink_units": 2,
     "advanced_configuration": {
       "application_jar": "<jar-url>",
-      "parallelism": 2,
       "upgrade_mode": "savepoint"
     }
   }'
@@ -339,7 +343,6 @@ job = organizations_flink_jobs_create.sync(
         "flink_units": 2,
         "advanced_configuration": {
             "application_jar": "<jar-url>",
-            "parallelism": 2,
             "upgrade_mode": "savepoint",
         },
     }),
@@ -366,7 +369,6 @@ await organizationsFlinkJobsCreate({
     flink_units: 2,
     advanced_configuration: {
       application_jar: "<jar-url>",
-      parallelism: 2,
       upgrade_mode: "savepoint",
     },
   },
@@ -389,7 +391,6 @@ resp, err := call("POST", "/flink/analytics/jobs/", map[string]any{
     "flink_units": 2,
     "advanced_configuration": map[string]any{
         "application_jar": "<jar-url>",
-        "parallelism":     2,
         "upgrade_mode":    "savepoint",
     },
 })
@@ -405,7 +406,6 @@ resp, err = call("DELETE", "/flink/analytics/jobs/clickstream/", nil)
 streamtime flink job create analytics \
   --identifier clickstream \
   --application-jar <jar-url> \
-  --parallelism 2 \
   --upgrade-mode savepoint
 
 streamtime flink job list analytics
