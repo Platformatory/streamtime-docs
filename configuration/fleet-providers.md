@@ -246,8 +246,12 @@ resp, err := call("PATCH", "/bootstrap-providers/aws-prod/", map[string]any{
 {% capture api %}{% include code-tabs.html id="accounts-update-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
 
 {% capture cli %}
-Not available in the CLI yet. Change the credentials from the UI or the API.
-{% comment %}Gap: #1882{% endcomment %}
+```bash
+streamtime provider update aws-prod \
+  --config '{"aws_access_key": "<new-access-key-id>", "aws_access_secret": "<new-secret-access-key>"}'
+```
+
+Pass the cloud's full set of credentials from the table above. The command sends only the configuration, so the account keeps its identifier and cloud.
 {% endcapture %}
 
 {% capture mcp %}
