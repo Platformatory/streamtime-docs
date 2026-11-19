@@ -383,6 +383,8 @@ the record from Streamtime and leaves the cloud network in place.
    (how many clusters the fleet can host). Under **Workloads**, choose what
    the fleet runs (Streaming, Stream Processing, Analytics) and how much
    capacity each gets; only the services those workloads need are installed.
+   On a Shared cloud fleet, Streaming capacity must be at least Max Tenants:
+   every tenant uses at least 1 Kafka unit.
    Optionally turn on **Enable autoscale for workload node pool** and
    **Enable AI**, and pick accounts under **How should this fleet be
    monitored?**
@@ -566,6 +568,7 @@ streamtime fleet create \
   --provider {{ k }} \
   --domain <base-domain> \
   --tenancy-mode Shared \
+  --max-tenants 6 \
   --streaming strimzi --streaming-units 6 \
   --placement-config '{{ include.placement }}' \
   --advanced-config '{{ include.advanced }}'
@@ -578,6 +581,9 @@ settings, then run `streamtime fleet reconcile {{ f }}`.
 Choose workloads with `--streaming`, `--stream-processing` and
 `--analytics` (each takes a comma-separated list of providers) and their
 `--…-units` options. Without them, every workload is enabled.
+
+`--max-tenants` defaults to 10. On a Shared cloud fleet, set it no higher
+than `--streaming-units`, or raise `--streaming-units` to match.
 {% endcapture %}
 
 {% capture mcp %}
