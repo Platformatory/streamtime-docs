@@ -14,13 +14,17 @@ registry, each subject's versions and each schema, and lets you manage them:
 
 | Task | Who can do it |
 |---|---|
-| Browse subjects, versions and schemas | Everyone who can see the cluster |
+| Open **Schemas** and browse subjects, versions and schemas | Administrators, Infrastructure Administrators and Cluster Administrators |
 | Register a schema, check compatibility | Administrators and Cluster Administrators |
 | Set or clear a subject's compatibility level | Administrators and Cluster Administrators |
 | Delete a version or a subject, and remove it permanently | Administrators and Cluster Administrators |
 
-Clusters without a schema registry have no **Schemas** section. Confluent
-Platform on VMs doesn't support it.
+Clusters without a schema registry have no **Schemas** section. To give an
+Apache Kafka cluster one, turn on **Schema Registry** in the cluster's
+**Advanced Configuration** (see
+[Apache Kafka]({{ site.baseurl }}/workloads/streaming/apache-kafka/)). Its
+default compatibility level is **Full**. Confluent Platform on VMs doesn't
+support schema management.
 
 Every change you make here is recorded in the organization's audit log, with
 who made it, the cluster, the subject, the version and the schema ID. The
@@ -40,13 +44,19 @@ from another subject) can be browsed but not registered here.
 ## Browse schemas
 
 {% capture ui %}
-1. Open the cluster and select **Administration**, then **Schemas**.
+1. Open the cluster and select **Administration**, then **Schemas**. The
+   registry's default level is shown at the top, as **Registry default
+   compatibility**.
 2. Search for a subject, and select it. Its latest version opens, with the
-   schema type and schema ID.
+   schema type, the schema ID and the schema. A subject named after an
+   existing topic links to that topic.
 3. Choose another **Version** to see an older schema. The compatibility
-   level the subject uses is shown beside it.
+   level the subject uses is shown beside it, under **Compatibility**.
+
+   {% include screenshot.html dir="kafka-schemas" file="browse.png" alt="Schemas page with orders-value selected: the subject list on the left, and Version 2, its Avro type and ID, Registry default (Full) under Compatibility, and the schema on the right" %}
 4. Turn on **Show deleted** to list soft-deleted subjects and versions too.
-   They're marked **Deleted**.
+   Deleted subjects are marked **Deleted** in the list. Deleted versions
+   are marked *(deleted)* in the **Version** list.
 {% endcapture %}
 
 {% capture curl %}
@@ -130,12 +140,14 @@ Subjects are usually named after the topic: `<topic>-value` for message
 values and `<topic>-key` for keys.
 
 {% capture ui %}
-1. In **Administration → Schemas**, select **Register schema**. To add a
-   version to a subject, select the subject and then **Register new
-   version**.
+1. In **Administration → Schemas**, select **Register Schema**. To add a
+   version to a subject, select the subject and then **Register New
+   Version**; the subject is filled in.
 2. Enter the **Subject**, choose the **Schema type** (**Avro**, **JSON
    Schema** or **Protobuf**) and paste the **Schema**, up to 1 MiB.
-3. Optionally select **Check compatibility** first (see below).
+
+   {% include screenshot.html dir="kafka-schemas" file="register.png" alt="Register a schema dialog with Subject refunds-value, Schema type Avro and an Avro record schema pasted in, above the Cancel, Check Compatibility and Register buttons" %}
+3. Optionally select **Check Compatibility** first (see below).
 4. Select **Register**. The new version opens. A schema that isn't
    compatible is refused with the registry's reason, and nothing is
    registered.
@@ -209,11 +221,20 @@ resource "streamtime_kafka_schema" "payments_value" {
 }
 ```
 
-`terraform apply` registers the schema. Changing `schema` registers the next
-version; a change in formatting alone (for Avro and JSON Schema) is not a
-change. To manage a subject that already exists, import it:
+`terraform plan` shows the resource to create, and `terraform apply`
+registers the schema; a plan after that reports no changes. Changing
+`schema` plans an in-place update with the schema diff, and `schema_id` and
+`version` known after apply; applying it registers the next version.
+
+To manage a subject that already exists, import it:
 `terraform import streamtime_kafka_schema.payments_value <cluster>/payments-value`.
+
 See [streamtime_kafka_schema]({{ site.baseurl }}/terraform/kafka-schema/).
+
+{: .note }
+Today a schema file that differs from the registered one only in formatting
+(including right after an import) keeps planning an in-place update that
+registers nothing.
 {% endcapture %}
 
 {% include tabs.html id="register-schema" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
@@ -234,8 +255,11 @@ compatible.
 
 {% capture ui %}
 1. In the register dialog, enter the subject, type and schema.
-2. Select **Check compatibility**. The dialog shows **Compatible**, or
-   **Not compatible** with the registry's reasons.
+2. Select **Check Compatibility**. The dialog shows **Compatible**, or
+   **Not compatible with the subject's existing versions** followed by the
+   registry's reasons. Nothing is registered.
+
+   {% include screenshot.html dir="kafka-schemas" file="check-compatibility.png" alt="Register a new version of orders-value dialog showing a warning: Not compatible with the subject's existing versions, with the registry's reason" %}
 {% endcapture %}
 
 {% capture curl %}
@@ -298,13 +322,18 @@ A subject uses the registry's default level unless it sets its own. The
 levels are **Backward**, **Backward, all versions**, **Forward**, **Forward,
 all versions**, **Full**, **Full, all versions** and **None** (API values
 `BACKWARD`, `BACKWARD_TRANSITIVE`, `FORWARD`, `FORWARD_TRANSITIVE`, `FULL`,
-`FULL_TRANSITIVE`, `NONE`). The registry's default level can't be changed
-here.
+`FULL_TRANSITIVE`, `NONE`). The registry's default level (**Full** on
+Apache Kafka) can't be changed here.
 
 {% capture ui %}
 1. In **Administration → Schemas**, select the subject.
-2. Choose a level in **Compatibility**. It applies at once.
+2. Choose a level in **Compatibility**. It applies at once, and
+   **Compatibility** shows the new level with a line on what it checks.
+
+   {% include screenshot.html dir="kafka-schemas" file="compatibility-level.png" alt="Compatibility list open on payments-value, showing Registry default and the seven levels, with Backward selected" %}
 3. To go back to the registry's default, choose **Registry default**.
+   **Compatibility** then shows **Registry default (Full)**, and the line
+   below says the subject uses the registry default.
 {% endcapture %}
 
 {% capture curl %}
@@ -315,9 +344,10 @@ curl -X PUT "$API/kafka/<cluster>/schemas/subjects/payments-value/config/" \
   -d '{"compatibility": "FULL"}'
 # {"subject": "payments-value", "compatibility": "FULL", "inherited": false}
 
-# Clear: the registry default applies again ("inherited": true)
+# Clear: the registry default applies again
 curl -X DELETE "$API/kafka/<cluster>/schemas/subjects/payments-value/config/" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN"
+# {"subject": "payments-value", "compatibility": "FULL", "inherited": true}
 ```
 {% endcapture %}
 {% capture python %}
@@ -376,10 +406,12 @@ resource "streamtime_kafka_schema" "payments_value" {
 }
 ```
 
-Remove `compatibility` to clear the subject's level and use the registry's
-default. When an apply changes both the level and the schema, the level is
-changed first, so relaxing it to `NONE` lets an otherwise incompatible schema
-register in the same apply.
+Adding `compatibility` plans an in-place update, `+ compatibility = "FULL"`;
+a plan after the apply reports no changes. Remove `compatibility` to clear
+the subject's level and use the registry's default: the plan shows
+`- compatibility = "FULL" -> null`. When an apply changes both the level and
+the schema, the level is changed first, so relaxing it to `NONE` lets an
+otherwise incompatible schema register in the same apply.
 {% endcapture %}
 
 {% include tabs.html id="schema-compatibility" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
@@ -401,11 +433,20 @@ Either way you type the subject name to confirm, and the API needs
 {% capture ui %}
 1. In **Administration → Schemas**, select the subject.
 2. To delete one version, choose it in **Version** and select **Delete
-   version**. To delete the whole subject, select **Delete subject**.
-3. Type the subject name and confirm.
-4. To remove it permanently, turn on **Show deleted**, select the deleted
-   subject or version, then **Delete permanently** (**Delete subject
-   permanently** for a subject). Type the subject name again and confirm.
+   Version *n***. To delete the whole subject, select **Delete Subject**.
+3. Type the subject name, then select **Delete Version *n*** (or **Delete
+   Subject**) in the dialog. After a version delete the subject stays open
+   on its latest version; after a subject delete it leaves the list.
+
+   {% include screenshot.html dir="kafka-schemas" file="delete-version.png" alt="Delete version 1 dialog for payments-value with the subject name typed in, and the Delete Version 1 button enabled" %}
+4. To remove it permanently, turn on **Show deleted**:
+   - For a version, select the subject, choose **Version *n* (deleted)** in
+     **Version**, then select **Delete Version *n* Permanently**.
+   - For a subject, select the subject marked **Deleted**, then select
+     **Delete Subject Permanently**.
+
+   Type the subject name again and select **Delete Permanently**. It's no
+   longer listed, even with **Show deleted** on.
 {% endcapture %}
 
 {% capture curl %}
@@ -413,14 +454,18 @@ Either way you type the subject name to confirm, and the API needs
 # Soft-delete one version, then remove it permanently
 curl -X DELETE "$API/kafka/<cluster>/schemas/subjects/payments-value/versions/1/?confirm=true" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN"
+# {"subject": "payments-value", "version": 1, "permanent": false, "deleted": true}
 curl -X DELETE "$API/kafka/<cluster>/schemas/subjects/payments-value/versions/1/?confirm=true&permanent=true" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN"
+# {"subject": "payments-value", "version": 1, "permanent": true, "deleted": true}
 
 # Soft-delete a subject, then remove it permanently
 curl -X DELETE "$API/kafka/<cluster>/schemas/subjects/payments-value/?confirm=true" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN"
+# {"subject": "payments-value", "versions": [2], "permanent": false, "deleted": true}
 curl -X DELETE "$API/kafka/<cluster>/schemas/subjects/payments-value/?confirm=true&permanent=true" \
   -H "Authorization: Bearer $STREAMTIME_TOKEN"
+# {"subject": "payments-value", "versions": [2], "permanent": true, "deleted": true}
 ```
 {% endcapture %}
 {% capture python %}
@@ -476,9 +521,12 @@ resource "streamtime_kafka_schema" "payments_value" {
 }
 ```
 
-`terraform destroy` soft-deletes the subject. With `hard_delete = true` it
-then removes it permanently, which cannot be undone. Deleting single versions
-isn't available in Terraform.
+`terraform destroy` plans the resource's removal (`- destroy`) and
+soft-deletes the subject. With `hard_delete = true` it then removes it
+permanently, which cannot be undone. Adding `hard_delete = true` to an
+existing resource plans an in-place update, `~ hard_delete = false -> true`,
+that changes nothing in the registry; apply it before you destroy. Deleting
+single versions isn't available in Terraform.
 {% endcapture %}
 
 {% include tabs.html id="delete-schema" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
@@ -493,11 +541,12 @@ Topics link to the subjects named after them, and each link opens
 
 - In **Administration → Topics**, the **Schema** column links **Value** and
   **Key** for topics with a `<topic>-value` or `<topic>-key` subject.
-- In a topic, the **Schemas** tab lists every subject that belongs to it:
-  the message value and key subjects, and subjects named after the topic and
-  record type (`<topic>-<record name>`). A subject that belongs to a longer
-  topic name, such as `orders-v2-value` for topic `orders`, isn't linked from
-  `orders`.
+- In a topic, the **Schemas** tab lists every subject that belongs to it,
+  with its role: the message value and key subjects, and subjects named
+  after the topic and record type (`<topic>-<record name>`).
+  **Browse All Subjects On This Cluster** opens the full list. A subject
+  that belongs to a longer topic name, such as `orders-v2-value` for topic
+  `orders`, isn't linked from `orders`.
 - When the topic's own configuration sets how its subjects are named, only
   matching subjects are linked. A topic whose schemas are named after the
   record type alone can't be matched by name; the tab says so and links to
@@ -512,13 +561,17 @@ with the schema whose ID it carries.
 {% capture ui %}
 1. Open **Administration → Topics** and select **Value** or **Key** in a
    topic's **Schema** column, or open the topic and its **Schemas** tab.
-2. Select a subject to open it in **Schemas**.
+
+   {% include screenshot.html dir="kafka-schemas" file="topic-schemas.png" alt="Topic orders on its Schemas tab, listing orders-value (Message value), orders-key (Message key) and orders-com.acme.Order (Named after the topic and record type), with Browse All Subjects On This Cluster below" %}
+2. Select a subject to open it in **Schemas**. **Back To All Topics**
+   returns to the topic list.
 {% endcapture %}
 
 {% capture curl %}
 ```bash
 curl "$API/kafka/<cluster>/topics/orders/schemas/" -H "Authorization: Bearer $STREAMTIME_TOKEN"
 # {"subjects": [{"subject": "orders-value", "role": "value", "match": "exact"},
+#               {"subject": "orders-key", "role": "key", "match": "exact"},
 #               {"subject": "orders-com.acme.Order", "role": "record", "match": "prefix"}],
 #  "strategy": null}
 ```
