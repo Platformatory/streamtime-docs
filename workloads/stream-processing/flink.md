@@ -274,6 +274,84 @@ See [streamtime_flink]({{ site.baseurl }}/terraform/flink/) and
 {% endcapture %}
 
 {% capture extra_section %}
+## See how many Flink Units a Job Workspace has free
+
+Every project books a **Flink Unit budget** from its Job Workspace, and the
+workspace's **Max Flink Units** is the pool those budgets come from. A new or
+resized project is refused when its budget is more than the free Flink Units.
+The workspace reports its capacity: the pool, how many Flink Units projects
+have booked, how many are free, and for each project its booking and how much
+of it the project's jobs use. Only a Job Workspace has capacity. A project also
+reports how much of its own budget its jobs use.
+
+{% capture ui %}
+Not available in the console yet.
+{% endcapture %}
+
+{% capture curl %}
+```bash
+curl -H "Authorization: Bearer $STREAMTIME_TOKEN" \
+  "https://api.example.com/organizations/<org>/flink/<workspace>/"
+```
+
+The response includes:
+
+```json
+"capacity": {
+  "pool": 10, "booked": 4, "free": 6,
+  "projects": [{"identifier": "etl", "flink_unit_budget": 4, "units_used": 3}]
+}
+```
+{% endcapture %}
+{% capture python %}
+```python
+import httpx
+
+workspace = httpx.get(
+    "https://api.example.com/organizations/<org>/flink/<workspace>/",
+    headers={"Authorization": f"Bearer {token}"},
+).json()
+print(workspace["capacity"]["free"])
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+const response = await fetch(
+  "https://api.example.com/organizations/<org>/flink/<workspace>/",
+  { headers: { Authorization: `Bearer ${token}` } },
+);
+console.log((await response.json()).capacity.free);
+```
+{% endcapture %}
+{% capture go %}
+```go
+req, _ := http.NewRequest("GET", "https://api.example.com/organizations/<org>/flink/<workspace>/", nil)
+req.Header.Set("Authorization", "Bearer "+token)
+resp, err := http.DefaultClient.Do(req)
+// decode the JSON body: capacity.pool, capacity.booked, capacity.free
+```
+{% endcapture %}
+{% capture api %}{% include code-tabs.html id="flink-capacity-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+
+{% capture cli %}
+```bash
+streamtime flink get <workspace>          # prints capacity
+streamtime flink-project get <project>    # prints flink_units_used
+```
+{% endcapture %}
+
+{% capture mcp %}
+Not available in MCP yet.
+{% endcapture %}
+
+{% capture terraform %}
+Not exposed by the provider: `streamtime_flink` and `streamtime_flink_project`
+manage the pool and the budget, and `capacity` and `flink_units_used` are
+reported by the API only.
+{% endcapture %}
+
+{% include tabs.html id="flink-capacity" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
 ## Submit and manage jobs (session mode)
 
 A session cluster runs the jobs you submit to it. Each job claims Flink
