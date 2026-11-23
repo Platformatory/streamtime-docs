@@ -48,7 +48,7 @@ Invite a user into an organization:
 curl -X POST "https://<streamtime-api-endpoint>/organizations/acme/members/invite/" \
   -H "Authorization: Bearer YOUR_API_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"email": "dev@acme.example"}'
+  -d '{"email": "dev@acme.example", "role": "Project Owner"}'
 ```
 *Paths from the committed OpenAPI snapshot; bodies are schema-derived and
 not executed against a live deployment.*

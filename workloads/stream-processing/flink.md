@@ -484,17 +484,24 @@ resp, err = call("DELETE", "/flink/analytics/jobs/clickstream/", nil)
 streamtime flink job create analytics \
   --identifier clickstream \
   --application-jar <jar-url> \
-  --upgrade-mode savepoint
+  --upgrade-mode savepoint \
+  --flink-units 2
 
 streamtime flink job list analytics
 streamtime flink job get analytics clickstream
+streamtime flink job update analytics clickstream --flink-units 4 --wait
 streamtime flink job delete analytics clickstream --yes
 ```
 
 Use `--project-version PROJECT@VERSION` instead of `--application-jar` to
-run a registered project version. Setting a job's Flink Units, or changing
-a job, isn't available in the CLI yet; jobs it creates get 1 Flink Unit.
-{% comment %}Gap: #1819{% endcomment %}
+run a registered project version. Without `--flink-units`, a job gets
+1 Flink Unit; a job's Flink Units come out of the cluster's Flink Unit budget.
+
+`flink job update` changes a job and redeploys it: `--flink-units` resizes
+it, `--project-version` runs another project version, and
+`--advanced-config` replaces its whole advanced configuration (give every
+setting, not only the ones you change). A job with the stateless upgrade
+mode restarts without a savepoint, so its in-progress state is lost.
 {% endcapture %}
 
 {% capture mcp %}

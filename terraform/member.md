@@ -26,11 +26,11 @@ resource "streamtime_member" "ana" {
 ### Required
 
 - `email` (String) The member's email address. It is also the ID you use to import them. Changing it adds a different member.
+- `role` (String) The role the member holds, for example Administrator or Project Owner. It must be an existing role.
 
 ### Optional
 
 - `initial_password` (String, Sensitive) Initial password for a new person using built-in sign-in. It is sent only when inviting the person, never changes an existing password, and is retained in sensitive Terraform state.
-- `role` (String) The role the member holds, for example Administrator. Leave it out to leave the member's role unset.
 
 ### Read-Only
 
