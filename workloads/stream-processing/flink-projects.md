@@ -13,8 +13,9 @@ builds the application and adds each build to the project as a
 **version**; Streamtime runs a version as a job in a **Job Workspace**,
 and moves it forward or back when you choose.
 
-- **Runtime:** Java, Scala or Python. It decides what a version is: a
-  JAR, or a `.zip` for Python.
+- **Runtime:** Java, Scala, Python or SQL. It decides what a version is: a
+  JAR, a `.zip` for Python, or a SQL script for SQL. SQL projects run on SQL
+  workspaces; see [SQL projects](#sql-projects).
 - **Budget:** the project books **Flink Units** on its Job Workspace, and
   its jobs run within them. See [Capacity units]({{ site.baseurl }}/about/scaling/#flink-units).
 - **Versions** come one of two ways: uploaded to Streamtime, or kept in
@@ -451,6 +452,42 @@ MCP reads the job's status, metrics and logs: *"Is the etl-main job
 healthy?"* Deploying isn't available in MCP.
 {% endcapture %}
 {% include tabs.html id="flink-project-run" ui=ui api=api cli=cli mcp=mcp %}
+
+## SQL projects
+
+A SQL project's versions are SQL scripts, kept in your own artifact store
+and registered by digest like any other release; they can't be uploaded to
+Streamtime. A version runs as a job on a **SQL workspace** (a Job Workspace on
+Confluent Platform for Apache Flink).
+
+When the job starts, a short-lived step inside your fleet fetches the script
+with your store's credential, checks it against the registered digest, and
+creates the job's statement from it. The script and the credential never leave
+the fleet.
+
+What a script can hold:
+
+- **One statement**, or one statement set
+  (`EXECUTE STATEMENT SET BEGIN INSERT …; INSERT …; END;`) to run several
+  INSERTs as one job. A script with several separate statements fails with
+  "only single statement supported".
+- **INSERT and SELECT on existing tables.** Each topic of the workspace's
+  Kafka cluster is a table. Creating tables (`CREATE TABLE`) isn't supported yet.
+- **Not portable to Apache Flink as is.** A SQL workspace doesn't accept
+  connector options such as `'connector' = 'kafka'`, `SET`, `CREATE CATALOG`
+  or `CREATE FUNCTION`. Set Flink options on the job instead of with `SET`.
+
+Deploying another version replaces the statement: the job restarts **without
+its state** and reads its input again from the start. Rolling back works the
+same way.
+
+To run a version, create a job on the SQL workspace, choose **A version from a
+Flink project** under **What the job runs**, and pick the SQL project and
+version. Moving the project's HEAD then deploys newer or older versions.
+
+Don't put credentials in a script: the statement's text is visible in the
+fleet. SQL on SQL workspaces is a preview feature of Confluent Platform for
+Apache Flink.
 
 ## Delete a project
 

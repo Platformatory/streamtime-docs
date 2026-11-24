@@ -58,13 +58,13 @@ variable "ghcr_read_token" {
 
 - `description` (String) Free-text description.
 - `metadata` (String) Project defaults and labels, as a JSON object set with jsonencode(): entry_class (the default main class of a JAR), default_args, labels and documentation_url. Values Streamtime fills in are not shown as changes.
-- `runtime` (String) Language of the application: java, scala or python. It decides which artifacts the project accepts. Changing it creates a new project.
+- `runtime` (String) Language of the application: java, scala, python or sql. It decides which artifacts the project accepts. Changing it creates a new project.
 - `store` (Attributes) Your own artifact store for the project's releases. Removing it disconnects the store; registered releases stay listed but cannot be pulled until a store is connected again. (see [below for nested schema](#nestedatt--store))
 
 ### Read-Only
 
 - `artifact_kind` (String) Kind of artifact the project accepts, from its runtime.
-- `build_tool` (String) Tool your CI pipeline builds the artifact with, chosen from the runtime: Maven for java, sbt for scala, pip for python.
+- `build_tool` (String) Tool your CI pipeline builds the artifact with, chosen from the runtime: Maven for java, sbt for scala, pip for python, none for sql.
 - `id` (String) Same as identifier. Use the identifier to import.
 - `latest_version` (String) Most recently uploaded version, if any.
 
