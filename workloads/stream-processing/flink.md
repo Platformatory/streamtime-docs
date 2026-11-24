@@ -285,7 +285,19 @@ of it the project's jobs use. Only a Job Workspace has capacity. A project also
 reports how much of its own budget its jobs use.
 
 {% capture ui %}
-Not available in the console yet.
+1. In the sidebar, select **Flink** and open the Job Workspace.
+2. In the **Capacity** card, read **Pool**, **Booked** and **Free**, each in
+   Flink Units. **Used by jobs** is how many Flink Units the running jobs
+   use of what projects booked.
+3. The table under the chips lists each project with its **Booked** Flink
+   Units and what its jobs use (**Used by jobs**). Select a project to open
+   it.
+
+Everyone who can open the workspace sees its capacity. When you create or
+edit a project, the **Job Workspace** list shows each workspace's free room,
+for example `analytics: 6 of 10 Flink Units free`.
+
+{% include screenshot.html dir="flink" file="workspace-capacity.png" alt="Capacity card of a Job Workspace with Pool, Booked and Free Flink Units and a table of project bookings" %}
 {% endcapture %}
 
 {% capture curl %}

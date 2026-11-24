@@ -9,7 +9,7 @@ permalink: /terraform/tracked-repository/
 
 # streamtime_tracked_repository (Resource)
 
-A repository whose packages Streamtime lists in the catalog. Managing the catalog needs the catalog permission, normally held by the root organization. Streamtime finds a tracked repository by its repository name, so import it by that name; Terraform refuses to read, change or delete one when another registry holds a repository of the same name.
+A repository whose packages Streamtime lists in the catalog. Managing the catalog needs the catalog permission, normally held by the root organization. Import it by its repository name. For oci, Terraform names the registry on every request, so a repository of the same name in another registry is never touched. A helm repository, or one imported before its registry is known, is refused when another registry holds a repository of the same name.
 
 ## Example Usage
 

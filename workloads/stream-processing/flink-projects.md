@@ -286,6 +286,96 @@ Not available in MCP.
 {% endcapture %}
 {% include tabs.html id="flink-project-version" ui=ui api=api cli=cli mcp=mcp %}
 
+## Change a project's Job Workspace or budget
+
+A project's **Job Workspace** and **Flink Units** can be changed after it is
+created. A project created before Job Workspaces were required has none yet;
+place it the same way. The change is refused when:
+
+- the new budget is more than the workspace has free (a project's own
+  booking doesn't count against it when it stays on its workspace);
+- the budget is lower than the Flink Units the project's jobs already use;
+- the project still has jobs on its current workspace, when you move it.
+  Delete them or redeploy them to the new workspace first.
+
+The reason is shown as written, and nothing changes.
+
+{% capture ui %}
+1. In the sidebar, open **Flink projects** and select the project.
+2. Select **Edit placement** (**Place project** for a project with no Job
+   Workspace). Only a Project Owner sees it.
+3. Choose the **Job Workspace**. Each one shows its free room, for example
+   `analytics: 6 of 10 Flink Units free`.
+4. Set **Flink Units**. The dialog shows how many the project's jobs use
+   now.
+5. **Save**. A refusal appears in the dialog; fix the value and save again.
+
+The project's page shows its workspace and **Jobs use N of M Flink Units**.
+
+{% include screenshot.html dir="flink" file="edit-placement.png" alt="Edit placement dialog with the Job Workspace list showing free room and the Flink Units field" %}
+{% endcapture %}
+{% capture curl %}
+```bash
+curl -X PATCH "$API/flink-projects/etl/" \
+  -H "Authorization: Bearer $STREAMTIME_TOKEN" -H "Content-Type: application/json" \
+  -d '{"cluster": "<job-workspace>", "flink_unit_budget": 6}'
+```
+
+Send only what changes. A refused change returns `400` with the reason:
+
+```json
+{"detail": {"flink_unit_budget": ["Cluster 'analytics' has 3 free Flink units of 10; this project asks for 12. Choose a smaller budget or another cluster."]}}
+```
+{% endcapture %}
+{% capture python %}
+```python
+from streamtime_sdk.api.flink_projects import flink_projects_partial_update
+from streamtime_sdk.models import PatchedFlinkProject
+
+flink_projects_partial_update.sync(
+    ORG, "etl", client=client,
+    body=PatchedFlinkProject(cluster="<job-workspace>", flink_unit_budget=6),
+)
+```
+{% endcapture %}
+{% capture typescript %}
+```typescript
+import { flinkProjectsPartialUpdate } from "./client";
+
+await flinkProjectsPartialUpdate({
+  path: { org_identifier: org, identifier: "etl" },
+  body: { cluster: "<job-workspace>", flink_unit_budget: 6 },
+});
+```
+{% endcapture %}
+{% capture go %}
+```go
+resp, err := call("PATCH", "/flink-projects/etl/", map[string]any{
+    "cluster": "<job-workspace>", "flink_unit_budget": 6,
+})
+if err != nil {
+    return err
+}
+defer resp.Body.Close()
+// 200 on success; 400 carries the reason under "detail"
+```
+{% endcapture %}
+{% capture api %}{% include code-tabs.html id="flink-project-placement-api" curl=curl python=python typescript=typescript go=go %}{% endcapture %}
+{% capture cli %}
+```bash
+streamtime flink-project update etl --cluster <job-workspace> --flink-units 6
+```
+{% endcapture %}
+{% capture mcp %}
+Not available in MCP.
+{% endcapture %}
+{% capture terraform %}
+Change `cluster` or `flink_unit_budget` on the `streamtime_flink_project`
+resource and apply. See
+[streamtime_flink_project]({{ site.baseurl }}/terraform/flink-project/).
+{% endcapture %}
+{% include tabs.html id="flink-project-placement" ui=ui api=api cli=cli mcp=mcp terraform=terraform %}
+
 ## Run a version
 
 Moving the project's HEAD to a version deploys it. The first time, name
