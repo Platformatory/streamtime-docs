@@ -68,6 +68,10 @@ curl -X POST "$API/oauth-providers/" \
 ```
 
 Change it with `PATCH $API/oauth-providers/<identifier>/`.
+
+`client_secret` is write-only: responses never include it, only
+`client_secret_set` (whether one is saved). When you update a provider,
+leave `client_secret` out to keep the saved secret.
 {% endcapture %}
 {% capture python %}
 ```python

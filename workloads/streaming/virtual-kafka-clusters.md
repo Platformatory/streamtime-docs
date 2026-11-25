@@ -18,9 +18,16 @@ like any Kafka cluster.
   endpoint and its own share of the capacity.
 - **Capacity in Kafka Units**: the virtual clusters on a Kafka cluster
   together can't claim more than its **Cluster Capacity (Kafka Units)**.
-- **Produce and fetch limits** follow the capacity it claims.
+- **Fair-use limits** follow the capacity it claims: produce and fetch
+  bytes, requests, and new connections per second.
+- **Audited admin operations**: topic, partition, config, record and group
+  changes, and every refused request, are recorded with the organization,
+  virtual cluster and signed-in client.
 - **OAuth sign-in** for clients, with your identity provider's issuer,
   audience and keys.
+- **Isolated namespaces**: the virtual clusters on one Kafka cluster can't
+  see or change each other's topics, consumer groups or transactions. See
+  [Isolation between virtual clusters](#isolation-between-virtual-clusters).
 
 ## Settings
 
@@ -251,6 +258,96 @@ CLI.
 {% endcapture %}
 
 {% include tabs.html id="vkc-connect" ui=ui api=api cli=cli mcp=mcp %}
+
+## Isolation between virtual clusters
+
+Each virtual cluster is its own namespace on the shared Kafka cluster.
+Clients use plain names (`orders`, `billing-app`); on the Kafka cluster
+they are stored as `<virtual cluster identifier>.<name>`, for example
+`team-a.orders`. That applies to topics, consumer groups and
+transactional IDs. So:
+
+- Two virtual clusters can both have a topic `orders`; they are separate
+  topics.
+- Listing topics, groups or transactions shows only the virtual cluster's
+  own.
+- A client can't reach another virtual cluster's data by naming it: the
+  name `team-b.orders`, sent through `team-a`, means `team-a.team-b.orders`.
+
+To keep that boundary, a virtual cluster accepts only the Kafka requests
+that stay inside it. Producing, consuming with the classic consumer group
+protocol, transactions, Kafka Streams, and topic administration (create,
+delete, partitions, topic configs, delete records) all work. These are
+refused:
+
+| Refused | Error the client gets | Use instead |
+|---|---|---|
+| The new consumer group protocol (`group.protocol=consumer`), share groups, streams groups | `UNSUPPORTED_VERSION` | the classic protocol (`group.protocol=classic`, the default) |
+| ACLs, quotas, SCRAM credentials, delegation tokens, log directories, partition reassignment, leader election | `UNSUPPORTED_VERSION` | ask the Kafka cluster's administrator |
+| Broker or broker logger configs | `CLUSTER_AUTHORIZATION_FAILED` | topic configs work |
+| Addressing topics by topic ID instead of name | `UNSUPPORTED_VERSION` (or `INVALID_REQUEST` for metadata) | names; current Kafka clients fall back to them automatically |
+
+Kafka clients ask a virtual cluster which requests and versions it
+supports and use only those, so these limits show up only when a client
+uses one of the refused features.
+
+### Fair-use limits
+
+Each Kafka Unit a virtual cluster claims gives it, shared by all its
+clients:
+
+| Limit | Per Kafka Unit |
+|---|---|
+| Produce | 5 MB/s |
+| Fetch | 15 MB/s |
+| Requests | 1,500 per second |
+| New connections | 25 per second |
+
+A client over a limit is slowed down the way a Kafka broker slows a client
+over its quota: responses carry a throttle time, and Kafka clients back
+off by themselves. A client that keeps sending anyway is held until the
+throttle time is over. A connection opened past the new-connection limit is
+accepted, then closed without an answer when its first request arrives;
+Kafka clients reconnect after their usual backoff.
+The number of connections a virtual cluster keeps open is not limited.
+
+The request and connection limits are starting values and may be tuned.
+
+### Audit of admin operations
+
+Each admin operation through a virtual cluster (creating or deleting
+topics, adding partitions, changing topic configs, deleting records or
+groups, resetting offsets) and each refused request is written to the
+virtual cluster's proxy log as one line, with the organization, the
+virtual cluster, the signed-in client, the operation, the topics or groups
+it named, and the result. Message contents, config values and credentials
+are never written.
+
+### Upgrade order for existing fleets
+
+Isolation, fair-use limits and the audit run in the fleet's virtual
+cluster component, which is installed when the fleet is set up. A fleet set
+up before this release still runs the old component. Upgrade that fleet's
+virtual cluster component to this release **before** you create or update
+a virtual cluster on it. A virtual cluster created or updated on a fleet
+that still has the old component does not start, and its clients can't
+connect until the component is upgraded. Virtual clusters you don't touch
+keep running as before until their next update.
+
+### Upgrading a virtual cluster created before isolation
+
+Topics, consumer groups and transactional IDs that a virtual cluster
+created before this release are stored without the prefix. After the
+upgrade its clients no longer see them: a topic `orders` now means
+`team-a.orders`, which starts empty. The old data is not deleted and stays
+on the Kafka cluster under its old name.
+
+Plan the upgrade as a new namespace: drain or replay the data your
+applications need into the virtual cluster after the upgrade (for example
+with MirrorMaker 2 or your own copy job against the Kafka cluster), and
+expect consumer groups to start again from their `auto.offset.reset`
+position. Delete the old, unprefixed topics from the Kafka cluster once
+you no longer need them.
 {% endcapture %}
 
 {% capture update_note %}

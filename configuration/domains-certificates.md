@@ -77,6 +77,10 @@ curl -X POST "$API/base-domains/" \
 `aws_region`), `cloudflare` (`zone_id`, `api_token`), `godaddy`
 (`api_key`, `api_secret`), `stdns` or `none`. The fields of each:
 `GET $API/base-domains/configuration-profiles/`.
+
+`tls_key` is write-only: responses never include it, only `tls_key_set`
+(whether a private key is saved). When you update a base domain, leave
+`tls_key` out to keep the saved key.
 {% endcapture %}
 {% capture python %}
 ```python
