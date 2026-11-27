@@ -84,4 +84,28 @@ The **Review operational history** prompt (`review_operational_history`) answers
 
 ## From the CLI
 
-Alert triage isn't available in the CLI yet.
+List the alerts that need attention, most severe first:
+
+```bash
+streamtime alert list --needs-attention --sort severity
+```
+
+Each option is the matching filter above:
+
+| Option | Values |
+|---|---|
+| `--triage-state` | Comma list of `investigated`, `investigating`, `awaiting_triage`, `closed` |
+| `--severity` | Comma list of `critical`, `major`, `warning`, `info`, `unknown` |
+| `--needs-attention` | Only alerts that need attention |
+| `--status` | `firing` or `resolved` |
+| `--resource-type`, `--resource` | `fleet`, `kafka`, `clickhouse` or `flink`, and the resource's identifier |
+| `--sort` | `severity`, or `created_at` / `updated_at` (prefix `-` for newest first) |
+| `--limit` | 1–100 |
+
+The table shows each alert's name, severity, triage state, resource and start time. A severity marked **(assessed)** comes from the alert's investigation report. `--output json` prints the API response. An unknown `--triage-state` or `--severity` value is refused with the allowed values; an unknown `--status` or `--resource-type` matches no alerts, and an unknown `--sort` uses the default order.
+
+```bash
+streamtime alert list --severity critical,major --status firing --resource-type kafka --resource kafka-prod
+```
+
+Starting or closing an investigation and reading its report aren't available in the CLI yet.
