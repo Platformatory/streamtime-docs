@@ -214,8 +214,33 @@ script, on the project's **CI/CD** tab or with
 `streamtime flink-project init etl` writes a local development setup.
 
 {% capture ui %}
-On the project's **Versions** tab, **Upload Version** adds a build by
-hand. The **CI/CD** tab shows the pipeline file to commit.
+The **CI/CD** tab shows the pipeline file to commit. To register by hand a
+build you have already pushed to your artifact store:
+
+1. Connect the project to your store (see above). Until then **Register
+   release** is disabled.
+2. On the project's **Versions** tab, select **Register release**.
+   Administrators, Cluster Administrators and Project Owners see it.
+3. Enter the **Version** (the next one is filled in), the **Location** of
+   the file in your store, and its **Digest**: run `sha256sum <file>` on
+   the file you pushed. This is the digest of the file, not the registry's
+   manifest digest.
+4. For a Python project, also choose the **Dependency layout** that
+   matches how you [packaged the release](#package-a-python-release), and
+   enter the **Entry file**. **Python version**, **Dependencies** and
+   **Connectors** are optional.
+5. Java, Scala and Python projects take optional build details:
+   **Commit**, **Branch**, **CI run ID**, **CI run link** and **Built
+   with**. A SQL project asks only for the version, location and digest of
+   your script (at most 1 MB).
+6. Select **Register**. The version appears in the list. Select **Set
+   HEAD** to run it now, or **Close**.
+
+Registering the same build again under the same version changes nothing,
+and the dialog says it was already registered. A different build needs a
+new version.
+
+{% include screenshot.html dir="flink" file="register-release.png" alt="Register release dialog with the Version, Location and Digest fields" %}
 {% endcapture %}
 {% capture curl %}
 ```bash
@@ -286,6 +311,71 @@ streamtime flink-project versions etl
 Not available in MCP.
 {% endcapture %}
 {% include tabs.html id="flink-project-version" ui=ui api=api cli=cli mcp=mcp %}
+
+## Package a Python release
+
+A Python release is a `.zip`. Your job's pods download nothing from a
+package index when they start, so the zip must carry every library your
+code needs beyond Python and PyFlink. The **dependency layout** says how
+you packed them. Choosing a layout does not repackage anything: it must
+match what is in the zip.
+
+| Dependency layout | In the zip | Before the job starts |
+|---|---|---|
+| **Wheel files packaged in the archive (wheelhouse)**, `wheelhouse` | `wheels/` with the `.whl` files, and `requirements.txt` | The packages in `requirements.txt` are installed from `wheels/` |
+| **Packages installed into the archive (vendored)**, `vendored` | `deps/` with the installed packages | `deps/` is used as it is |
+| **No extra packages**, `none` | Your code only | Nothing is installed, even if there is a `requirements.txt` |
+
+Put your files at the top of the zip, not inside a folder. The **Entry
+file** is the path of the `.py` file that starts the job, as it appears in
+the zip, for example `main.py`. Leave PyFlink (`apache-flink`) out of
+`requirements.txt` and the zip: the job already has it.
+
+Libraries with compiled code must be built for the Python version and
+processor type of your cluster. The commands below build for Python 3.10
+on x86_64; use `manylinux2014_aarch64` for Arm nodes, and ask your
+administrator if your installation runs another Python version.
+
+Wheelhouse:
+
+```bash
+pip download -r requirements.txt -d wheels --only-binary=:all: \
+  --implementation cp --python-version 3.10 --platform manylinux2014_x86_64
+zip -r app.zip main.py requirements.txt wheels
+```
+
+`wheels/` needs a wheel for every package, including the ones your
+packages depend on. `pip download` collects them all.
+
+Vendored:
+
+```bash
+pip install -r requirements.txt --target deps --only-binary=:all: \
+  --implementation cp --python-version 3.10 --platform manylinux2014_x86_64
+zip -r app.zip main.py deps
+```
+
+No extra packages:
+
+```bash
+zip -r app.zip main.py
+```
+
+Add any other code your job imports to the same `zip` command.
+
+**Connector JARs** such as the Kafka connector go in a `jars/` folder in
+the zip, with any layout. If you name one under **Connectors**, the start
+of its file name must match, and it must be in `jars/` unless the cluster
+already provides it.
+
+The pipeline file on the **CI/CD** tab builds a wheelhouse when your
+project has a `requirements.txt`. That file must list at least one
+package: if you need none, delete it.
+
+The zip is checked when a job starts, not when you register it. A missing
+entry file, a layout that does not match the zip, or a wheel built for
+another Python version or processor type stops the job with the reason.
+Vendored packages are not checked for Python version or processor type.
 
 ## Change a project's Job Workspace or budget
 
